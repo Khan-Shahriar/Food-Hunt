@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Food Hunt | Eat Together, Pay Less</title>
+    <meta
+      name="description"
+      content="Food Hunt helps office employees order food together, share delivery costs, and save money."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="assets/fh-icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main>
+      <section class="landing page is-active" id="landingPage" aria-labelledby="landingTitle">
+        <div class="landing-visual" aria-hidden="true">
+          <img src="assets/fh-icon.png" alt="" />
+        </div>
+        <div class="landing-content">
+          <p class="eyebrow">Order Together. Save Together. Eat Together.</p>
+          <h1 id="landingTitle">Food Hunt</h1>
+          <p class="tagline">Eat Together, Pay Less</p>
+          <button class="button button-primary button-large" type="button" data-open-modal="login">
+            Login
+          </button>
+        </div>
+      </section>
+
+      <section class="dashboard page" id="dashboardPage" aria-labelledby="dashboardTitle">
+        <header class="dashboard-nav">
+          <a class="brand" href="#" aria-label="Food Hunt dashboard">
+            <span class="brand-mark" aria-hidden="true">
+              <img src="assets/fh-icon.png" alt="" />
+            </span>
+            <span>Food Hunt</span>
+          </a>
+          <nav class="dashboard-links" aria-label="Dashboard navigation">
+            <button class="nav-link is-active" type="button" data-dashboard-view="home">Home</button>
+            <button class="nav-link" type="button" data-dashboard-view="dashboard">Dashboard</button>
+            <button class="nav-link" type="button" data-dashboard-view="profile">Profile</button>
+            <button class="nav-link" type="button" data-dashboard-view="settings">Settings</button>
+          </nav>
+          <div class="nav-actions">
+            <button class="icon-button notification-button" type="button" aria-label="Notifications">
+              <span class="notification-dot"></span>
+            </button>
+            <button class="profile-button" type="button" aria-label="User profile" data-dashboard-view="profile">
+              <span data-profile-initial>U</span>
+            </button>
+            <button class="button button-secondary button-small" type="button" data-logout>Logout</button>
+          </div>
+        </header>
+
+        <div class="dashboard-shell">
+          <section class="dashboard-view is-active" data-view-panel="home">
+            <article class="welcome-card">
+              <p class="eyebrow">Welcome back</p>
+              <h2>Hi, <span data-user-name>User</span></h2>
+              <p>Use the dashboard to follow group orders, costs, and office lunch updates.</p>
+            </article>
+          </section>
+
+          <section class="dashboard-view" data-view-panel="dashboard">
+            <section class="news-panel" aria-labelledby="dashboardTitle">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Office lunch board</p>
+                  <h2 id="dashboardTitle">News</h2>
+                </div>
+                <span class="live-pill">Auto refresh</span>
+              </div>
+              <div class="news-box" aria-live="polite">
+                <ul class="news-list" data-news-list></ul>
+              </div>
+              <article class="order-summary" aria-labelledby="summaryTitle">
+                <div class="summary-title-row">
+                  <div>
+                    <p class="eyebrow">Current group order</p>
+                    <h3 id="summaryTitle">Group Order Summary</h3>
+                  </div>
+                  <span class="status-pill">Collecting</span>
+                </div>
+                <div class="summary-grid">
+                  <div>
+                    <span>Restaurant Name</span>
+                    <strong>Spice Yard Kitchen</strong>
+                  </div>
+                  <div>
+                    <span>Participants</span>
+                    <strong data-participants>8</strong>
+                  </div>
+                  <div>
+                    <span>Total Cost</span>
+                    <strong data-total-cost>৳1,200</strong>
+                  </div>
+                  <div>
+                    <span>Order Status</span>
+                    <strong>Open until 12:45 PM</strong>
+                  </div>
+                </div>
+              </article>
+            </section>
+
+            <aside class="info-stack" aria-label="Cost information">
+              <article class="cost-card">
+                <span>Per Head Cost</span>
+                <strong data-per-head>৳150</strong>
+                <p>Total food cost divided by participants.</p>
+              </article>
+              <article class="cost-card">
+                <span>Delivery Charge</span>
+                <strong data-delivery>৳20</strong>
+                <p>Shared delivery charge for this group order.</p>
+              </article>
+              <article class="notification-card">
+                <h3>Notifications</h3>
+                <ul>
+                  <li>New lunch offer posted for your office.</li>
+                  <li>Delivery estimate updated to 1:25 PM.</li>
+                  <li>Two colleagues joined the order.</li>
+                </ul>
+              </article>
+            </aside>
+          </section>
+
+          <section class="dashboard-view" data-view-panel="profile">
+            <article class="settings-card">
+              <p class="eyebrow">Account</p>
+              <h2>Profile</h2>
+              <form class="settings-form" data-profile-form>
+                <label>
+                  Full Name
+                  <input type="text" name="fullName" required />
+                </label>
+                <label>
+                  Email
+                  <input type="email" name="email" required />
+                </label>
+                <label>
+                  Office Name
+                  <input type="text" name="officeName" readonly />
+                </label>
+                <label>
+                  Role
+                  <input type="text" name="role" readonly />
+                </label>
+                <p class="form-message" data-profile-message role="status"></p>
+                <button class="button button-primary" type="submit">Save Profile</button>
+              </form>
+            </article>
+          </section>
+
+          <section class="dashboard-view" data-view-panel="settings">
+            <article class="settings-card">
+              <p class="eyebrow">Security</p>
+              <h2>Change Password</h2>
+              <form class="settings-form" data-password-form>
+                <label>
+                  Current Password
+                  <input type="password" name="currentPassword" required />
+                </label>
+                <label>
+                  New Password
+                  <input type="password" name="newPassword" required />
+                </label>
+                <label>
+                  Confirm New Password
+                  <input type="password" name="confirmPassword" required />
+                </label>
+                <p class="form-hint">Use at least 8 characters with uppercase, lowercase, number, and special character.</p>
+                <p class="form-error" data-password-error role="alert"></p>
+                <button class="button button-primary" type="submit">Update Password</button>
+              </form>
+            </article>
+
+            <article class="settings-card danger-card">
+              <p class="eyebrow">Danger zone</p>
+              <h2>Delete Account</h2>
+              <form class="settings-form" data-delete-form>
+                <label>
+                  Confirm Password
+                  <input type="password" name="password" required />
+                </label>
+                <p class="form-error" data-delete-error role="alert"></p>
+                <button class="button button-danger" type="submit">Delete Account</button>
+              </form>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast-stack" data-toast-stack aria-live="polite"></div>
+
+    <div class="modal-backdrop" data-modal aria-hidden="true">
+      <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <button class="close-button" type="button" data-close-modal aria-label="Close login popup">
+          X
+        </button>
+        <div class="auth-tabs" role="tablist" aria-label="Authentication tabs">
+          <button class="auth-tab is-active" type="button" data-auth-tab="login">Login</button>
+          <button class="auth-tab" type="button" data-auth-tab="signup">Sign Up</button>
+        </div>
+
+        <form class="auth-form is-active" data-auth-form="login" novalidate>
+          <h2 id="authTitle">Welcome back</h2>
+          <label>
+            Email
+            <input type="email" name="email" placeholder="you@office.com" required autocomplete="email" />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" placeholder="Enter password" required autocomplete="current-password" />
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" name="rememberMe" />
+            Remember me
+          </label>
+          <p class="form-error" data-error="login" role="alert"></p>
+          <button class="button button-primary" type="submit">Login</button>
+          <p class="auth-switch">
+            <button type="button" data-open-modal="forgot">Forgot password?</button>
+          </p>
+          <div class="auth-divider"><span>or continue with</span></div>
+          <div class="social-auth">
+            <button class="button button-outline" type="button" disabled title="Coming soon">Google</button>
+            <button class="button button-outline" type="button" disabled title="Coming soon">Phone number</button>
+          </div>
+          <p class="auth-switch">
+            Don't have an account?
+            <button type="button" data-switch-auth="signup">Sign Up</button>
+          </p>
+        </form>
+
+        <form class="auth-form" data-auth-form="signup" novalidate>
+          <h2>Create account</h2>
+          <label>
+            Full Name
+            <input type="text" name="fullName" placeholder="Your full name" required autocomplete="name" />
+          </label>
+          <label>
+            Office Name
+            <input type="text" name="officeName" placeholder="Company or office name" required />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" placeholder="you@office.com" required autocomplete="email" />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" placeholder="Create password" required autocomplete="new-password" />
+          </label>
+          <label>
+            Confirm Password
+            <input type="password" name="confirmPassword" placeholder="Confirm password" required autocomplete="new-password" />
+          </label>
+          <p class="form-hint">Example: Hello@2026</p>
+          <p class="form-error" data-error="signup" role="alert"></p>
+          <button class="button button-primary" type="submit">Create Account</button>
+          <p class="auth-switch">
+            Already have an account?
+            <button type="button" data-switch-auth="login">Login</button>
+          </p>
+        </form>
+
+        <form class="auth-form" data-auth-form="forgot" novalidate>
+          <h2>Forgot password</h2>
+          <p class="form-copy">Enter your email and we will send a reset link.</p>
+          <label>
+            Email
+            <input type="email" name="email" placeholder="you@office.com" required autocomplete="email" />
+          </label>
+          <p class="form-error" data-error="forgot" role="alert"></p>
+          <button class="button button-primary" type="submit">Send Reset Link</button>
+          <p class="auth-switch">
+            <button type="button" data-switch-auth="login">Back to Login</button>
+          </p>
+        </form>
+
+        <form class="auth-form" data-auth-form="reset" novalidate>
+          <h2>Reset password</h2>
+          <label>
+            New Password
+            <input type="password" name="password" placeholder="New password" required autocomplete="new-password" />
+          </label>
+          <label>
+            Confirm Password
+            <input type="password" name="confirmPassword" placeholder="Confirm password" required autocomplete="new-password" />
+          </label>
+          <input type="hidden" name="token" data-reset-token />
+          <p class="form-error" data-error="reset" role="alert"></p>
+          <button class="button button-primary" type="submit">Save New Password</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
