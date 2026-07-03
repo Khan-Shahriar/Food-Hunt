@@ -52,6 +52,7 @@ function isAccountLocked(user) {
 }
 
 router.post("/signup", (req, res) => {
+  console.log("Signup request received");
   const { fullName, officeName, email, password, confirmPassword } = req.body;
   const validationError = validateSignup({
     fullName,
