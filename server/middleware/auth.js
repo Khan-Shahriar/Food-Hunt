@@ -28,9 +28,15 @@ export function requireAuth(req, res, next) {
 
   try {
     const payload = verifyToken(token);
-    req.user = payload;
+
+    req.user = {
+        id: payload.sub,
+        email: payload.email,
+        role: payload.role
+    };
+
     next();
-  } catch {
+} catch {
     res.clearCookie("fh_token");
     return res.status(401).json({ error: "Session expired. Please log in again." });
   }

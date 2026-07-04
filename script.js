@@ -124,7 +124,7 @@ function showLanding() {
   }
 }
 
-function showDashboard(user) {
+async function showDashboard(user) {
   currentUser = user;
   closeModal();
   landingPage.classList.remove("is-active");
@@ -133,7 +133,7 @@ function showDashboard(user) {
   userNameElement.textContent = user.fullName;
   populateProfileForm(user);
   setDashboardView("home");
-  renderNews();
+  await renderNews();
   refreshOrderNumbers();
   if (!refreshTimer) {
     refreshTimer = setInterval(refreshOrderNumbers, 9000);
@@ -157,22 +157,50 @@ function populateProfileForm(user) {
   profileForm.role.value = user.role || "user";
 }
 
-function renderNews() {
-  if (!newsList) {
-    return;
-  }
+async function renderNews() {
 
-  const duplicatedItems = [...newsItems, ...newsItems];
-  newsList.innerHTML = duplicatedItems
-    .map(
-      (item) => `
-        <li>
-          <strong>${item.title}</strong>
-          <span>${item.detail}</span>
-        </li>
-      `,
-    )
-    .join("");
+    if (!newsList) return;
+
+    try {
+
+        const offers = await api("/offers");
+
+        newsList.innerHTML = "";
+
+        offers.forEach((offer) => {
+
+            newsList.innerHTML += `
+
+            <li class="offer-card">
+
+                <strong>${offer.restaurant_name}</strong>
+
+                <span>${offer.food_name}</span>
+
+                <small>${offer.food_description}</small>
+
+                <p>
+
+                    ৳${offer.food_price}
+
+                    •
+
+                    ${offer.max_people} People
+
+                </p>
+
+            </li>
+
+            `;
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
 }
 
 function refreshOrderNumbers() {
@@ -393,25 +421,38 @@ passwordForm.addEventListener("submit", handlePasswordUpdate);
 deleteForm.addEventListener("submit", handleDeleteAccount);
 
 async function bootstrap() {
-  const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window.location.search);
 
-  if (params.get("verify")) {
-    try {
-      await handleVerifyEmail(params.get("verify"));
-    } catch (error) {
-      openModal("login");
-      showToast(error.message, "error");
+    if (params.get("verify")) {
+        try {
+            await handleVerifyEmail(params.get("verify"));
+        } catch (error) {
+            openModal("login");
+            showToast(error.message, "error");
+        }
+        return;
     }
-    return;
-  }
 
-  if (params.get("reset")) {
-    resetTokenInput.value = params.get("reset");
-    openModal("reset");
-    return;
-  }
+    if (params.get("reset")) {
+        resetTokenInput.value = params.get("reset");
+        openModal("reset");
+        return;
+    }
 
-  await restoreSession();
+    await restoreSession();
 }
 
 bootstrap();
+
+
+// =========================
+// Create Offer Button
+// =========================
+
+const createOfferBtn = document.getElementById("createOfferBtn");
+
+if (createOfferBtn) {
+    createOfferBtn.addEventListener("click", () => {
+        window.location.href = "create-offer.html";
+    });
+}

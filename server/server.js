@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
 import { requireAuth } from "./middleware/auth.js";
 import db from "./db.js";
+import offerRoutes from "./routes/offers.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, "..");
@@ -38,6 +39,7 @@ const authLimiter = rateLimit({
 });
 
 app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/offers", offerRoutes);
 app.use("/api/user", userRoutes);
 
 app.get("/api/dashboard", requireAuth, (_req, res) => {
