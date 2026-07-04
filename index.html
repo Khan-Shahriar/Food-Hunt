@@ -110,52 +110,92 @@
               <article class="order-summary" aria-labelledby="summaryTitle">
                 <div class="summary-title-row">
                   <div>
-                    <p class="eyebrow">Current group order</p>
-                    <h3 id="summaryTitle">Group Order Summary</h3>
+                    <p class="eyebrow">
+                      Group Order Summary
+                    </p>
+
+                    <h3 id="summaryTitle">
+                      Description
+                    </h3>
                   </div>
-                  <span class="status-pill">Collecting</span>
+
+                <span class="status-pill">
+                    Collecting
+                </span>
                 </div>
                 <div class="summary-grid">
                   <div>
                     <span>Restaurant Name</span>
-                    <strong>Spice Yard Kitchen</strong>
+                    <strong id="summaryRestaurant">
+                      Select an Offer
+                    </strong>
                   </div>
                   <div>
                     <span>Participants</span>
-                    <strong data-participants>8</strong>
+                    <strong id="summaryPeople">
+                       0
+                    </strong>
                   </div>
                   <div>
-                    <span>Total Cost</span>
-                    <strong data-total-cost>৳1,200</strong>
-                  </div>
-                  <div>
-                    <span>Order Status</span>
-                    <strong>Open until 12:45 PM</strong>
-                  </div>
+    <span>Food Name</span>
+    <strong id="summaryFoodName">
+        -
+    </strong>
+</div>
+
+<div>
+    <span>Description</span>
+    <strong id="summaryDescription">
+        -
+    </strong>
+</div>
+
+<div>
+    <span>Order Status</span>
+    <strong id="summaryStatus">
+        Waiting...
+    </strong>
+</div>
                 </div>
               </article>
             </section>
 
             <aside class="info-stack" aria-label="Cost information">
-              <article class="cost-card">
+
+            <article class="cost-card">
                 <span>Per Head Cost</span>
-                <strong data-per-head>৳150</strong>
-                <p>Total food cost divided by participants.</p>
-              </article>
-              <article class="cost-card">
+                <strong id="summaryPerHead">
+                    ৳0
+                </strong>
+                <p>Food price per person.</p>
+            </article>
+
+            <article class="cost-card">
                 <span>Delivery Charge</span>
-                <strong data-delivery>৳20</strong>
-                <p>Shared delivery charge for this group order.</p>
-              </article>
-              <article class="notification-card">
+                <strong id="summaryDelivery">
+                    ৳0
+                </strong>
+                <p>Shared delivery charge per person.</p>
+            </article>
+
+            <article class="cost-card">
+                <span>Total Cost</span>
+                <strong id="summaryTotalCost">
+                    ৳0
+                </strong>
+                <p>Food price + shared delivery charge.</p>
+            </article>
+
+            <article class="notification-card">
                 <h3>Notifications</h3>
                 <ul>
-                  <li>New lunch offer posted for your office.</li>
-                  <li>Delivery estimate updated to 1:25 PM.</li>
-                  <li>Two colleagues joined the order.</li>
+                    <li>New lunch offer posted for your office.</li>
+                    <li>Delivery estimate updated to 1:25 PM.</li>
+                    <li>Two colleagues joined the order.</li>
                 </ul>
-              </article>
-            </aside>
+            </article>
+
+        </aside>
           </section>
 
           <section class="dashboard-view" data-view-panel="profile">

@@ -171,27 +171,31 @@ async function renderNews() {
 
             newsList.innerHTML += `
 
-            <li class="offer-card">
+<li class="offer-card" data-offer-id="${offer.id}">
 
-                <strong>${offer.restaurant_name}</strong>
+    <strong>${offer.restaurant_name}</strong>
 
-                <span>${offer.food_name}</span>
+    <span>Created By: ${offer.full_name}</span>
 
-                <small>${offer.food_description}</small>
+</li>
 
-                <p>
+`;
 
-                    ৳${offer.food_price}
+        });
 
-                    •
+        document.querySelectorAll(".offer-card").forEach((card) => {
 
-                    ${offer.max_people} People
+    card.addEventListener("click", () => {
 
-                </p>
+        const id = Number(card.dataset.offerId);
 
-            </li>
+        const offer = offers.find(o => o.id === id);
 
-            `;
+        if (!offer) return;
+
+        showOfferSummary(offer);
+
+          });
 
         });
 
@@ -200,6 +204,47 @@ async function renderNews() {
         console.error(err);
 
     }
+
+}
+
+function showOfferSummary(offer) {
+
+    // Left Side (Group Order Summary)
+
+    document.getElementById("summaryRestaurant").textContent =
+        offer.restaurant_name;
+
+    document.getElementById("summaryFoodName").textContent =
+        offer.food_name;
+
+    document.getElementById("summaryDescription").textContent =
+        offer.food_description;
+
+    document.getElementById("summaryPeople").textContent =
+        `0 / ${offer.max_people}`;
+
+    document.getElementById("summaryStatus").textContent =
+        "Open until " + offer.end_time;
+
+
+    // Right Side (Cost Cards)
+
+    const perHeadCost = Number(offer.food_price);
+
+    const deliveryPerHead =
+        Number(offer.delivery_charge) / Number(offer.max_people);
+
+    const totalCost =
+        perHeadCost + deliveryPerHead;
+
+    document.getElementById("summaryPerHead").textContent =
+        "৳" + perHeadCost.toFixed(2);
+
+    document.getElementById("summaryDelivery").textContent =
+        "৳" + deliveryPerHead.toFixed(2);
+
+    document.getElementById("summaryTotalCost").textContent =
+        "৳" + totalCost.toFixed(2);
 
 }
 

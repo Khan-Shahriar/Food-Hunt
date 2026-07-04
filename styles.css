@@ -416,8 +416,20 @@ input:focus {
 }
 
 .dashboard-view.is-active {
-  animation: pageIn 260ms ease both;
-  display: block;
+    animation: pageIn 260ms ease both;
+}
+
+.dashboard-view[data-view-panel="home"].is-active,
+.dashboard-view[data-view-panel="profile"].is-active,
+.dashboard-view[data-view-panel="settings"].is-active {
+    display: block;
+}
+
+.dashboard-view[data-view-panel="dashboard"].is-active {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 24px;
+    align-items: start;
 }
 
 .dashboard-view[data-view-panel="dashboard"].is-active {
