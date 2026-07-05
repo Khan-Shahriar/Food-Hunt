@@ -22,11 +22,13 @@ const deleteForm = document.querySelector("[data-delete-form]");
 const toastStack = document.querySelector("[data-toast-stack]");
 const resetTokenInput = document.querySelector("[data-reset-token]");
 const authTabs = document.querySelector(".auth-tabs");
+const joinButton = document.querySelector(".join-btn");
 
 const API_BASE = "http://localhost:8080/api";
 let currentUser = null;
 let refreshTimer = null;
 let countdownInterval = null;
+let selectedOffer = null;
 
 const newsItems = [
   {
@@ -70,7 +72,11 @@ async function api(path, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.error || "Something went wrong.");
+    throw new Error(
+        data.message ||
+        data.error ||
+        "Something went wrong."
+    );
   }
 
   return data;
@@ -234,6 +240,8 @@ function showOfferSummary(offer) {
 
     // Left Side (Group Order Summary)
 
+    selectedOffer = offer;
+
     document.getElementById("summaryRestaurant").textContent =
         offer.restaurant_name;
 
@@ -267,6 +275,36 @@ function showOfferSummary(offer) {
 
     document.getElementById("summaryTotalCost").textContent =
         "৳" + totalCost.toFixed(2);
+
+}
+
+async function joinOffer() {
+
+    if (!selectedOffer) {
+
+        showToast(data.message, "success");
+
+            joinButton.disabled = true;
+            joinButton.textContent = "✓ Joined";
+        return;
+
+    }
+
+    try {
+
+        const data = await api(`/offers/${selectedOffer.id}/join`, {
+
+            method: "POST"
+
+        });
+
+        showToast(data.message, "success");
+
+    } catch (err) {
+
+        showToast(err.message, "error");
+
+    }
 
 }
 
@@ -568,6 +606,12 @@ if (createOfferBtn) {
     createOfferBtn.addEventListener("click", () => {
         window.location.href = "create-offer.html";
     });
+}
+
+if (joinButton) {
+
+    joinButton.addEventListener("click", joinOffer);
+
 }
 
 
