@@ -252,7 +252,7 @@ function showOfferSummary(offer) {
         offer.food_description;
 
     document.getElementById("summaryPeople").textContent =
-        `0 / ${offer.max_people}`;
+    `${offer.participant_count} / ${offer.max_people}`;
 
     startCountdown(offer.endTime || offer.end_time);
 
