@@ -26,6 +26,7 @@ const authTabs = document.querySelector(".auth-tabs");
 const API_BASE = "http://localhost:8080/api";
 let currentUser = null;
 let refreshTimer = null;
+let countdownInterval = null;
 
 const newsItems = [
   {
@@ -245,8 +246,7 @@ function showOfferSummary(offer) {
     document.getElementById("summaryPeople").textContent =
         `0 / ${offer.max_people}`;
 
-    document.getElementById("summaryStatus").textContent =
-        "Open until " + offer.end_time;
+    startCountdown(offer.endTime || offer.end_time);
 
 
     // Right Side (Cost Cards)
@@ -509,12 +509,58 @@ async function bootstrap() {
     await restoreSession();
 }
 
+function startCountdown(endTime) {
+
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+    }
+
+    function update() {
+
+        const now = new Date();
+
+        const [hour, minute] = endTime.split(":");
+
+        const end = new Date();
+
+        end.setHours(Number(hour));
+        end.setMinutes(Number(minute));
+        end.setSeconds(0);
+
+        const diff = end - now;
+
+        if (diff <= 0) {
+
+            document.getElementById("summaryStatus").textContent = "Closed";
+
+            clearInterval(countdownInterval);
+
+            return;
+        }
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+
+const minutes = Math.floor(
+    (diff % (1000 * 60 * 60)) / (1000 * 60)
+);
+
+const seconds = Math.floor(
+    (diff % (1000 * 60)) / 1000
+);
+
+document.getElementById("summaryStatus").textContent =
+    `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    update();
+
+    countdownInterval = setInterval(update, 1000);
+}
+
 bootstrap();
 
 
-// =========================
 // Create Offer Button
-// =========================
 
 const createOfferBtn = document.getElementById("createOfferBtn");
 
@@ -523,3 +569,6 @@ if (createOfferBtn) {
         window.location.href = "create-offer.html";
     });
 }
+
+
+
