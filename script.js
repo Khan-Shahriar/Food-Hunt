@@ -157,6 +157,23 @@ function populateProfileForm(user) {
   profileForm.role.value = user.role || "user";
 }
 
+function getRestaurantLogo(name) {
+
+    const restaurant = name.toLowerCase().trim();
+
+    if (restaurant === "kfc")
+        return "assets/restaurants/kfc.png";
+
+    if (restaurant === "pizza hut")
+        return "assets/restaurants/pizza-hut.png";
+
+    if (restaurant === "bfc")
+        return "assets/restaurants/bfc.png";
+
+    return "assets/restaurants/default.png";
+
+}
+
 async function renderNews() {
 
     if (!newsList) return;
@@ -170,32 +187,37 @@ async function renderNews() {
         offers.forEach((offer) => {
 
             newsList.innerHTML += `
+                <li class="offer-card" data-offer-id="${offer.id}">
 
-<li class="offer-card" data-offer-id="${offer.id}">
+                    <img
+                        class="restaurant-logo"
+                        src="${getRestaurantLogo(offer.restaurant_name)}"
+                        alt="${offer.restaurant_name}"
+                    >
 
-    <strong>${offer.restaurant_name}</strong>
+                    <div class="offer-info">
+                        <strong>${offer.restaurant_name}</strong>
+                        <span>Created By: ${offer.full_name}</span>
+                    </div>
 
-    <span>Created By: ${offer.full_name}</span>
-
-</li>
-
-`;
+                </li>
+            `;
 
         });
 
         document.querySelectorAll(".offer-card").forEach((card) => {
 
-    card.addEventListener("click", () => {
+            card.addEventListener("click", () => {
 
-        const id = Number(card.dataset.offerId);
+                const id = Number(card.dataset.offerId);
 
-        const offer = offers.find(o => o.id === id);
+                const offer = offers.find(o => o.id === id);
 
-        if (!offer) return;
+                if (!offer) return;
 
-        showOfferSummary(offer);
+                showOfferSummary(offer);
 
-          });
+            });
 
         });
 
