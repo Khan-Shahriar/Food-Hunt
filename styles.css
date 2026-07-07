@@ -1050,3 +1050,60 @@ input:focus {
     font-size:13px;
     font-weight:600;
 }
+
+.offer-card{
+    background:#fff;
+    border:1px solid #e7e7e7;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:16px;
+    transition:.25s;
+}
+
+.offer-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 30px rgba(0,0,0,.08);
+}
+
+.offer-header{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.offer-title{
+    flex:1;
+}
+
+.offer-title strong{
+    display:block;
+    font-size:18px;
+}
+
+.food-name{
+    margin-top:4px;
+    font-weight:600;
+}
+
+.offer-title small{
+    color:#777;
+}
+
+.offer-footer{
+    display:flex;
+    justify-content:space-between;
+    margin:18px 0;
+}
+
+.price-badge{
+    background:#eef7ff;
+    color:#0f5eb5;
+    padding:6px 12px;
+    border-radius:999px;
+    font-weight:600;
+}
+
+.news-join-btn{
+    width:100%;
+}
+

@@ -197,43 +197,61 @@ async function renderNews() {
         offers.forEach((offer) => {
 
             newsList.innerHTML += `
-                <li class="offer-card" data-offer-id="${offer.id}">
+<li class="offer-card" data-offer-id="${offer.id}">
 
-                  <img
-                      class="restaurant-logo"
-                      src="${getRestaurantLogo(offer.restaurant_name)}"
-                      alt="${offer.restaurant_name}"
-                  >
+    <div class="offer-header">
 
-                  <div class="offer-info">
+        <img
+            class="restaurant-logo"
+            src="${getRestaurantLogo(offer.restaurant_name)}"
+            alt="${offer.restaurant_name}"
+        >
 
-                     <strong>${offer.restaurant_name}</strong>
+        <div class="offer-title">
 
-                     <div class="food-name">
-                         ${offer.food_name}
-                     </div>
+            <strong>${offer.restaurant_name}</strong>
 
-                     <span>
-                         Created By: ${offer.full_name}
-                      </span>
+            <div class="food-name">
+                ${offer.food_name}
+            </div>
 
-                      <div class="offer-meta">
+            <small>
+                Created by ${offer.full_name}
+            </small>
 
-                          <span class="people-badge">
-                              👥 ${offer.participant_count} / ${offer.max_people}
-                          </span>
+        </div>
 
-                          <span class="countdown-badge"
-                                data-end="${offer.end_time}">
-                              --
-                          </span>
+        <div class="countdown-badge"
+             data-end="${offer.end_time}">
+            --
+        </div>
 
-                      </div>
+    </div>
 
-                  </div>
+    <div class="offer-footer">
 
-              </li>
-            `;
+        <span class="people-badge">
+            👥 ${offer.participant_count} / ${offer.max_people}
+        </span>
+
+        <span class="price-badge">
+            💰 ৳${(
+                Number(offer.food_price) +
+                Number(offer.delivery_charge) /
+                Math.max(1, offer.participant_count)
+            ).toFixed(2)}
+        </span>
+
+    </div>
+
+    <button
+        class="button button-primary news-join-btn"
+        data-offer="${offer.id}">
+        Join Order
+    </button>
+
+</li>
+`;
 
         });
 
@@ -252,6 +270,26 @@ async function renderNews() {
             });
 
         });
+
+        document.querySelectorAll(".news-join-btn").forEach((button) => {
+
+    button.addEventListener("click", async (e) => {
+
+        e.stopPropagation();
+
+        const offer = offers.find(
+            o => o.id === Number(button.dataset.offer)
+        );
+
+        if (!offer) return;
+
+        selectedOffer = offer;
+
+        await joinOffer();
+
+    });
+
+});
 
         updateNewsCountdowns();
 
