@@ -994,3 +994,10 @@ input:focus {
     cursor: not-allowed;
     opacity: .85;
 }
+
+.join-btn:disabled {
+    background: #16a34a;
+    color: #fff;
+    cursor: not-allowed;
+    opacity: 0.9;
+}

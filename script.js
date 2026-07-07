@@ -245,6 +245,18 @@ function showOfferSummary(offer) {
 
     selectedOffer = offer;
 
+    if (offer.joined) {
+
+    joinButton.disabled = true;
+    joinButton.textContent = "✓ Joined";
+
+} else {
+
+    joinButton.disabled = false;
+    joinButton.textContent = "Join Order";
+
+}
+
     document.getElementById("summaryRestaurant").textContent =
         offer.restaurant_name;
 
@@ -286,6 +298,13 @@ async function joinOffer() {
     if (!selectedOffer) {
 
         showToast(data.message, "success");
+
+          // Update current offer
+          selectedOffer.joined = 1;
+          selectedOffer.participant_count = data.participantCount;
+
+          // Refresh the summary
+          showOfferSummary(selectedOffer);
 
             joinButton.disabled = true;
             joinButton.textContent = "✓ Joined";
