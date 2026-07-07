@@ -199,18 +199,40 @@ async function renderNews() {
             newsList.innerHTML += `
                 <li class="offer-card" data-offer-id="${offer.id}">
 
-                    <img
-                        class="restaurant-logo"
-                        src="${getRestaurantLogo(offer.restaurant_name)}"
-                        alt="${offer.restaurant_name}"
-                    >
+                  <img
+                      class="restaurant-logo"
+                      src="${getRestaurantLogo(offer.restaurant_name)}"
+                      alt="${offer.restaurant_name}"
+                  >
 
-                    <div class="offer-info">
-                        <strong>${offer.restaurant_name}</strong>
-                        <span>Created By: ${offer.full_name}</span>
-                    </div>
+                  <div class="offer-info">
 
-                </li>
+                     <strong>${offer.restaurant_name}</strong>
+
+                     <div class="food-name">
+                         ${offer.food_name}
+                     </div>
+
+                     <span>
+                         Created By: ${offer.full_name}
+                      </span>
+
+                      <div class="offer-meta">
+
+                          <span class="people-badge">
+                              👥 ${offer.participant_count} / ${offer.max_people}
+                          </span>
+
+                          <span class="countdown-badge"
+                                data-end="${offer.end_time}">
+                              --
+                          </span>
+
+                      </div>
+
+                  </div>
+
+              </li>
             `;
 
         });
@@ -230,6 +252,8 @@ async function renderNews() {
             });
 
         });
+
+        updateNewsCountdowns();
 
     } catch (err) {
 
@@ -632,6 +656,45 @@ document.getElementById("summaryStatus").textContent =
 
 bootstrap();
 
+setInterval(updateNewsCountdowns, 1000);
+
+function updateNewsCountdowns() {
+
+    document.querySelectorAll(".countdown-badge").forEach((badge) => {
+
+        const endTime = badge.dataset.end;
+
+        if (!endTime) return;
+
+        const now = new Date();
+
+        const [hour, minute] = endTime.split(":");
+
+        const end = new Date();
+
+        end.setHours(Number(hour));
+        end.setMinutes(Number(minute));
+        end.setSeconds(0);
+
+        const diff = end - now;
+
+        if (diff <= 0) {
+
+            badge.textContent = "🔴 Closed";
+            return;
+
+        }
+
+        const hours = Math.floor(diff / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+
+        badge.textContent =
+            `⏳ ${String(hours).padStart(2,"0")}:${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+
+    });
+
+}
 
 // Create Offer Button
 
