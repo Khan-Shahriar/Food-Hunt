@@ -147,6 +147,20 @@ router.post("/:id/join", requireAuth, (req, res) => {
             });
         }
 
+        const participantCount = db.prepare(`
+    SELECT COUNT(*) AS total
+    FROM offer_participants
+    WHERE offer_id = ?
+`).get(offerId).total;
+
+if (participantCount >= offer.max_people) {
+
+    return res.status(400).json({
+        message: "This order is already full."
+    });
+
+}
+
         // Check if already joined
         const alreadyJoined = db.prepare(`
             SELECT id

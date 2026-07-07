@@ -245,17 +245,30 @@ function showOfferSummary(offer) {
 
     selectedOffer = offer;
 
-    if (offer.joined) {
+// Update Join button state
+joinButton.classList.remove("full");
+
+if (offer.participant_count >= offer.max_people) {
+
+    joinButton.disabled = true;
+    joinButton.textContent = "Order Full";
+    joinButton.classList.add("full");
+
+}
+else if (offer.joined) {
 
     joinButton.disabled = true;
     joinButton.textContent = "✓ Joined";
 
-} else {
+}
+else {
 
     joinButton.disabled = false;
     joinButton.textContent = "Join Order";
 
 }
+
+// Continue with the rest of your summary...
 
     document.getElementById("summaryRestaurant").textContent =
         offer.restaurant_name;
