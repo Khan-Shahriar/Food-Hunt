@@ -162,20 +162,29 @@ router.post("/:id/join", requireAuth, (req, res) => {
         }
 
         // Save participant
-        db.prepare(`
-            INSERT INTO offer_participants
-            (
-                offer_id,
-                user_id
-            )
-            VALUES
-            (?,?)
-        `).run(offerId, userId);
+        // Save participant
+db.prepare(`
+    INSERT INTO offer_participants
+    (
+        offer_id,
+        user_id
+    )
+    VALUES
+    (?,?)
+`).run(offerId, userId);
 
-        res.json({
-            success: true,
-            message: "Joined successfully."
-        });
+// Get updated participant count
+const participantCount = db.prepare(`
+    SELECT COUNT(*) AS total
+    FROM offer_participants
+    WHERE offer_id = ?
+`).get(offerId);
+
+res.json({
+    success: true,
+    message: "Joined successfully.",
+    participantCount: participantCount.total
+});
 
     } catch (err) {
 
