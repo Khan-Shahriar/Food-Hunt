@@ -1168,6 +1168,225 @@ input:focus {
   }
 }
 
+/* ==========================================
+   Create Offer Page
+========================================== */
+
+.create-offer-page{
+    max-width:900px;
+    margin:40px auto;
+    padding:0 20px 60px;
+}
+
+.create-offer-header{
+    text-align:center;
+    margin-bottom:32px;
+}
+
+.create-offer-header h1{
+    margin:12px 0;
+    font-size:3rem;
+    font-weight:900;
+    line-height:1;
+}
+
+.create-offer-subtitle{
+    max-width:620px;
+    margin:0 auto;
+    color:var(--gray);
+    font-size:1.05rem;
+    line-height:1.7;
+}
+
+.create-offer-card{
+
+    background:#fff;
+
+    border:1px solid #ece7cf;
+
+    border-radius:20px;
+
+    padding:40px;
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.06);
+
+}
+
+.form-section-title{
+    margin:8px 0 -6px;
+    padding-bottom:12px;
+    border-bottom:1px solid var(--line);
+    font-size:1.1rem;
+    font-weight:800;
+    color:var(--ink);
+}
+
+#createOfferForm,
+#offerForm{
+    display:grid;
+    gap:24px;
+}
+
+.form-row{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+
+.create-offer-card label{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    font-size:.9rem;
+    font-weight:800;
+    color:#444;
+}
+
+.create-offer-card input,
+.create-offer-card textarea{
+
+    width:100%;
+    padding:15px 18px;
+
+    border:1px solid #e3e3e3;
+    border-radius:14px;
+
+    background:#fcfcfc;
+
+    font-size:15px;
+
+    transition:.25s;
+
+}
+
+.create-offer-card textarea{
+    resize:vertical;
+    min-height:120px;
+}
+
+.create-offer-card input:focus,
+.create-offer-card textarea:focus{
+
+    background:#fff;
+
+    border-color:var(--yellow);
+
+    box-shadow:
+        0 0 0 4px rgba(255,215,0,.18);
+
+    outline:none;
+
+}
+
+.create-offer-btn{
+    width:100%;
+    height:58px;
+    border:none;
+    border-radius:12px;
+    font-size:18px;
+    font-weight:800;
+    margin-top:10px;
+}
+
+.create-offer-layout{
+    display:grid;
+    grid-template-columns:1fr 320px;
+    gap:28px;
+    align-items:start;
+}
+
+.offer-preview{
+    position:sticky;
+    top:100px;
+
+    background:var(--white);
+
+    border:1px solid var(--line);
+
+    border-radius:20px;
+
+    padding:28px;
+
+    box-shadow:0 18px 44px rgba(22,22,22,.08);
+}
+
+.offer-preview h2{
+    margin:0 0 24px;
+    font-size:1.35rem;
+    font-weight:800;
+}
+
+.preview-item{
+    margin-bottom:22px;
+}
+
+.preview-item span,
+.preview-grid span,
+.preview-total span{
+
+    display:block;
+
+    color:var(--gray);
+
+    font-size:.85rem;
+
+    font-weight:700;
+
+    margin-bottom:6px;
+
+}
+
+.preview-item strong{
+    display:block;
+    font-size:1.2rem;
+    font-weight:800;
+    color:var(--ink);
+}
+
+.preview-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+    margin-bottom:22px;
+}
+
+.preview-grid strong{
+    display:block;
+    font-size:1.05rem;
+    font-weight:800;
+}
+
+.offer-preview hr{
+    border:none;
+    border-top:1px solid var(--line);
+    margin:24px 0;
+}
+
+.preview-total strong{
+    display:block;
+    margin-top:10px;
+    font-size:2rem;
+    font-weight:900;
+    color:var(--green);
+}
+
+@media(max-width:700px){
+
+    .form-row{
+        grid-template-columns:1fr;
+    }
+
+    .create-offer-card{
+        padding:24px;
+    }
+
+    .create-offer-header h1{
+        font-size:2.2rem;
+    }
+
+}
+
 
 /* =========================================================
    Responsive Design

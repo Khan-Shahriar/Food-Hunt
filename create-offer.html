@@ -16,98 +16,264 @@ content="width=device-width, initial-scale=1.0">
 
 <body>
 
-<div class="offer-container">
+<header class="dashboard-nav">
 
-<div class="offer-header">
+    <a href="index.html" class="brand">
 
-    <div class="offer-icon">🍔</div>
+        <span class="brand-mark">
+            <img src="assets/fh-icon.png" alt="Food Hunt">
+        </span>
 
-    <div>
+        Food Hunt
 
-        <h1>Create New Offer</h1>
+    </a>
 
-        <p>
-            Start a lunch order for your colleagues.
+    <button
+        class="button button-secondary"
+        onclick="window.location='index.html'">
+
+        ← Back to Dashboard
+
+    </button>
+
+</header>
+
+
+<main class="create-offer-page">
+
+    <section class="create-offer-header">
+
+        <p class="eyebrow">
+            OFFICE GROUP ORDER
         </p>
+
+        <h1>Create Group Order</h1>
+
+        <p class="create-offer-subtitle">
+            Start a food order for your office and let your colleagues join to share delivery costs.
+        </p>
+
+    </section>
+
+
+    <div class="create-offer-layout">
+
+    <section class="create-offer-card">
+
+        <form id="offerForm">
+
+            <h2 class="form-section-title">
+                Restaurant Information
+            </h2>
+
+            <!-- Restaurant -->
+
+            <label>
+                Restaurant Name
+                <input
+                    type="text"
+                    id="restaurantName"
+                    required>
+            </label>
+
+            <!-- Food -->
+
+            <label>
+                Food Name
+                <input
+                    type="text"
+                    id="foodName"
+                    required>
+            </label>
+
+            <!-- Description -->
+
+            <label>
+                Food Description
+                <textarea
+                    id="foodDescription"
+                    rows="4"></textarea>
+            </label>
+
+
+            <div class="form-row">
+
+                <h2 class="form-section-title">
+                    Order Details
+                </h2>
+
+                <label>
+                    Quantity
+                    <input
+                        type="number"
+                        id="quantity"
+                        min="1"
+                        required>
+                </label>
+
+                <label>
+                    Maximum Participants
+                    <input
+                        type="number"
+                        id="maxPeople"
+                        min="2"
+                        required>
+                </label>
+
+            </div>
+
+
+
+
+            <div class="form-row">
+
+                <label>
+                    Food Price
+                    <input
+                        type="number"
+                        id="foodPrice"
+                        required>
+                </label>
+
+                <label>
+                    Delivery Charge
+                    <input
+                        type="number"
+                        id="deliveryCharge"
+                        required>
+                </label>
+
+            </div>
+
+            <h2 class="form-section-title">
+                Schedule
+            </h2>
+
+
+            <div class="form-row">
+
+                <label>
+                    Start Time
+                    <input
+                        type="time"
+                        id="startTime"
+                        required>
+                </label>
+
+                <label>
+                    End Time
+                    <input
+                        type="time"
+                        id="endTime"
+                        required>
+                </label>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="button button-primary create-offer-btn">
+
+                Create Group Order
+
+            </button>
+
+        </form>
+
+    </section>
+
+    <aside class="offer-preview">
+
+    <h2>🍽 Order Preview</h2>
+
+    <div class="preview-item">
+
+        <span>Restaurant</span>
+
+        <strong id="previewRestaurant">
+            —
+        </strong>
 
     </div>
 
+    <div class="preview-item">
+
+        <span>Food</span>
+
+        <strong id="previewFood">
+            —
+        </strong>
+
+    </div>
+
+    <div class="preview-grid">
+
+        <div>
+
+            <span>Quantity</span>
+
+            <strong id="previewQty">
+                0
+            </strong>
+
+        </div>
+
+        <div>
+
+            <span>Max People</span>
+
+            <strong id="previewPeople">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+    <div class="preview-grid">
+
+        <div>
+
+            <span>Food Price</span>
+
+            <strong id="previewPrice">
+                ৳0
+            </strong>
+
+        </div>
+
+        <div>
+
+            <span>Delivery</span>
+
+            <strong id="previewDelivery">
+                ৳0
+            </strong>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div class="preview-total">
+
+        <span>Estimated Per Person</span>
+
+        <strong id="previewTotal">
+
+            ৳0
+
+        </strong>
+
+    </div>
+
+</aside>
+
 </div>
 
-<form id="offerForm">
-
-<label>Restaurant Name</label>
-
-<input
-type="text"
-id="restaurantName"
-required>
-
-<label>Food Name</label>
-
-<input
-type="text"
-id="foodName"
-required>
-
-<label>Food Description</label>
-
-<textarea
-id="foodDescription"></textarea>
-
-<label>Quantity</label>
-
-<input
-type="number"
-id="quantity"
-min="1"
-required>
-
-<label>Food Price</label>
-
-<input
-type="number"
-id="foodPrice"
-required>
-
-<label>Delivery Charge</label>
-
-<input
-type="number"
-id="deliveryCharge"
-required>
-
-<label>Start Time</label>
-
-<input
-type="time"
-id="startTime"
-required>
-
-<label>End Time</label>
-
-<input
-type="time"
-id="endTime"
-required>
-
-<label>Maximum Participants</label>
-
-<input
-type="number"
-id="maxPeople"
-min="2"
-required>
-
-<button type="submit">
-
-Create Offer
-
-</button>
-
-</form>
-
-</div>
+</main>
 
 <script src="offer.js"></script>
 
