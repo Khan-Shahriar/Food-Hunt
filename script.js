@@ -24,7 +24,10 @@ const resetTokenInput = document.querySelector("[data-reset-token]");
 const authTabs = document.querySelector(".auth-tabs");
 const joinButton = document.querySelector(".join-btn");
 
-const API_BASE = "http://localhost:8080/api";
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:8080/api"
+    : `${window.location.origin}/api`;
 let currentUser = null;
 let refreshTimer = null;
 let countdownInterval = null;
