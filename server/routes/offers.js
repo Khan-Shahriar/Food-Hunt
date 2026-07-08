@@ -127,14 +127,11 @@ ORDER BY offers.created_at DESC
 
 router.post("/:id/join", requireAuth, (req, res) => {
 
-    console.log("Offers routes loaded");
-
     const offerId = Number(req.params.id);
     const userId = req.user.id;
 
     try {
 
-        // Check if offer exists
         const offer = db.prepare(`
             SELECT *
             FROM offers
@@ -148,20 +145,17 @@ router.post("/:id/join", requireAuth, (req, res) => {
         }
 
         const participantCount = db.prepare(`
-    SELECT COUNT(*) AS total
-    FROM offer_participants
-    WHERE offer_id = ?
-`).get(offerId).total;
+            SELECT COUNT(*) AS total
+            FROM offer_participants
+            WHERE offer_id = ?
+        `).get(offerId).total;
 
-if (participantCount >= offer.max_people) {
+        if (participantCount >= offer.max_people) {
+            return res.status(400).json({
+                message: "This order is already full."
+            });
+        }
 
-    return res.status(400).json({
-        message: "This order is already full."
-    });
-
-}
-
-        // Check if already joined
         const alreadyJoined = db.prepare(`
             SELECT id
             FROM offer_participants
@@ -175,30 +169,21 @@ if (participantCount >= offer.max_people) {
             });
         }
 
-        // Save participant
-        // Save participant
-db.prepare(`
-    INSERT INTO offer_participants
-    (
-        offer_id,
-        user_id
-    )
-    VALUES
-    (?,?)
-`).run(offerId, userId);
+        db.prepare(`
+            INSERT INTO offer_participants
+            (
+                offer_id,
+                user_id
+            )
+            VALUES
+            (?,?)
+        `).run(offerId, userId);
 
-// Get updated participant count
-const participantCount = db.prepare(`
-    SELECT COUNT(*) AS total
-    FROM offer_participants
-    WHERE offer_id = ?
-`).get(offerId);
-
-res.json({
-    success: true,
-    message: "Joined successfully.",
-    participantCount: participantCount.total
-});
+        res.json({
+            success: true,
+            message: "Joined successfully.",
+            participantCount: participantCount + 1
+        });
 
     } catch (err) {
 
