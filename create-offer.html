@@ -69,106 +69,88 @@ content="width=device-width, initial-scale=1.0">
             <!-- Restaurant -->
 
             <label>
-                Restaurant Name
-                <input
-                    type="text"
-                    id="restaurantName"
-                    required>
-            </label>
+    Restaurant Name
+    <input
+        type="text"
+        id="restaurantName"
+        required>
+</label>
 
-            <!-- Food -->
+<label>
+    Food Name
+    <input
+        type="text"
+        id="foodName"
+        required>
+</label>
 
-            <label>
-                Food Name
-                <input
-                    type="text"
-                    id="foodName"
-                    required>
-            </label>
+<label>
+    Food Description
+    <textarea
+        id="foodDescription"></textarea>
+</label>
 
-            <!-- Description -->
+<div class="form-row">
 
-            <label>
-                Food Description
-                <textarea
-                    id="foodDescription"
-                    rows="4"></textarea>
-            </label>
+    <label>
+        Quantity
+        <input
+            type="number"
+            id="quantity"
+            min="1"
+            required>
+    </label>
 
+    <label>
+        Maximum Participants
+        <input
+            type="number"
+            id="maxPeople"
+            min="2"
+            required>
+    </label>
 
-            <div class="form-row">
+</div>
 
-                <h2 class="form-section-title">
-                    Order Details
-                </h2>
+<div class="form-row">
 
-                <label>
-                    Quantity
-                    <input
-                        type="number"
-                        id="quantity"
-                        min="1"
-                        required>
-                </label>
+    <label>
+        Food Price
+        <input
+            type="number"
+            id="foodPrice"
+            required>
+    </label>
 
-                <label>
-                    Maximum Participants
-                    <input
-                        type="number"
-                        id="maxPeople"
-                        min="2"
-                        required>
-                </label>
+    <label>
+        Delivery Charge
+        <input
+            type="number"
+            id="deliveryCharge"
+            required>
+    </label>
 
-            </div>
+</div>
 
+<div class="form-row">
 
+    <label>
+        Start Time
+        <input
+            type="time"
+            id="startTime"
+            required>
+    </label>
 
+    <label>
+        End Time
+        <input
+            type="time"
+            id="endTime"
+            required>
+    </label>
 
-            <div class="form-row">
-
-                <label>
-                    Food Price
-                    <input
-                        type="number"
-                        id="foodPrice"
-                        required>
-                </label>
-
-                <label>
-                    Delivery Charge
-                    <input
-                        type="number"
-                        id="deliveryCharge"
-                        required>
-                </label>
-
-            </div>
-
-            <h2 class="form-section-title">
-                Schedule
-            </h2>
-
-
-            <div class="form-row">
-
-                <label>
-                    Start Time
-                    <input
-                        type="time"
-                        id="startTime"
-                        required>
-                </label>
-
-                <label>
-                    End Time
-                    <input
-                        type="time"
-                        id="endTime"
-                        required>
-                </label>
-
-            </div>
+</div>
 
 
             <button
@@ -185,77 +167,72 @@ content="width=device-width, initial-scale=1.0">
 
     <aside class="offer-preview">
 
-    <h2>🍽 Order Preview</h2>
+    <div class="preview-logo">
 
-    <div class="preview-item">
+        <img
+            id="previewLogo"
+            src="assets/restaurants/default.png"
+            alt="Restaurant">
 
-        <span>Restaurant</span>
+    </div>
 
-        <strong id="previewRestaurant">
-            —
+    <h2 id="previewRestaurant">
+        Restaurant Name
+    </h2>
+
+    <p id="previewFood" class="preview-food">
+        Food Name
+    </p>
+
+    <div class="preview-divider"></div>
+
+    <div class="preview-row">
+
+        <span>Quantity</span>
+
+        <strong id="previewQty">0</strong>
+
+    </div>
+
+    <div class="preview-row">
+
+        <span>Participants</span>
+
+        <strong>
+
+            <span id="previewPeople">0</span>
+
+            People
+
         </strong>
 
     </div>
 
-    <div class="preview-item">
+    <div class="preview-row">
 
-        <span>Food</span>
+        <span>Food Price</span>
 
-        <strong id="previewFood">
-            —
+        <strong id="previewPrice">
+
+            ৳0
+
         </strong>
 
     </div>
 
-    <div class="preview-grid">
+    <div class="preview-row">
 
-        <div>
+        <span>Delivery Charge</span>
 
-            <span>Quantity</span>
+        <strong id="previewDelivery">
 
-            <strong id="previewQty">
-                0
-            </strong>
+            ৳0
 
-        </div>
-
-        <div>
-
-            <span>Max People</span>
-
-            <strong id="previewPeople">
-                0
-            </strong>
-
-        </div>
+        </strong>
 
     </div>
 
-    <div class="preview-grid">
-
-        <div>
-
-            <span>Food Price</span>
-
-            <strong id="previewPrice">
-                ৳0
-            </strong>
-
-        </div>
-
-        <div>
-
-            <span>Delivery</span>
-
-            <strong id="previewDelivery">
-                ৳0
-            </strong>
-
-        </div>
-
-    </div>
-
-    <hr>
+    <div class="preview-divider"></div>
 
     <div class="preview-total">
 
