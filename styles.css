@@ -1302,9 +1302,81 @@ input:focus {
     padding:0 20px 30px;
 }
 
-.create-offer-header{
-    text-align:center;
-    margin-bottom:20px;
+.create-offer-banner{
+
+    display:flex;
+    align-items:center;
+    gap:28px;
+
+    background:#fff;
+
+    border:1px solid var(--line);
+    border-radius:18px;
+
+    padding:22px 30px;
+    margin-bottom:24px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.05);
+
+}
+
+.banner-pill{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:14px 24px;
+
+    background:#fff7d1;
+
+    color:#8b6500;
+
+    border-radius:999px;
+
+    font-size:.85rem;
+    font-weight:800;
+
+    white-space:nowrap;
+
+}
+
+.banner-divider{
+
+    width:1px;
+    align-self:stretch;
+
+    background:var(--line);
+
+}
+
+.banner-content{
+
+    flex:1;
+
+}
+
+.banner-content h1{
+
+    margin:0;
+
+    font-size:3rem;
+    line-height:1;
+
+    font-weight:900;
+
+}
+
+.banner-content p{
+
+    margin:10px 0 0;
+
+    color:var(--gray);
+
+    font-size:1.05rem;
+
+    max-width:700px;
+
 }
 
 .create-offer-header h1{
