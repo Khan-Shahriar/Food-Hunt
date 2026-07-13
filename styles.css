@@ -459,6 +459,14 @@ input:focus {
   z-index: 10;
 }
 
+/* NEW - Dashboard Layout */
+
+.dashboard-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
 
 /* =========================================================
    Dashboard Brand
@@ -552,11 +560,11 @@ input:focus {
    ========================================================= */
 
 .dashboard-shell {
-  display: grid;
-  gap: 24px;
-  margin: 0 auto;
-  max-width: 1240px;
-  padding: 32px clamp(18px, 4vw, 46px) 46px;
+    display: grid;
+    gap: 24px;
+    margin: 0 auto;
+    max-width: 1240px;
+    padding: 20px clamp(18px, 4vw, 46px) 46px;
 }
 
 
@@ -599,6 +607,17 @@ input:focus {
   animation: pageIn 260ms ease both;
 }
 
+/* ==========================================
+   Dashboard Layout
+========================================== */
+
+.dashboard-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
 .dashboard-view[data-view-panel="home"].is-active,
 .dashboard-view[data-view-panel="profile"].is-active,
 .dashboard-view[data-view-panel="settings"].is-active {
@@ -610,9 +629,7 @@ input:focus {
 /* Keep only ONE of these rules */
 
 .dashboard-view[data-view-panel="dashboard"].is-active {
-  display: grid;
-  gap: 24px;
-  grid-template-columns: minmax(0, 1fr) 340px;
+    display: block;
 }
 
 
@@ -925,8 +942,9 @@ input:focus {
 
 .order-summary {
   border-top: 1px solid var(--line);
-  margin-top: 30px;
+  margin-top: 24px;
   padding-top: 28px;
+  
 }
 
 .summary-title-row h3 {
@@ -1063,8 +1081,9 @@ input:focus {
    ========================================================= */
 
 .info-stack {
-  display: grid;
-  gap: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 
@@ -1683,10 +1702,6 @@ input:focus {
 
   .brand {
     font-size: 1rem;
-  }
-
-  .dashboard-shell {
-    padding-top: 20px;
   }
 
   .panel-heading,
