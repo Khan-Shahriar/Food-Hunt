@@ -76,9 +76,9 @@ async function api(path, options = {}) {
 
   if (!response.ok) {
     throw new Error(
-        data.message ||
-        data.error ||
-        "Something went wrong."
+      data.message ||
+      data.error ||
+      "Something went wrong."
     );
   }
 
@@ -169,34 +169,34 @@ function populateProfileForm(user) {
 
 function getRestaurantLogo(name) {
 
-    const restaurant = name.toLowerCase().trim();
+  const restaurant = name.toLowerCase().trim();
 
-    if (restaurant === "kfc")
-        return "assets/restaurants/kfc.png";
+  if (restaurant === "kfc")
+    return "assets/restaurants/kfc.png";
 
-    if (restaurant === "pizza hut")
-        return "assets/restaurants/pizza-hut.png";
+  if (restaurant === "pizza hut")
+    return "assets/restaurants/pizza-hut.png";
 
-    if (restaurant === "bfc")
-        return "assets/restaurants/bfc.png";
+  if (restaurant === "bfc")
+    return "assets/restaurants/bfc.png";
 
-    return "assets/restaurants/default.png";
+  return "assets/restaurants/default.png";
 
 }
 
 async function renderNews() {
 
-    if (!newsList) return;
+  if (!newsList) return;
 
-    try {
+  try {
 
-        const offers = await api("/offers");
+    const offers = await api("/offers");
 
-        newsList.innerHTML = "";
+    newsList.innerHTML = "";
 
-        offers.forEach((offer) => {
+    offers.forEach((offer) => {
 
-            newsList.innerHTML += `
+      newsList.innerHTML += `
 <li class="offer-card" data-offer-id="${offer.id}">
 
     <div class="offer-header">
@@ -236,10 +236,10 @@ async function renderNews() {
 
         <span class="price-badge">
             💰 ৳${(
-                Number(offer.food_price) +
-                Number(offer.delivery_charge) /
-                Math.max(1, offer.participant_count)
-            ).toFixed(2)}
+          Number(offer.food_price) +
+          Number(offer.delivery_charge) /
+          Math.max(1, offer.participant_count)
+        ).toFixed(2)}
         </span>
 
     </div>
@@ -253,32 +253,32 @@ async function renderNews() {
 </li>
 `;
 
-        });
+    });
 
-        document.querySelectorAll(".offer-card").forEach((card) => {
+    document.querySelectorAll(".offer-card").forEach((card) => {
 
-            card.addEventListener("click", () => {
+      card.addEventListener("click", () => {
 
-                const id = Number(card.dataset.offerId);
+        const id = Number(card.dataset.offerId);
 
-                const offer = offers.find(o => o.id === id);
+        const offer = offers.find(o => o.id === id);
 
-                if (!offer) return;
+        if (!offer) return;
 
-                showOfferSummary(offer);
+        showOfferSummary(offer);
 
-            });
+      });
 
-        });
+    });
 
-        document.querySelectorAll(".news-join-btn").forEach((button) => {
+    document.querySelectorAll(".news-join-btn").forEach((button) => {
 
-    button.addEventListener("click", async (e) => {
+      button.addEventListener("click", async (e) => {
 
         e.stopPropagation();
 
         const offer = offers.find(
-            o => o.id === Number(button.dataset.offer)
+          o => o.id === Number(button.dataset.offer)
         );
 
         if (!offer) return;
@@ -287,121 +287,121 @@ async function renderNews() {
 
         await joinOffer();
 
+      });
+
     });
 
-});
+    updateNewsCountdowns();
 
-        updateNewsCountdowns();
+  } catch (err) {
 
-    } catch (err) {
+    console.error(err);
 
-        console.error(err);
-
-    }
+  }
 
 }
 
 function showOfferSummary(offer) {
 
-    // Left Side (Group Order Summary)
+  // Left Side (Group Order Summary)
 
-    selectedOffer = offer;
+  selectedOffer = offer;
 
-// Update Join button state
-joinButton.classList.remove("full");
+  // Update Join button state
+  joinButton.classList.remove("full");
 
-if (offer.participant_count >= offer.max_people) {
+  if (offer.participant_count >= offer.max_people) {
 
     joinButton.disabled = true;
     joinButton.textContent = "Order Full";
     joinButton.classList.add("full");
 
-}
-else if (offer.joined) {
+  }
+  else if (offer.joined) {
 
     joinButton.disabled = true;
     joinButton.textContent = "✓ Joined";
 
-}
-else {
+  }
+  else {
 
     joinButton.disabled = false;
     joinButton.textContent = "Join Order";
 
-}
+  }
 
-// Continue with the rest of your summary...
+  // Continue with the rest of your summary...
 
-    document.getElementById("summaryRestaurant").textContent =
-        offer.restaurant_name;
+  document.getElementById("summaryRestaurant").textContent =
+    offer.restaurant_name;
 
-    document.getElementById("summaryFoodName").textContent =
-        offer.food_name;
+  document.getElementById("summaryFoodName").textContent =
+    offer.food_name;
 
-    document.getElementById("summaryDescription").textContent =
-        offer.food_description;
+  document.getElementById("summaryDescription").textContent =
+    offer.food_description;
 
-    document.getElementById("summaryPeople").textContent =
+  document.getElementById("summaryPeople").textContent =
     `${offer.participant_count} / ${offer.max_people}`;
 
-    startCountdown(offer.endTime || offer.end_time);
+  startCountdown(offer.endTime || offer.end_time);
 
 
-    // Right Side (Cost Cards)
+  // Right Side (Cost Cards)
 
-    const perHeadCost = Number(offer.food_price);
+  const perHeadCost = Number(offer.food_price);
 
-    const deliveryPerHead =
-        Number(offer.delivery_charge) / Number(offer.max_people);
+  const deliveryPerHead =
+    Number(offer.delivery_charge) / Number(offer.max_people);
 
-    const totalCost =
-        perHeadCost + deliveryPerHead;
+  const totalCost =
+    perHeadCost + deliveryPerHead;
 
-    document.getElementById("summaryPerHead").textContent =
-        "৳" + perHeadCost.toFixed(2);
+  document.getElementById("summaryPerHead").textContent =
+    "৳" + perHeadCost.toFixed(2);
 
-    document.getElementById("summaryDelivery").textContent =
-        "৳" + deliveryPerHead.toFixed(2);
+  document.getElementById("summaryDelivery").textContent =
+    "৳" + deliveryPerHead.toFixed(2);
 
-    document.getElementById("summaryTotalCost").textContent =
-        "৳" + totalCost.toFixed(2);
+  document.getElementById("summaryTotalCost").textContent =
+    "৳" + totalCost.toFixed(2);
 
 }
 
 async function joinOffer() {
 
-    if (!selectedOffer) {
+  if (!selectedOffer) {
 
-        showToast(data.message, "success");
+    showToast(data.message, "success");
 
-          // Update current offer
-          selectedOffer.joined = 1;
-          selectedOffer.participant_count = data.participantCount;
+    // Update current offer
+    selectedOffer.joined = 1;
+    selectedOffer.participant_count = data.participantCount;
 
-          // Refresh the summary
-          showOfferSummary(selectedOffer);
+    // Refresh the summary
+    showOfferSummary(selectedOffer);
 
-            joinButton.disabled = true;
-            joinButton.textContent = "✓ Joined";
-        return;
+    joinButton.disabled = true;
+    joinButton.textContent = "✓ Joined";
+    return;
 
-    }
+  }
 
-    try {
+  try {
 
-        const data = await api(`/offers/${selectedOffer.id}/join`, {
+    const data = await api(`/offers/${selectedOffer.id}/join`, {
 
-            method: "POST"
+      method: "POST"
 
-        });
+    });
 
-        showToast(data.message, "success");
+    showToast(data.message, "success");
 
-    } catch (err) {
+  } catch (err) {
 
-        showToast(err.message, "error");
+    showToast(err.message, "error");
 
-    }
+  }
 
 }
 
@@ -623,73 +623,73 @@ passwordForm.addEventListener("submit", handlePasswordUpdate);
 deleteForm.addEventListener("submit", handleDeleteAccount);
 
 async function bootstrap() {
-    const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window.location.search);
 
-    if (params.get("verify")) {
-        try {
-            await handleVerifyEmail(params.get("verify"));
-        } catch (error) {
-            openModal("login");
-            showToast(error.message, "error");
-        }
-        return;
+  if (params.get("verify")) {
+    try {
+      await handleVerifyEmail(params.get("verify"));
+    } catch (error) {
+      openModal("login");
+      showToast(error.message, "error");
     }
+    return;
+  }
 
-    if (params.get("reset")) {
-        resetTokenInput.value = params.get("reset");
-        openModal("reset");
-        return;
-    }
+  if (params.get("reset")) {
+    resetTokenInput.value = params.get("reset");
+    openModal("reset");
+    return;
+  }
 
-    await restoreSession();
+  await restoreSession();
 }
 
 function startCountdown(endTime) {
 
-    if (countdownInterval) {
-        clearInterval(countdownInterval);
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+
+  function update() {
+
+    const now = new Date();
+
+    const [hour, minute] = endTime.split(":");
+
+    const end = new Date();
+
+    end.setHours(Number(hour));
+    end.setMinutes(Number(minute));
+    end.setSeconds(0);
+
+    const diff = end - now;
+
+    if (diff <= 0) {
+
+      document.getElementById("summaryStatus").textContent = "Closed";
+
+      clearInterval(countdownInterval);
+
+      return;
     }
 
-    function update() {
+    const hours = Math.floor(diff / (1000 * 60 * 60));
 
-        const now = new Date();
+    const minutes = Math.floor(
+      (diff % (1000 * 60 * 60)) / (1000 * 60)
+    );
 
-        const [hour, minute] = endTime.split(":");
+    const seconds = Math.floor(
+      (diff % (1000 * 60)) / 1000
+    );
 
-        const end = new Date();
+    document.getElementById("summaryStatus").textContent =
+      `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  }
 
-        end.setHours(Number(hour));
-        end.setMinutes(Number(minute));
-        end.setSeconds(0);
+  update();
 
-        const diff = end - now;
-
-        if (diff <= 0) {
-
-            document.getElementById("summaryStatus").textContent = "Closed";
-
-            clearInterval(countdownInterval);
-
-            return;
-        }
-
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-
-const minutes = Math.floor(
-    (diff % (1000 * 60 * 60)) / (1000 * 60)
-);
-
-const seconds = Math.floor(
-    (diff % (1000 * 60)) / 1000
-);
-
-document.getElementById("summaryStatus").textContent =
-    `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-    }
-
-    update();
-
-    countdownInterval = setInterval(update, 1000);
+  countdownInterval = setInterval(update, 1000);
 }
 
 bootstrap();
@@ -698,39 +698,39 @@ setInterval(updateNewsCountdowns, 1000);
 
 function updateNewsCountdowns() {
 
-    document.querySelectorAll(".countdown-badge").forEach((badge) => {
+  document.querySelectorAll(".countdown-badge").forEach((badge) => {
 
-        const endTime = badge.dataset.end;
+    const endTime = badge.dataset.end;
 
-        if (!endTime) return;
+    if (!endTime) return;
 
-        const now = new Date();
+    const now = new Date();
 
-        const [hour, minute] = endTime.split(":");
+    const [hour, minute] = endTime.split(":");
 
-        const end = new Date();
+    const end = new Date();
 
-        end.setHours(Number(hour));
-        end.setMinutes(Number(minute));
-        end.setSeconds(0);
+    end.setHours(Number(hour));
+    end.setMinutes(Number(minute));
+    end.setSeconds(0);
 
-        const diff = end - now;
+    const diff = end - now;
 
-        if (diff <= 0) {
+    if (diff <= 0) {
 
-            badge.textContent = "🔴 Closed";
-            return;
+      badge.textContent = "🔴 Closed";
+      return;
 
-        }
+    }
 
-        const hours = Math.floor(diff / 3600000);
-        const minutes = Math.floor((diff % 3600000) / 60000);
-        const seconds = Math.floor((diff % 60000) / 1000);
+    const hours = Math.floor(diff / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
 
-        badge.textContent =
-            `⏳ ${String(hours).padStart(2,"0")}:${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+    badge.textContent =
+      `⏳ ${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
-    });
+  });
 
 }
 
@@ -739,14 +739,14 @@ function updateNewsCountdowns() {
 const createOfferBtn = document.getElementById("createOfferBtn");
 
 if (createOfferBtn) {
-    createOfferBtn.addEventListener("click", () => {
-        window.location.href = "create-offer.html";
-    });
+  createOfferBtn.addEventListener("click", () => {
+    window.location.href = "create-offer.html";
+  });
 }
 
 if (joinButton) {
 
-    joinButton.addEventListener("click", joinOffer);
+  joinButton.addEventListener("click", joinOffer);
 
 }
 
