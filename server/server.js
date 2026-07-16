@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
@@ -11,6 +12,7 @@ import { requireAuth } from "./middleware/auth.js";
 import db from "./db.js";
 import offerRoutes from "./routes/offers.js";
 
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, "..");
 const dataDir = path.join(rootDir, "data");
@@ -20,6 +22,7 @@ if (!fs.existsSync(dataDir)) {
 }
 
 const app = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 8080;
 
 app.use(

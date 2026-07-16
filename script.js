@@ -9,10 +9,10 @@ const authForms = document.querySelectorAll("[data-auth-form]");
 const newsList = document.querySelector("[data-news-list]");
 const profileInitial = document.querySelector("[data-profile-initial]");
 const userNameElement = document.querySelector("[data-user-name]");
-const participantsElement = document.querySelector("[data-participants]");
-const totalCostElement = document.querySelector("[data-total-cost]");
-const perHeadElement = document.querySelector("[data-per-head]");
-const deliveryElement = document.querySelector("[data-delivery]");
+const participantsElement = document.getElementById("summaryPeople");
+const totalCostElement = document.getElementById("summaryTotalCost");
+const perHeadElement = document.getElementById("summaryPerHead");
+const deliveryElement = document.getElementById("summaryDelivery");
 const logoutButton = document.querySelector("[data-logout]");
 const dashboardViewButtons = document.querySelectorAll("[data-dashboard-view]");
 const dashboardViews = document.querySelectorAll("[data-view-panel]");
@@ -410,7 +410,7 @@ function refreshOrderNumbers() {
   const totalCost = participants * 150;
   const deliveryCharge = Math.max(15, Math.round(160 / participants));
 
-  participantsElement.textContent = participants;
+  participantsElement.textContent = `${participants} / ${participants}`;
   totalCostElement.textContent = currency.format(totalCost);
   perHeadElement.textContent = currency.format(Math.round(totalCost / participants));
   deliveryElement.textContent = currency.format(deliveryCharge);
