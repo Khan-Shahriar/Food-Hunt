@@ -462,10 +462,10 @@ input:focus {
 /* NEW - Dashboard Layout */
 
 .dashboard-top {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 24px;
-    align-items: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: start;
 }
 
 /* =========================================================
@@ -560,11 +560,11 @@ input:focus {
    ========================================================= */
 
 .dashboard-shell {
-    display: grid;
-    gap: 24px;
-    margin: 0 auto;
-    max-width: 1240px;
-    padding: 20px clamp(18px, 4vw, 46px) 46px;
+  display: grid;
+  gap: 24px;
+  margin: 0 auto;
+  max-width: 1240px;
+  padding: 20px clamp(18px, 4vw, 46px) 46px;
 }
 
 
@@ -629,7 +629,7 @@ input:focus {
 /* Keep only ONE of these rules */
 
 .dashboard-view[data-view-panel="dashboard"].is-active {
-    display: block;
+  display: block;
 }
 
 
@@ -718,8 +718,11 @@ input:focus {
 }
 
 .news-panel {
-  border: 2px solid var(--yellow);
-  padding: clamp(20px, 3vw, 30px);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
 }
 
 .panel-heading,
@@ -734,6 +737,13 @@ input:focus {
   font-size: clamp(2rem, 5vw, 4.3rem);
   line-height: 1;
   margin: 0;
+}
+
+.news-panel .panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
 }
 
 .live-pill,
@@ -838,23 +848,23 @@ input:focus {
    Current Dashboard Card Design
    ========================================================= */
 
-.offer-card{
-    display:flex;
-    align-items:center;
-    gap:16px;
-    cursor:pointer;
+.offer-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
 
-    background:#fff;
-    border:1px solid #e7e7e7;
-    border-radius:14px;
-    padding:18px;
-    margin-bottom:16px;
-    transition:.25s;
+  background: #fff;
+  border: 1px solid #e7e7e7;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  transition: .25s;
 }
 
 .offer-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(0,0,0,.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .08);
 }
 
 .offer-header {
@@ -944,7 +954,7 @@ input:focus {
   border-top: 1px solid var(--line);
   margin-top: 24px;
   padding-top: 28px;
-  
+
 }
 
 .summary-title-row h3 {
@@ -981,12 +991,12 @@ input:focus {
   min-height: 100px;
 }
 
-.summary-item span{
-    display:block;
-    color:#777;
-    font-size:13px;
-    font-weight:700;
-    margin-bottom:8px;
+.summary-item span {
+  display: block;
+  color: #777;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
 .summary-item strong {
@@ -1030,11 +1040,11 @@ input:focus {
    Summary Footer
    ========================================================= */
 
-.summary-footer{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:20px;
-    margin:20px 0;
+.summary-footer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 20px 0;
 }
 
 .summary-footer div {
@@ -1044,9 +1054,9 @@ input:focus {
   padding: 16px;
 }
 
-.summary-footer strong{
-    font-size:22px;
-    font-weight:700;
+.summary-footer strong {
+  font-size: 22px;
+  font-weight: 700;
 }
 
 
@@ -1081,9 +1091,9 @@ input:focus {
    ========================================================= */
 
 .info-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 
@@ -1092,9 +1102,13 @@ input:focus {
    ========================================================= */
 
 .cost-card {
-  background: var(--yellow);
-  min-height: 190px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
   padding: 24px;
+  background: linear-gradient(135deg, #ffd100, #ffc400);
+  border-radius: 22px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
 }
 
 .cost-card span {
@@ -1115,6 +1129,47 @@ input:focus {
 .cost-card p {
   color: #4f4300;
   margin: 0;
+}
+
+/* =========================================================
+   Cost Card Content
+   ========================================================= */
+
+   .cost-icon{
+    width:74px;
+    height:74px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    display:grid;
+    place-items:center;
+
+    font-size:34px;
+
+    flex-shrink:0;
+}
+
+.cost-content{
+    display:flex;
+    flex-direction:column;
+}
+
+.cost-content span{
+    font-size:.95rem;
+    font-weight:700;
+    text-transform:uppercase;
+}
+
+.cost-content strong{
+    font-size:2.8rem;
+    font-weight:800;
+    margin:4px 0;
+}
+
+.cost-content p{
+    color:#333;
 }
 
 
@@ -1191,421 +1246,421 @@ input:focus {
    Create Offer Page
 ========================================== */
 
-.preview-logo{
+.preview-logo {
 
-    width:110px;
-    height:110px;
+  width: 110px;
+  height: 110px;
 
-    margin:0 auto 18px;
+  margin: 0 auto 18px;
 
-    border-radius:20px;
+  border-radius: 20px;
 
-    background:#fffdf5;
+  background: #fffdf5;
 
-    border:1px solid var(--line);
+  border: 1px solid var(--line);
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    overflow:hidden;
-
-}
-
-.preview-logo img{
-
-    width:80%;
-    height:80%;
-
-    object-fit:contain;
+  overflow: hidden;
 
 }
 
-.offer-preview h2{
+.preview-logo img {
 
-    margin:0;
+  width: 80%;
+  height: 80%;
 
-    text-align:center;
-
-    font-size:1.8rem;
-
-    font-weight:800;
+  object-fit: contain;
 
 }
 
-.preview-food{
+.offer-preview h2 {
 
-    margin:8px 0 24px;
+  margin: 0;
 
-    text-align:center;
+  text-align: center;
 
-    color:#666;
+  font-size: 1.8rem;
 
-    font-size:1rem;
-
-    font-weight:600;
+  font-weight: 800;
 
 }
 
-.preview-divider{
+.preview-food {
 
-    height:1px;
+  margin: 8px 0 24px;
 
-    background:var(--line);
+  text-align: center;
 
-    margin:22px 0;
+  color: #666;
 
-}
+  font-size: 1rem;
 
-.preview-row{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:18px;
+  font-weight: 600;
 
 }
 
-.preview-row span{
+.preview-divider {
 
-    color:#777;
+  height: 1px;
 
-    font-weight:700;
+  background: var(--line);
 
-}
-
-.preview-row strong{
-
-    font-size:1.05rem;
-
-    font-weight:800;
+  margin: 22px 0;
 
 }
 
-.preview-total{
+.preview-row {
 
-    text-align:center;
+  display: flex;
 
-}
+  justify-content: space-between;
 
-.preview-total span{
+  align-items: center;
 
-    display:block;
-
-    color:#777;
-
-    font-weight:700;
-
-    margin-bottom:12px;
+  margin-bottom: 18px;
 
 }
 
-.preview-total strong{
+.preview-row span {
 
-    display:block;
+  color: #777;
 
-    font-size:2.4rem;
-
-    font-weight:900;
-
-    color:var(--green);
+  font-weight: 700;
 
 }
 
-.create-offer-page{
-    width:min(96vw,1700px);
-    margin:24px auto;
-    padding:0 20px 30px;
-}
+.preview-row strong {
 
-.create-offer-banner{
+  font-size: 1.05rem;
 
-    display:flex;
-    align-items:center;
-    gap:28px;
-
-    background:#fff;
-
-    border:1px solid var(--line);
-    border-radius:18px;
-
-    padding:22px 30px;
-    margin-bottom:24px;
-
-    box-shadow:0 12px 30px rgba(0,0,0,.05);
+  font-weight: 800;
 
 }
 
-.banner-pill{
+.preview-total {
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    padding:14px 24px;
-
-    background:#fff7d1;
-
-    color:#8b6500;
-
-    border-radius:999px;
-
-    font-size:.85rem;
-    font-weight:800;
-
-    white-space:nowrap;
+  text-align: center;
 
 }
 
-.banner-divider{
+.preview-total span {
 
-    width:1px;
-    align-self:stretch;
+  display: block;
 
-    background:var(--line);
+  color: #777;
 
-}
+  font-weight: 700;
 
-.banner-content{
-
-    flex:1;
+  margin-bottom: 12px;
 
 }
 
-.banner-content h1{
+.preview-total strong {
 
-    margin:0;
+  display: block;
 
-    font-size:3rem;
-    line-height:1;
+  font-size: 2.4rem;
 
-    font-weight:900;
+  font-weight: 900;
 
-}
-
-.banner-content p{
-
-    margin:10px 0 0;
-
-    color:var(--gray);
-
-    font-size:1.05rem;
-
-    max-width:700px;
+  color: var(--green);
 
 }
 
-.create-offer-header h1{
-    margin:0 0 6px;
-    font-size:2.2rem;
-    line-height:1.1;
+.create-offer-page {
+  width: min(96vw, 1700px);
+  margin: 24px auto;
+  padding: 0 20px 30px;
 }
 
-.create-offer-subtitle{
-    max-width:620px;
-    margin:0 auto;
-    color:var(--gray);
-    font-size:1.05rem;
-    line-height:1.7;
-}
+.create-offer-banner {
 
-.create-offer-card{
+  display: flex;
+  align-items: center;
+  gap: 28px;
 
-    background:#fff;
+  background: #fff;
 
-    border:1px solid #ece7cf;
+  border: 1px solid var(--line);
+  border-radius: 18px;
 
-    border-radius:20px;
+  padding: 22px 30px;
+  margin-bottom: 24px;
 
-    padding:28px;
-
-    box-shadow:
-        0 20px 45px rgba(0,0,0,.06);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .05);
 
 }
 
-.form-section-title{
-    margin:8px 0 -6px;
-    padding-bottom:12px;
-    border-bottom:1px solid var(--line);
-    font-size:1.1rem;
-    font-weight:800;
-    color:var(--ink);
+.banner-pill {
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 14px 24px;
+
+  background: #fff7d1;
+
+  color: #8b6500;
+
+  border-radius: 999px;
+
+  font-size: .85rem;
+  font-weight: 800;
+
+  white-space: nowrap;
+
+}
+
+.banner-divider {
+
+  width: 1px;
+  align-self: stretch;
+
+  background: var(--line);
+
+}
+
+.banner-content {
+
+  flex: 1;
+
+}
+
+.banner-content h1 {
+
+  margin: 0;
+
+  font-size: 3rem;
+  line-height: 1;
+
+  font-weight: 900;
+
+}
+
+.banner-content p {
+
+  margin: 10px 0 0;
+
+  color: var(--gray);
+
+  font-size: 1.05rem;
+
+  max-width: 700px;
+
+}
+
+.create-offer-header h1 {
+  margin: 0 0 6px;
+  font-size: 2.2rem;
+  line-height: 1.1;
+}
+
+.create-offer-subtitle {
+  max-width: 620px;
+  margin: 0 auto;
+  color: var(--gray);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.create-offer-card {
+
+  background: #fff;
+
+  border: 1px solid #ece7cf;
+
+  border-radius: 20px;
+
+  padding: 28px;
+
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, .06);
+
+}
+
+.form-section-title {
+  margin: 8px 0 -6px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--ink);
 }
 
 #createOfferForm,
-#offerForm{
-    display:grid;
-    gap:16px;
+#offerForm {
+  display: grid;
+  gap: 16px;
 }
 
-.form-row{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:16px;
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
-.create-offer-card label{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    font-size:.9rem;
-    font-weight:800;
-    color:#444;
+.create-offer-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: .9rem;
+  font-weight: 800;
+  color: #444;
 }
 
 .create-offer-card input,
-.create-offer-card textarea{
+.create-offer-card textarea {
 
-    width:none;
-    padding:12px 16px;
+  width: none;
+  padding: 12px 16px;
 
-    border:1px solid #e3e3e3;
-    border-radius:14px;
+  border: 1px solid #e3e3e3;
+  border-radius: 14px;
 
-    background:#fcfcfc;
+  background: #fcfcfc;
 
-    font-size:15px;
+  font-size: 15px;
 
-    transition:.25s;
+  transition: .25s;
 
 }
 
-.create-offer-card textarea{
-    resize:vertical;
-    min-height:120px;
+.create-offer-card textarea {
+  resize: vertical;
+  min-height: 120px;
 }
 
 .create-offer-card input:focus,
-.create-offer-card textarea:focus{
+.create-offer-card textarea:focus {
 
-    background:#fff;
+  background: #fff;
 
-    border-color:var(--yellow);
+  border-color: var(--yellow);
 
-    box-shadow:
-        0 0 0 4px rgba(255,215,0,.18);
+  box-shadow:
+    0 0 0 4px rgba(255, 215, 0, .18);
 
-    outline:none;
+  outline: none;
 
 }
 
-.create-offer-btn{
-    width:100%;
-    height:50px;
-    border:none;
-    border-radius:12px;
-    font-size:18px;
-    font-weight:800;
-    margin-top:10px;
+.create-offer-btn {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 10px;
 }
 
-.create-offer-layout{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 420px;
-    gap:40px;
-    align-items:start;
+.create-offer-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 40px;
+  align-items: start;
 }
 
-.offer-preview{
-    position:sticky;
-    top:100px;
+.offer-preview {
+  position: sticky;
+  top: 100px;
 
-    background:var(--white);
+  background: var(--white);
 
-    border:1px solid var(--line);
+  border: 1px solid var(--line);
 
-    border-radius:20px;
+  border-radius: 20px;
 
-    padding:28px;
+  padding: 28px;
 
-    box-shadow:0 18px 44px rgba(22,22,22,.08);
+  box-shadow: 0 18px 44px rgba(22, 22, 22, .08);
 }
 
-.offer-preview h2{
-    margin:0 0 24px;
-    font-size:1.35rem;
-    font-weight:800;
+.offer-preview h2 {
+  margin: 0 0 24px;
+  font-size: 1.35rem;
+  font-weight: 800;
 }
 
-.preview-item{
-    margin-bottom:22px;
+.preview-item {
+  margin-bottom: 22px;
 }
 
 .preview-item span,
 .preview-grid span,
-.preview-total span{
+.preview-total span {
 
-    display:block;
+  display: block;
 
-    color:var(--gray);
+  color: var(--gray);
 
-    font-size:.85rem;
+  font-size: .85rem;
 
-    font-weight:700;
+  font-weight: 700;
 
-    margin-bottom:6px;
+  margin-bottom: 6px;
 
 }
 
-.preview-item strong{
-    display:block;
-    font-size:1.2rem;
-    font-weight:800;
-    color:var(--ink);
+.preview-item strong {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--ink);
 }
 
-.preview-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:18px;
-    margin-bottom:22px;
+.preview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 22px;
 }
 
-.preview-grid strong{
-    display:block;
-    font-size:1.05rem;
-    font-weight:800;
+.preview-grid strong {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 800;
 }
 
-.offer-preview hr{
-    border:none;
-    border-top:1px solid var(--line);
-    margin:24px 0;
+.offer-preview hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 24px 0;
 }
 
-.preview-total strong{
-    display:block;
-    margin-top:10px;
-    font-size:2rem;
-    font-weight:900;
-    color:var(--green);
+.preview-total strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--green);
 }
 
-@media(max-width:900px){
+@media(max-width:900px) {
 
-    .create-offer-layout{
-        grid-template-columns:1fr;
-    }
+  .create-offer-layout {
+    grid-template-columns: 1fr;
+  }
 
-    .offer-preview{
-        position:static;
-    }
+  .offer-preview {
+    position: static;
+  }
 
-    .form-row{
-        grid-template-columns:1fr;
-    }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 
-    .create-offer-card{
-    padding:40px;
-    }
+  .create-offer-card {
+    padding: 40px;
+  }
 
-    .create-offer-header h1{
-        font-size:2.2rem;
-    }
+  .create-offer-header h1 {
+    font-size: 2.2rem;
+  }
 
 }
 
@@ -1644,27 +1699,27 @@ input:focus {
    Create Offer Layout
 ========================================== */
 
-.create-offer-page{
-    padding:30px 40px 60px;
+.create-offer-page {
+  padding: 30px 40px 60px;
 }
 
-.offer-layout{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 320px;
-    gap:24px;
-    align-items:start;
+.offer-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
 
-    max-width:1500px;
-    margin:0 auto;
+  max-width: 1500px;
+  margin: 0 auto;
 }
 
-.offer-main{
-    width:100%;
+.offer-main {
+  width: 100%;
 }
 
-.offer-sidebar{
-    position:sticky;
-    top:95px;
+.offer-sidebar {
+  position: sticky;
+  top: 95px;
 }
 
 
@@ -1711,7 +1766,7 @@ input:focus {
   }
 
   .news-box {
-    height: 340px;
+    min-height: 340px;
   }
 
   .info-stack,

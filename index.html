@@ -74,126 +74,318 @@
           </article>
         </section>
         <section class="dashboard-view" data-view-panel="dashboard">
+
           <div class="dashboard-top">
-            <!-- ===========================
-               News Panel
-            ============================ -->
+
+            <!-- ==========================
+         News Panel
+    =========================== -->
             <section class="news-panel" aria-labelledby="dashboardTitle">
+
               <div class="panel-heading">
                 <div>
-                  <p class="eyebrow">Office Lunch Board</p>
+                  <p class="eyebrow">OFFICE LUNCH BOARD</p>
                   <h2 id="dashboardTitle">News</h2>
                 </div>
+
                 <span class="live-pill">
                   Auto refresh
                 </span>
               </div>
-              <div class="news-box" aria-live="polite">
-                <ul class="news-list" data-news-list></ul>
-              </div>
-            </section>
-            <!-- ===========================
-               Right Sidebar
-          ============================ -->
-            <aside class="info-stack" aria-label="Cost information">
-              <article class="cost-card">
-                <span>Per Head Cost</span>
-                <strong id="summaryPerHead">
-                  ৳0
-                </strong>
-                <p>
-                  Food price per person.
-                </p>
-              </article>
-              <article class="cost-card">
-                <span>Delivery Charge</span>
-                <strong id="summaryDelivery">
-                  ৳0
-                </strong>
-                <p>
-                  Shared delivery charge per person.
-                </p>
-              </article>
-              <article class="cost-card">
-                <span>Total Cost</span>
-                <strong id="summaryTotalCost">
-                  ৳0
-                </strong>
-                <p>
-                  Food price + shared delivery charge.
-                </p>
-              </article>
-              <article class="notification-card">
-                <h3>Notifications</h3>
-                <ul>
-                  <li>New lunch offer posted for your office.</li>
-                  <li>Delivery estimate updated to 1:25 PM.</li>
-                  <li>Two colleagues joined the order.</li>
+
+              <div class="news-box">
+
+                <ul class="news-list" data-news-list>
+
+                  <!-- JS inserts offer cards here -->
+
                 </ul>
+
+              </div>
+
+              <a href="#" class="view-all-offers">
+                View all offers →
+              </a>
+
+            </section>
+
+
+
+            <!-- ==========================
+         Right Sidebar
+    =========================== -->
+
+            <aside class="info-stack">
+
+              <!-- Cost Card -->
+
+              <article class="cost-card">
+
+                <div class="cost-icon">
+                  🍔
+                </div>
+
+                <div class="cost-content">
+
+                  <span>Per Head Cost</span>
+
+                  <strong id="summaryPerHead">
+                    ৳0
+                  </strong>
+
+                  <p>
+                    Food price per person.
+                  </p>
+
+                </div>
+
               </article>
+
+
+
+              <!-- Delivery -->
+
+              <article class="cost-card">
+
+                <div class="cost-icon">
+                  🛵
+                </div>
+
+                <div class="cost-content">
+
+                  <span>Delivery Charge</span>
+
+                  <strong id="summaryDelivery">
+                    ৳0
+                  </strong>
+
+                  <p>
+                    Shared delivery charge.
+                  </p>
+
+                </div>
+
+              </article>
+
+
+
+              <!-- Total -->
+
+              <article class="cost-card">
+
+                <div class="cost-icon">
+                  💳
+                </div>
+
+                <div class="cost-content">
+
+                  <span>Total Cost</span>
+
+                  <strong id="summaryTotalCost">
+                    ৳0
+                  </strong>
+
+                  <p>
+                    Food + Delivery.
+                  </p>
+
+                </div>
+
+              </article>
+
+
+
+              <!-- Notifications -->
+
+              <article class="notification-card">
+
+                <h3>Notifications</h3>
+
+                <ul class="notification-list">
+
+                  <li>
+                    <span class="notification-icon">🎁</span>
+
+                    <div>
+
+                      <strong>New lunch offer posted.</strong>
+
+                      <small>10:30 AM</small>
+
+                    </div>
+
+                  </li>
+
+                  <li>
+
+                    <span class="notification-icon">🛵</span>
+
+                    <div>
+
+                      <strong>Delivery estimate updated.</strong>
+
+                      <small>09:15 AM</small>
+
+                    </div>
+
+                  </li>
+
+                  <li>
+
+                    <span class="notification-icon">👥</span>
+
+                    <div>
+
+                      <strong>Two colleagues joined.</strong>
+
+                      <small>09:05 AM</small>
+
+                    </div>
+
+                  </li>
+
+                </ul>
+
+                <a href="#">
+                  View all notifications →
+                </a>
+
+              </article>
+
             </aside>
+
           </div>
-          <!-- ===========================
-           Group Order Summary
-          ============================ -->
-          <article class="order-summary" aria-labelledby="summaryTitle">
+
+
+
+          <!-- ==========================
+       Group Order Summary
+  =========================== -->
+
+          <article class="order-summary">
+
             <div class="summary-title-row">
+
               <div>
+
                 <p class="eyebrow">
-                  Current Group Order
+                  CURRENT GROUP ORDER
                 </p>
-                <h3 id="summaryTitle">
+
+                <h3>
                   Group Order Summary
                 </h3>
+
               </div>
+
               <span class="status-pill">
                 Collecting
               </span>
+
             </div>
+
+
+
             <div class="summary-grid">
+
               <div class="summary-item">
-                <span>Restaurant</span>
+
+                <span>Restaurant Name</span>
+
                 <strong id="summaryRestaurant">
                   Select an Offer
                 </strong>
+
               </div>
+
+
+
               <div class="summary-item">
+
                 <span>Participants</span>
+
                 <strong id="summaryPeople">
                   0 / 0
                 </strong>
+
               </div>
+
+
+
               <div class="summary-item">
-                <span>Food</span>
+
+                <span>Food Name</span>
+
                 <strong id="summaryFoodName">
                   -
                 </strong>
+
               </div>
+
+
+
+              <div class="summary-item">
+
+                <span>Description</span>
+
+                <strong id="summaryDescription">
+                  Select an offer to view its description.
+                </strong>
+
+              </div>
+
             </div>
-            <div class="summary-description">
-              <span>Description</span>
-              <p id="summaryDescription">
-                Select an offer to view its description.
-              </p>
-            </div>
+
+
+
             <div class="summary-footer">
+
               <div>
+
                 <span>Order Status</span>
+
                 <strong id="summaryStatus">
                   Waiting...
                 </strong>
+
               </div>
+
+
+
               <div>
+
                 <span>Created By</span>
+
                 <strong id="summaryCreatedBy">
                   -
                 </strong>
+
               </div>
+
+
+
+              <div>
+
+                <span>Time Left</span>
+
+                <strong id="summaryTimeLeft">
+                  --
+                </strong>
+
+              </div>
+
             </div>
+
+
+
             <button class="button button-primary join-btn">
+
               Join Order
+
             </button>
+
           </article>
+
         </section>
         <section class="dashboard-view" data-view-panel="profile">
           <article class="settings-card">
