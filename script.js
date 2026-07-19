@@ -196,59 +196,51 @@ async function renderNews() {
 
     offers.forEach((offer) => {
 
+      console.log(offer);
+
       newsList.innerHTML += `
-<li class="offer-card" data-offer-id="${offer.id}">
+      <li class="offer-card"
+      data-offer-id="${offer.id}">
+    
+      <img
+         class="restaurant-logo"
+          src="${getRestaurantLogo(offer.restaurant_name)}"
+          alt="${offer.restaurant_name}"
+      >
 
-    <div class="offer-header">
+    <div class="offer-content">
 
-        <img
-            class="restaurant-logo"
-            src="${getRestaurantLogo(offer.restaurant_name)}"
-            alt="${offer.restaurant_name}"
-        >
+        <div class="offer-top">
 
-        <div class="offer-title">
+            <div class="offer-left">
 
-            <strong>${offer.restaurant_name}</strong>
+                <strong>
+                    ${offer.restaurant_name}
+                </strong>
 
-            <div class="food-name">
-                ${offer.food_name}
+                <small>
+                    Created by ${offer.full_name}
+                </small>
+
             </div>
 
-            <small>
-                Created by ${offer.full_name}
-            </small>
+            <div class="offer-right">
+
+                <span class="offer-badge">
+                    New
+                </span>
+
+                <span
+                  class="offer-time"
+                  data-end="${offer.end_time}">
+                  --
+                </span>
+
+            </div>
 
         </div>
 
-        <div class="countdown-badge"
-             data-end="${offer.end_time}">
-            --
-        </div>
-
     </div>
-
-    <div class="offer-footer">
-
-        <span class="people-badge">
-            👥 ${offer.participant_count} / ${offer.max_people}
-        </span>
-
-        <span class="price-badge">
-            💰 ৳${(
-          Number(offer.food_price) +
-          Number(offer.delivery_charge) /
-          Math.max(1, offer.participant_count)
-        ).toFixed(2)}
-        </span>
-
-    </div>
-
-    <button
-        class="button button-primary news-join-btn"
-        data-offer="${offer.id}">
-        Join Order
-    </button>
 
 </li>
 `;
@@ -291,7 +283,8 @@ async function renderNews() {
 
     });
 
-    updateNewsCountdowns();
+    console.log("renderNews finished");
+    updateOfferTimes();
 
   } catch (err) {
 
@@ -300,6 +293,52 @@ async function renderNews() {
   }
 
 }
+
+function updateOfferTimes() {
+
+  document.querySelectorAll(".offer-time").forEach((item) => {
+
+    const endString = item.dataset.end;
+
+    if (!endString) {
+      item.textContent = "--";
+      return;
+    }
+
+    const end = new Date(endString);
+    const now = new Date();
+
+    const diff = end.getTime() - now.getTime();
+
+    if (isNaN(diff)) {
+      item.textContent = "--";
+      return;
+    }
+
+    if (diff <= 0) {
+      item.textContent = "Expired";
+      return;
+    }
+
+    const totalSeconds = Math.floor(diff / 1000);
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) {
+      item.textContent = `${hours}h ${minutes}m`;
+    } else {
+      item.textContent = `${minutes}m ${seconds}s`;
+    }
+
+  });
+
+}
+
+
+
+setInterval(updateOfferTimes, 1000);
 
 function showOfferSummary(offer) {
 
@@ -654,13 +693,16 @@ function startCountdown(endTime) {
 
     const now = new Date();
 
-    const [hour, minute] = endTime.split(":");
+    const [hour, minute] = endString.split(":");
 
-    const end = new Date();
-
-    end.setHours(Number(hour));
-    end.setMinutes(Number(minute));
-    end.setSeconds(0);
+    const end = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      Number(hour),
+      Number(minute),
+      0
+    );
 
     const diff = end - now;
 

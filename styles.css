@@ -814,134 +814,108 @@ input:focus {
 
 /* =========================================================
    Offer Card
-   ---------------------------------------------------------
-   Card Layout
    ========================================================= */
 
-.offer-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  cursor: pointer;
+.offer-card{
+  display:flex;
+  align-items:center;
+  gap:18px;
+
+  padding:18px 20px;
+  margin:0;
+
+  background:#fff;
+  border-bottom:1px solid #ececec;
+
+  cursor:pointer;
+  transition:.25s;
 }
 
-.restaurant-logo {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  border-radius: 10px;
-  background: #fff;
-  border: 1px solid #ddd;
-  padding: 5px;
+.offer-card:last-child{
+  border-bottom:none;
 }
 
-.offer-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.offer-card:hover{
+  background:#fffdf2;
+}
+
+.restaurant-logo{
+  width:70px;
+  height:70px;
+
+  object-fit:contain;
+
+  border-radius:10px;
+  border:1px solid #ececec;
+  background:#fff;
+
+  flex-shrink:0;
 }
 
 
 /* =========================================================
-   Offer Card (Modern)
-   ---------------------------------------------------------
-   Current Dashboard Card Design
+   Offer Card Content
    ========================================================= */
 
-.offer-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  cursor: pointer;
-
-  background: #fff;
-  border: 1px solid #e7e7e7;
-  border-radius: 14px;
-  padding: 18px;
-  margin-bottom: 16px;
-  transition: .25s;
+.offer-content{
+  flex:1;
 }
 
-.offer-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, .08);
+.offer-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
 }
 
-.offer-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+.offer-left{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
 }
 
-.offer-title {
-  flex: 1;
+.offer-left strong{
+  font-size:1.35rem;
+  font-weight:700;
 }
 
-.offer-title strong {
-  display: block;
-  font-size: 18px;
+.offer-left small{
+  color:#666;
+  font-size:.95rem;
 }
 
-.food-name {
-  margin-top: 4px;
-  font-weight: 600;
-}
-
-.offer-title small {
-  color: #777;
-}
-
-.offer-footer {
-  display: flex;
-  justify-content: space-between;
-  margin: 18px 0;
+.offer-right{
+  display:flex;
+  align-items:center;
+  gap:16px;
 }
 
 
 /* =========================================================
-   Offer Badges
+   Offer Badge
    ========================================================= */
 
-.price-badge {
-  background: #eef7ff;
-  color: #0f5eb5;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-weight: 600;
-}
+.offer-badge{
+  background:#fde68a;
+  color:#6b5500;
 
-.people-badge {
-  background: #eef8f0;
-  color: #1b7f3a;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-}
+  padding:6px 14px;
+  border-radius:999px;
 
-.countdown-badge {
-  background: #fff3cd;
-  color: #856404;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size:.82rem;
+  font-weight:700;
 }
 
 
 /* =========================================================
-   Offer Meta
+   Offer Time
    ========================================================= */
 
-.offer-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.news-join-btn {
-  width: 100%;
+.offer-time{
+  color:#444;
+  font-size:1rem;
+  font-weight:600;
+  white-space:nowrap;
 }
 
 /* =========================================================
