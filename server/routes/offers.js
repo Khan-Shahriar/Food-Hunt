@@ -111,11 +111,12 @@ ORDER BY offers.created_at DESC
 
     } catch (err) {
 
-        console.error(err);
+       console.error("CREATE OFFER ERROR:", err);
 
-        res.status(500).json({
-            message: "Failed to load offers."
-        });
+    return res.status(500).json({
+        success: false,
+        message: err.message
+    });
 
     }
 
