@@ -1,0 +1,257 @@
+/* =========================================================
+   Dashboard
+   ---------------------------------------------------------
+   Main Dashboard Layout
+   Navigation
+   Header
+   ========================================================= */
+
+.dashboard {
+  background: #fbfaf0;
+}
+
+.dashboard-nav {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  min-height: 76px;
+  padding: 0 clamp(18px, 4vw, 46px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* =========================================================
+   Dashboard Brand
+   ========================================================= */
+
+.brand {
+  align-items: center;
+  color: var(--ink);
+  display: flex;
+  font-size: 1.15rem;
+  font-weight: 900;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.brand-mark {
+  align-items: center;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: inline-flex;
+  height: 40px;
+  justify-content: center;
+  overflow: hidden;
+  width: 40px;
+}
+
+.brand-mark img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+
+/* =========================================================
+   Dashboard Navigation
+   ========================================================= */
+
+.nav-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.icon-button,
+.profile-button {
+  height: 42px;
+  position: relative;
+  width: 42px;
+}
+
+.notification-button::before {
+  border: 2px solid var(--ink);
+  border-bottom: 0;
+  border-radius: 16px 16px 8px 8px;
+  content: "";
+  height: 16px;
+  width: 15px;
+}
+
+.notification-button::after {
+  background: var(--ink);
+  border-radius: 50%;
+  bottom: 10px;
+  content: "";
+  height: 4px;
+  position: absolute;
+  width: 8px;
+}
+
+.notification-dot {
+  background: var(--red);
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  height: 11px;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 11px;
+}
+
+.profile-button {
+  background: var(--yellow);
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   Dashboard Container
+   ========================================================= */
+
+.dashboard-shell {
+  display: grid;
+  gap: 24px;
+  margin: 0 auto;
+  max-width: 1240px;
+  padding: 20px clamp(18px, 4vw, 46px) 46px;
+}
+
+
+/* =========================================================
+   Dashboard Links
+   ========================================================= */
+
+.dashboard-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nav-link {
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--gray);
+  font-weight: 800;
+  min-height: 38px;
+  padding: 0 12px;
+}
+
+.nav-link.is-active,
+.nav-link:hover {
+  background: var(--yellow-soft);
+  color: var(--ink);
+}
+
+
+/* =========================================================
+   Dashboard Views
+   ========================================================= */
+
+.dashboard-view {
+  display: none;
+}
+
+.dashboard-view.is-active {
+  animation: pageIn 260ms ease both;
+}
+
+/* ==========================================
+   Dashboard Layout
+========================================== */
+
+.dashboard-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.dashboard-view[data-view-panel="home"].is-active,
+.dashboard-view[data-view-panel="profile"].is-active,
+.dashboard-view[data-view-panel="settings"].is-active {
+  display: block;
+}
+
+
+
+/* Keep only ONE of these rules */
+
+.dashboard-view[data-view-panel="dashboard"].is-active {
+  display: block;
+}
+
+
+/* =========================================================
+   Dashboard Cards
+   ========================================================= */
+
+.welcome-card,
+.settings-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 18px 44px rgba(22, 22, 22, 0.08);
+  padding: clamp(20px, 3vw, 30px);
+}
+
+.welcome-card h2,
+.settings-card h2 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin: 0 0 12px;
+}
+
+.settings-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.danger-card {
+  border-color: rgba(201, 53, 53, 0.35);
+}
+
+
+/* =========================================================
+   Toast Notifications
+   ========================================================= */
+
+.toast-stack {
+  display: grid;
+  gap: 10px;
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  width: min(360px, calc(100vw - 40px));
+  z-index: 40;
+}
+
+.toast {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  font-weight: 700;
+  padding: 14px 16px;
+}
+
+.toast-success {
+  border-color: rgba(40, 122, 78, 0.35);
+  color: var(--green);
+}
+
+.toast-error {
+  border-color: rgba(201, 53, 53, 0.35);
+  color: var(--red);
+}
+
+.dashboard-view[data-view-panel="settings"].is-active {
+  display: grid;
+  gap: 18px;
+}

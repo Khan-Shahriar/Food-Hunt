@@ -1,0 +1,238 @@
+/* =========================================================
+   FOOD HUNT
+   Main Stylesheet
+   ========================================================= */
+
+
+/* =========================================================
+   Global
+   ---------------------------------------------------------
+   Variables
+   Reset
+   Base Elements
+   ========================================================= */
+
+:root {
+  --yellow: #ffd700;
+  --yellow-soft: #fff4a8;
+  --yellow-deep: #e7bd00;
+  --ink: #161616;
+  --gray: #5f6368;
+  --line: #e8e3c6;
+  --paper: #fffdf2;
+  --white: #ffffff;
+  --green: #287a4e;
+  --red: #c93535;
+  --shadow: 0 24px 70px rgba(22, 22, 22, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+label {
+  color: #333333;
+  display: grid;
+  font-size: 0.9rem;
+  font-weight: 800;
+  gap: 6px;
+}
+
+input {
+  background: var(--white);
+  border: 1px solid #d9d3b3;
+  border-radius: 8px;
+  min-height: 48px;
+  padding: 0 14px;
+  width: 100%;
+}
+
+input:focus {
+  border-color: var(--yellow-deep);
+  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.24);
+  outline: none;
+}
+
+
+/* =========================================================
+   Shared Buttons
+   ---------------------------------------------------------
+   Primary
+   Secondary
+   Outline
+   Danger
+   ========================================================= */
+
+.button {
+  align-items: center;
+  border: 0;
+  border-radius: 8px;
+  display: inline-flex;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 22px;
+  transition: box-shadow 180ms ease, transform 180ms ease, background 180ms ease;
+}
+
+.button:hover {
+  box-shadow: 0 16px 34px rgba(22, 22, 22, 0.18);
+  transform: translateY(-2px);
+}
+
+.button-primary {
+  background: var(--yellow);
+  color: var(--ink);
+}
+
+.button-primary:hover {
+  background: var(--yellow-deep);
+}
+
+.button-secondary {
+  background: var(--white);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.button-outline {
+  background: var(--white);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.button-outline:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.button-danger {
+  background: var(--red);
+  color: var(--white);
+}
+
+.button-large {
+  font-size: 1.08rem;
+  min-width: 180px;
+  min-height: 58px;
+}
+
+.button-small {
+  font-size: 0.88rem;
+  min-height: 40px;
+  padding: 0 14px;
+}
+
+
+/* =========================================================
+   Layout
+   ---------------------------------------------------------
+   Page Containers
+   ========================================================= */
+
+.page {
+  display: none;
+  min-height: 100vh;
+}
+
+.page.is-active {
+  animation: pageIn 420ms ease both;
+  display: block;
+}
+
+
+/* =========================================================
+   Landing Page
+   ---------------------------------------------------------
+   Hero
+   Hero Image
+   Typography
+   ========================================================= */
+
+.landing {
+  align-items: center;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255, 215, 0, 0.32), transparent 28%),
+    linear-gradient(135deg, #fffdf2 0%, #ffffff 48%, #fff5b8 100%);
+  display: none;
+  justify-content: center;
+  overflow: hidden;
+  padding: 42px 22px;
+  position: relative;
+  text-align: center;
+}
+
+.landing.is-active {
+  display: flex;
+}
+
+.landing-content {
+  position: relative;
+  z-index: 2;
+}
+
+.landing h1 {
+  font-size: clamp(4.5rem, 13vw, 10.5rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 0.9;
+  margin: 0;
+}
+
+.tagline {
+  color: #2c2c2c;
+  font-size: clamp(1.35rem, 3vw, 2.4rem);
+  font-weight: 800;
+  margin: 20px 0 34px;
+}
+
+.eyebrow {
+  color: #7d6600;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin: 0 0 14px;
+  text-transform: uppercase;
+}
+
+.landing-visual {
+  align-items: center;
+  display: flex;
+  height: min(58vw, 520px);
+  justify-content: center;
+  opacity: 0.95;
+  position: absolute;
+  right: max(-110px, -8vw);
+  top: max(74px, 10vh);
+  width: min(58vw, 520px);
+}
+
+.landing-visual img {
+  border-radius: 50%;
+  box-shadow: var(--shadow);
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}

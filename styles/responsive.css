@@ -1,0 +1,162 @@
+@media(max-width:900px) {
+
+  .create-offer-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .offer-preview {
+    position: static;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .create-offer-card {
+    padding: 40px;
+  }
+
+  .create-offer-header h1 {
+    font-size: 2.2rem;
+  }
+
+}
+
+@media (max-width: 680px) {
+
+  .landing {
+    align-items: flex-end;
+    min-height: 100vh;
+    padding-bottom: 70px;
+  }
+
+  .landing-visual {
+    height: 360px;
+    left: 50%;
+    opacity: 0.55;
+    right: auto;
+    top: 48px;
+    transform: translateX(-50%);
+    width: 360px;
+  }
+
+  .landing h1 {
+    font-size: clamp(4rem, 21vw, 6rem);
+  }
+
+  .dashboard-nav {
+    min-height: 68px;
+  }
+
+  .brand {
+    font-size: 1rem;
+  }
+
+  .panel-heading,
+  .summary-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .news-box {
+    min-height: 340px;
+  }
+
+  .info-stack,
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 430px) {
+
+  .auth-modal {
+    padding: 18px;
+  }
+
+  .auth-tabs {
+    margin-top: 42px;
+  }
+
+  .button-large {
+    width: 100%;
+  }
+
+}
+
+/* =========================================================
+   Responsive Design
+   ---------------------------------------------------------
+   Mobile
+   ========================================================= */
+
+@media (max-width: 680px) {
+
+  .landing {
+    align-items: flex-end;
+    min-height: 100vh;
+    padding-bottom: 70px;
+  }
+
+  .landing-visual {
+    height: 360px;
+    left: 50%;
+    opacity: 0.55;
+    right: auto;
+    top: 48px;
+    transform: translateX(-50%);
+    width: 360px;
+  }
+
+  .landing h1 {
+    font-size: clamp(4rem, 21vw, 6rem);
+  }
+
+  .dashboard-nav {
+    min-height: 68px;
+  }
+
+  .brand {
+    font-size: 1rem;
+  }
+
+  .panel-heading,
+  .summary-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .news-box {
+    min-height: 340px;
+  }
+
+  .info-stack,
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+/* =========================================================
+   Responsive Design
+   ---------------------------------------------------------
+   Small Mobile
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+  .auth-modal {
+    padding: 18px;
+  }
+
+  .auth-tabs {
+    margin-top: 42px;
+  }
+
+  .button-large {
+    width: 100%;
+  }
+
+}
