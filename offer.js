@@ -2,7 +2,7 @@
    Configuration
 ========================================== */
 
-const API = "http://localhost:8080/api";
+const API = "/api";
 
 
 /* ==========================================
@@ -96,6 +96,25 @@ function updatePreview() {
     input.addEventListener("input", updatePreview);
 
 });
+
+function setDefaultDateTimes() {
+
+    const now = new Date();
+
+    // Round to the next 5 minutes
+    now.setMinutes(Math.ceil(now.getMinutes() / 5) * 5);
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+
+    const end = new Date(now);
+    end.setMinutes(end.getMinutes() + 45); // Default offer duration
+
+    startInput.value = now.toISOString().slice(0, 16);
+    endInput.value = end.toISOString().slice(0, 16);
+
+}
+
+setDefaultDateTimes();
 
 updatePreview();
 
