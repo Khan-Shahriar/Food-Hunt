@@ -116,10 +116,13 @@
 
 .dashboard-shell {
   display: grid;
-  gap: 24px;
+  gap: 28px;
+
+  width: min(1600px, calc(100% - 64px));
+
   margin: 0 auto;
-  max-width: 1240px;
-  padding: 20px clamp(18px, 4vw, 46px) 46px;
+
+  padding: 28px 0 48px;
 }
 
 
