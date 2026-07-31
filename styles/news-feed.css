@@ -69,13 +69,12 @@
    ========================================================= */
 
 .news-box {
-  margin-top: 28px;
-
-  background: #fff;
+  margin-top: 24px;
+  background: var(--white);
   border: 1px solid var(--line);
-  border-radius: 16px;
-
-  overflow: hidden;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .news-list {
