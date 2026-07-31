@@ -118,11 +118,9 @@
   display: grid;
   gap: 28px;
 
-  width: min(1600px, calc(100% - 64px));
-
-  margin: 0 auto;
-
-  padding: 28px 0 48px;
+  width:min(1500px,calc(100% - 32px));
+  margin:auto;
+  padding:26px 0 48px;
 }
 
 
@@ -171,7 +169,7 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 1fr) 390px;
   gap: 28px;
   align-items: start;
 }
