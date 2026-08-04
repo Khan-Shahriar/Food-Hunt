@@ -169,9 +169,10 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 390px;
+  grid-template-columns: minmax(0, 1fr) 360px;
   gap: 28px;
-  align-items: start;
+
+  align-items: stretch;
 }
 
 .dashboard-view[data-view-panel="home"].is-active,
@@ -188,6 +189,25 @@
   display: block;
 }
 
+/* =========================================================
+   Bottom Dashboard Layout
+   ========================================================= */
+
+.summary-layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 340px;
+    gap:24px;
+    align-items:start;
+    margin-top:40px;
+}
+
+.order-summary{
+    margin:0;
+}
+
+.notification-card{
+    margin:0;
+}
 
 /* =========================================================
    Dashboard Cards
@@ -216,6 +236,25 @@
 
 .danger-card {
   border-color: rgba(201, 53, 53, 0.35);
+}
+
+.dashboard-layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 350px;
+    gap:24px;
+    align-items:start;
+}
+
+.dashboard-main{
+    display:flex;
+    flex-direction:column;
+    gap:32px;
+}
+
+.dashboard-right{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
 }
 
 

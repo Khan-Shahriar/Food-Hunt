@@ -19,10 +19,15 @@
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 20px;
-  padding: 24px;
+
+  padding: 20px;
+
   box-shadow: 0 12px 32px rgba(22,22,22,.08);
-  display:flex;
-  flex-direction:column;
+
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
 }
 
 .panel-heading,
@@ -71,19 +76,34 @@
    ========================================================= */
 
 .news-box {
-    margin-top:24px;
-  margin-bottom:18px;
+  margin-top: 10px;
+
   background: var(--white);
   border: 1px solid var(--line);
   border-radius: 16px;
+
   padding: 8px;
+
+  flex: 1;
+
+  min-height: 0;
+
   overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
 }
 
-.news-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.news-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+
+  flex:1;
+
+  overflow-y:auto;
+
+  overflow-x:hidden;
 }
 
 /*.news-list:hover {
@@ -108,6 +128,31 @@
   color: var(--gray);
   display: block;
   font-size: 0.92rem;
+}
+
+.view-all-offers{
+    margin-top:16px;
+
+    flex-shrink:0;
+}
+
+.news-footer{
+    margin-top:14px;
+
+    flex-shrink:0;
+}
+
+.news-list::-webkit-scrollbar{
+    width:8px;
+}
+
+.news-list::-webkit-scrollbar-thumb{
+    background:#d8d8d8;
+    border-radius:20px;
+}
+
+.news-list::-webkit-scrollbar-thumb:hover{
+    background:#bdbdbd;
 }
 
 
