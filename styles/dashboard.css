@@ -193,20 +193,22 @@
    Bottom Dashboard Layout
    ========================================================= */
 
-.summary-layout{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 340px;
-    gap:24px;
-    align-items:start;
-    margin-top:40px;
+.summary-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 24px;
+    align-items: start;
+    margin-top: 32px;
 }
 
-.order-summary{
-    margin:0;
+.order-summary {
+    margin: 0;
+    padding-top: 0;
+    border-top: 1px solid var(--line);
 }
 
-.notification-card{
-    margin:0;
+.notification-card {
+    margin-top: 46px;
 }
 
 /* =========================================================
