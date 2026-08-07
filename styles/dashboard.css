@@ -202,13 +202,16 @@
 }
 
 .order-summary {
-    margin: 0;
-    padding-top: 0;
-    border-top: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  margin-top: 5px;
+  padding-top: 5px;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .notification-card {
-    margin-top: 46px;
+    margin-top: 16px;
 }
 
 /* =========================================================
