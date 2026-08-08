@@ -53,10 +53,10 @@ function updatePreview() {
     const delivery = Number(deliveryInput.value) || 0;
 
     previewRestaurant.textContent =
-    restaurant || "Select a restaurant";
+        restaurant || "Select a restaurant";
 
     previewFood.textContent =
-    food || "Enter food name";
+        food || "Enter food name";
 
     previewQty.textContent = quantity;
 
@@ -70,15 +70,19 @@ function updatePreview() {
 
     if (people > 0) {
 
+        const deliveryPerPerson =
+            delivery / people;
+
         const totalPerPerson =
-            (foodPrice + delivery) / people;
+            foodPrice + deliveryPerPerson;
 
         previewTotal.textContent =
             "৳" + totalPerPerson.toFixed(2);
 
     } else {
 
-        previewTotal.textContent = "৳0.00";
+        previewTotal.textContent =
+            "৳" + foodPrice.toFixed(2);
 
     }
 
