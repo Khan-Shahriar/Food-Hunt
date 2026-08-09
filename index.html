@@ -75,11 +75,12 @@
         </section>
         <section class="dashboard-view" data-view-panel="dashboard">
 
-          <div class="dashboard-grid">
-
-            <!-- ==========================
+          <!-- ==========================
               News Panel
             =========================== -->
+
+          <div class="dashboard-grid">
+
             <section class="news-panel" aria-labelledby="dashboardTitle">
 
               <div class="panel-heading">
@@ -372,8 +373,6 @@
 
           </div>
 
-
-
         </section>
 
         <section class="dashboard-view" data-view-panel="profile">
@@ -381,6 +380,24 @@
             <p class="eyebrow">Account</p>
             <h2>Profile</h2>
             <form class="settings-form" data-profile-form>
+              <div class="profile-avatar-section">
+
+                <label class="profile-avatar-upload" for="profileAvatar">
+
+                  <span class="profile-avatar" data-profile-avatar>
+                    <span data-profile-initial>U</span>
+                  </span>
+
+                  <span class="avatar-upload-text">
+                    <strong>Profile Photo</strong>
+                    <small>Click to upload an image</small>
+                  </span>
+
+                </label>
+
+                <input type="file" id="profileAvatar" accept="image/*" hidden data-profile-avatar-input />
+
+              </div>
               <label>
                 Full Name
                 <input type="text" name="fullName" required />
@@ -542,7 +559,8 @@
       </form>
     </div>
   </div>
-  <script src="script.js"></script>
+  <script src="dashboard.js" defer></script>
+  <script src="script.js" defer></script>
 </body>
 
 </html>

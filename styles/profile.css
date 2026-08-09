@@ -1,0 +1,426 @@
+/* ==========================================
+   Center Profile & Settings
+========================================== */
+
+[data-view-panel="profile"],
+[data-view-panel="settings"] {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ==========================================
+   Profile & Settings
+========================================== */
+
+.settings-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--border, #e7dfc8);
+  border-radius: 16px;
+  padding: 24px;
+  box-sizing: border-box;
+  box-shadow: 0 12px 35px rgba(40, 35, 20, 0.06);
+  margin-bottom: 24px;
+}
+
+/* ==========================================
+   Profile Avatar
+========================================== */
+
+.profile-avatar-section {
+  grid-column: 1 / -1;
+
+  display: flex;
+  align-items: center;
+
+  padding-bottom: 8px;
+}
+
+.profile-avatar-upload {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+
+  gap: 16px;
+
+  cursor: pointer;
+}
+
+/* Avatar circle */
+
+.profile-avatar {
+  width: 76px;
+  height: 76px;
+
+  flex: 0 0 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #fff4b8;
+  border: 2px solid #e6c400;
+
+  color: #171717;
+
+  font-size: 1.5rem;
+  font-weight: 800;
+
+  overflow: hidden;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.profile-avatar-upload:hover .profile-avatar {
+  transform: scale(1.03);
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Uploaded image */
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+/* Text beside avatar */
+
+.avatar-upload-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.avatar-upload-text strong {
+  color: #222;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.avatar-upload-text small {
+  color: #777;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+/* ------------------------------------------
+   Page Heading
+------------------------------------------ */
+
+.settings-card .eyebrow {
+  margin: 0 0 8px;
+  color: #806d00;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.settings-card h2 {
+  margin: 0 0 28px;
+  color: #171717;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* ==========================================
+   Profile
+========================================== */
+
+[data-view-panel="profile"] {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Profile form */
+
+[data-profile-form] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* Labels */
+
+.settings-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #343434;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* Full width fields */
+
+[data-profile-form] label:nth-child(2) {
+  grid-column: 1 / -1;
+}
+
+[data-profile-form] label:nth-child(3),
+[data-profile-form] label:nth-child(4) {
+  grid-column: span 1;
+}
+
+/* Inputs */
+
+.settings-form input {
+  width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+
+  padding: 0 15px;
+
+  border: 1px solid #ddd3b8;
+  border-radius: 10px;
+
+  background: #fffdf7;
+  color: #181818;
+
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.settings-form input:hover {
+  border-color: #cdbf98;
+}
+
+.settings-form input:focus {
+  border-color: #e0b900;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(255, 211, 0, 0.16);
+}
+
+/* Read-only fields */
+
+.settings-form input[readonly] {
+  background: #f7f5ed;
+  color: #666;
+  cursor: default;
+}
+
+/* ==========================================
+   Form Message
+========================================== */
+
+.form-message,
+.form-error {
+  margin: 2px 0 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+[data-profile-message] {
+  grid-column: 1 / -1;
+}
+
+/* ==========================================
+   Buttons
+========================================== */
+
+.settings-form > .button {
+  min-height: 48px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+/* Profile button */
+
+[data-profile-form] > .button {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+.settings-form > .button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.08);
+}
+
+.settings-form > .button:active {
+  transform: translateY(0);
+}
+
+/* ==========================================
+   Settings Page
+========================================== */
+
+[data-view-panel="settings"] {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Password form */
+
+[data-password-form] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+[data-password-form] label:first-child {
+  grid-column: 1 / -1;
+}
+
+[data-password-form] label:nth-child(2),
+[data-password-form] label:nth-child(3) {
+  grid-column: span 1;
+}
+
+/* Password hint */
+
+[data-password-form] .form-hint {
+  grid-column: 1 / -1;
+
+  margin: -2px 0 2px;
+
+  color: #777;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Password error */
+
+[data-password-form] .form-error {
+  grid-column: 1 / -1;
+}
+
+/* Update button */
+
+[data-password-form] > .button {
+  grid-column: 1 / -1;
+}
+
+/* ==========================================
+   Danger Zone
+========================================== */
+
+.settings-card.danger-card {
+  border-color: #efc4c4;
+  box-shadow: none;
+}
+
+.danger-card .eyebrow {
+  color: #9a6900;
+}
+
+.danger-card h2 {
+  margin-bottom: 24px;
+}
+
+[data-delete-form] {
+  display: grid;
+  gap: 18px;
+}
+
+[data-delete-form] .form-error {
+  margin-top: -4px;
+}
+
+.button-danger {
+  min-height: 48px;
+  border-radius: 10px;
+  font-weight: 800;
+}
+
+/* ==========================================
+   Better spacing between Settings cards
+========================================== */
+
+[data-view-panel="settings"] .settings-card:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================
+   Subtle card animation
+========================================== */
+
+[data-view-panel="profile"].is-active .settings-card,
+[data-view-panel="settings"].is-active .settings-card {
+  animation: profileCardIn 0.35s ease both;
+}
+
+[data-view-panel="settings"].is-active .danger-card {
+  animation-delay: 0.05s;
+}
+
+@keyframes profileCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================
+   Mobile
+========================================== */
+
+@media (max-width: 700px) {
+
+  .settings-card {
+    padding: 22px;
+    border-radius: 14px;
+  }
+
+  .settings-card h2 {
+    font-size: 2rem;
+    margin-bottom: 22px;
+  }
+
+  [data-profile-form],
+  [data-password-form] {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+
+  [data-profile-form] label,
+  [data-password-form] label,
+  [data-profile-form] label:nth-child(2),
+  [data-profile-form] label:nth-child(3),
+  [data-profile-form] label:nth-child(4),
+  [data-password-form] label:first-child,
+  [data-password-form] label:nth-child(2),
+  [data-password-form] label:nth-child(3) {
+    grid-column: 1;
+  }
+
+  [data-profile-message],
+  [data-password-form] .form-hint,
+  [data-password-form] .form-error,
+  [data-profile-form] > .button,
+  [data-password-form] > .button {
+    grid-column: 1;
+  }
+
+  .settings-form input {
+    min-height: 46px;
+  }
+}
