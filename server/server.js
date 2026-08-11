@@ -30,7 +30,7 @@ app.use(
     contentSecurityPolicy: false,
   }),
 );
-app.use(express.json({ limit: "32kb" }));
+app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 
 const authLimiter = rateLimit({

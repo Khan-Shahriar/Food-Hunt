@@ -22,13 +22,13 @@ function sanitizeUser(row) {
 }
 
 router.get("/profile", requireAuth, (req, res) => {
-  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.user.sub);
+  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.user.id);
   return res.json({ user: sanitizeUser(user) });
 });
 
 router.put("/profile", requireAuth, (req, res) => {
   const { fullName, email, profilePicture } = req.body;
-  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.user.sub);
+  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.user.id);
 
   if (!fullName?.trim()) {
     return res.status(400).json({ error: "Full name is required." });
@@ -62,7 +62,7 @@ router.put("/profile", requireAuth, (req, res) => {
 
 router.put("/password", requireAuth, (req, res) => {
   const { currentPassword, newPassword, confirmPassword } = req.body;
-  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.user.sub);
+  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.user.id);
 
   if (!bcrypt.compareSync(currentPassword || "", user.password_hash)) {
     return res.status(401).json({ error: "Current password is incorrect." });
@@ -85,7 +85,7 @@ router.put("/password", requireAuth, (req, res) => {
 
 router.delete("/account", requireAuth, (req, res) => {
   const { password } = req.body;
-  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.user.sub);
+  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.user.id);
 
   if (!bcrypt.compareSync(password || "", user.password_hash)) {
     return res.status(401).json({ error: "Password is incorrect." });
