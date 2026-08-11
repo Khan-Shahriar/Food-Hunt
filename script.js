@@ -241,14 +241,32 @@ async function handleVerifyEmail(token) {
 
 async function handleProfileUpdate(event) {
   event.preventDefault();
-  const payload = Object.fromEntries(new FormData(profileForm).entries());
+
+  const profileMessage =
+    profileForm.querySelector("[data-profile-message]");
+
+  profileMessage.textContent = "";
+
+  const avatar = document.querySelector("[data-profile-avatar]");
+  const avatarImage = avatar?.querySelector("img");
+
+  const payload = {
+    fullName: profileForm.fullName.value,
+    email: profileForm.email.value,
+    profilePicture: avatarImage?.src || null,
+  };
+
   const data = await api("/user/profile", {
     method: "PUT",
     body: JSON.stringify(payload),
   });
 
-  showDashboard(data.user);
-  profileForm.querySelector("[data-profile-message]").textContent = data.message;
+  currentUser = data.user;
+
+  profileMessage.textContent = data.message;
+
+  profileInitial.textContent =
+    data.user.fullName.trim().charAt(0).toUpperCase() || "U";
 }
 
 async function handlePasswordUpdate(event) {
@@ -358,7 +376,9 @@ profileForm.addEventListener("submit", async (event) => {
   try {
     await handleProfileUpdate(event);
   } catch (error) {
-    profileForm.querySelector("[data-profile-message]").textContent = error.message;
+    console.error("Profile update error:", error);
+    profileForm.querySelector("[data-profile-message]").textContent =
+      error.message || "Profile update failed.";
   }
 });
 
