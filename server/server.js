@@ -11,6 +11,7 @@ import userRoutes from "./routes/user.js";
 import { requireAuth } from "./middleware/auth.js";
 import db from "./db.js";
 import offerRoutes from "./routes/offers.js";
+import adminRoutes from "./routes/admin.js";
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
