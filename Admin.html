@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Hunt — Admin Panel</title>
+  <link rel="stylesheet" href="Admin.css">
+</head>
+<body>
+
+  <div class="admin-app">
+
+    <!-- Mobile overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- =========================
+         Sidebar
+    ========================== -->
+    <aside class="admin-sidebar" id="adminSidebar">
+
+      <div class="sidebar-top">
+        <a class="admin-brand" href="#">
+          <span class="brand-mark">FH</span>
+          <span>
+            <strong>FOOD HUNT</strong>
+            <small>Admin Panel</small>
+          </span>
+        </a>
+
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">×</button>
+      </div>
+
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <p class="nav-label">MAIN</p>
+
+        <button class="admin-nav-link is-active" data-section="dashboard">
+          <span class="nav-icon">▦</span>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="admin-nav-link" data-section="offers">
+          <span class="nav-icon">🍱</span>
+          <span>Offers</span>
+          <span class="nav-count" id="offerNavCount">0</span>
+        </button>
+
+        <button class="admin-nav-link" data-section="users">
+          <span class="nav-icon">♙</span>
+          <span>Users</span>
+          <span class="nav-count" id="userNavCount">0</span>
+        </button>
+
+        <button class="admin-nav-link" data-section="orders">
+          <span class="nav-icon">🛒</span>
+          <span>Orders</span>
+        </button>
+
+        <button class="admin-nav-link" data-section="restaurants">
+          <span class="nav-icon">♨</span>
+          <span>Restaurants</span>
+        </button>
+
+        <p class="nav-label">MANAGEMENT</p>
+
+        <button class="admin-nav-link" data-section="reports">
+          <span class="nav-icon">▥</span>
+          <span>Reports</span>
+        </button>
+
+        <button class="admin-nav-link" data-section="issues">
+          <span class="nav-icon">⚑</span>
+          <span>Reports / Issues</span>
+        </button>
+
+        <button class="admin-nav-link" data-section="activity">
+          <span class="nav-icon">◷</span>
+          <span>Activity Logs</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button class="admin-nav-link" data-section="settings">
+          <span class="nav-icon">⚙</span>
+          <span>Settings</span>
+        </button>
+
+        <button class="admin-nav-link" data-section="profile">
+          <span class="nav-icon">●</span>
+          <span>Admin Profile</span>
+        </button>
+
+        <button class="logout-link" id="logoutButton">
+          <span class="nav-icon">↪</span>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- =========================
+         Main
+    ========================== -->
+    <main class="admin-main">
+
+      <header class="admin-header">
+        <div class="header-left">
+          <button class="menu-button" id="menuButton" aria-label="Open menu">☰</button>
+
+          <div>
+            <p class="header-eyebrow">FOOD HUNT CONTROL CENTER</p>
+            <h1 id="pageTitle">Dashboard</h1>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="header-icon-button" id="refreshButton" title="Refresh">↻</button>
+          <button class="header-icon-button notification-button" title="Notifications">
+            ♢
+            <span></span>
+          </button>
+
+          <button class="admin-user-button" data-section="profile">
+            <span class="admin-avatar">A</span>
+            <span class="admin-user-copy">
+              <strong id="adminName">Admin</strong>
+              <small>Administrator</small>
+            </span>
+            <span>⌄</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="admin-content">
+
+        <!-- =========================
+             Dashboard
+        ========================== -->
+        <section class="admin-section is-active" data-section-panel="dashboard">
+
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">OVERVIEW</p>
+              <h2>Good to see you, Admin.</h2>
+              <p>Monitor Food Hunt and manage everything from one place.</p>
+            </div>
+            <button class="button button-primary" data-section="offers">Manage Offers</button>
+          </div>
+
+          <div class="stat-grid">
+            <article class="stat-card">
+              <div class="stat-icon yellow">♙</div>
+              <div>
+                <span>Total Users</span>
+                <strong id="summaryUsers">0</strong>
+              </div>
+              <small>Registered accounts</small>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-icon green">🍱</div>
+              <div>
+                <span>Total Offers</span>
+                <strong id="summaryOffers">0</strong>
+              </div>
+              <small>All created offers</small>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-icon orange">●</div>
+              <div>
+                <span>Active Offers</span>
+                <strong id="summaryActiveOffers">0</strong>
+              </div>
+              <small>Currently available</small>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-icon red">🛒</div>
+              <div>
+                <span>Participants</span>
+                <strong id="summaryParticipants">0</strong>
+              </div>
+              <small>Current participation</small>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+
+            <article class="panel-card">
+              <div class="panel-header">
+                <div>
+                  <p class="section-kicker">LIVE</p>
+                  <h3>Active Offers</h3>
+                </div>
+                <button class="text-button" data-section="offers">View all →</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Offer</th>
+                      <th>Creator</th>
+                      <th>Participants</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboardOffersTable">
+                    <tr><td colspan="4" class="empty-cell">Loading offers...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="panel-card">
+              <div class="panel-header">
+                <div>
+                  <p class="section-kicker">RECENT</p>
+                  <h3>Activity</h3>
+                </div>
+                <button class="text-button" data-section="activity">View logs →</button>
+              </div>
+              <div class="activity-list" id="dashboardActivity">
+                <div class="empty-state compact">No activity yet.</div>
+              </div>
+            </article>
+
+          </div>
+        </section>
+
+        <!-- =========================
+             Offers
+        ========================== -->
+        <section class="admin-section" data-section-panel="offers">
+
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">MANAGEMENT</p>
+              <h2>Offer Management</h2>
+              <p>Edit, disable, review, or remove Food Hunt offers.</p>
+            </div>
+            <button class="button button-primary" id="createOfferButton">+ New Offer</button>
+          </div>
+
+          <div class="toolbar">
+            <div class="search-box">
+              <span>⌕</span>
+              <input id="offerSearch" type="search" placeholder="Search restaurant, food, creator...">
+            </div>
+
+            <select id="offerStatusFilter">
+              <option value="all">All statuses</option>
+              <option value="active">Active</option>
+              <option value="full">Full</option>
+              <option value="expired">Expired</option>
+              <option value="disabled">Disabled</option>
+            </select>
+          </div>
+
+          <article class="panel-card">
+            <div class="table-wrap">
+              <table class="management-table">
+                <thead>
+                  <tr>
+                    <th>Restaurant / Food</th>
+                    <th>Creator</th>
+                    <th>Price</th>
+                    <th>Participants</th>
+                    <th>End Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="offersTableBody">
+                  <tr><td colspan="7" class="empty-cell">Loading offers...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <!-- =========================
+             Users
+        ========================== -->
+        <section class="admin-section" data-section-panel="users">
+
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">MANAGEMENT</p>
+              <h2>User Management</h2>
+              <p>Review accounts and control access to Food Hunt.</p>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <div class="search-box">
+              <span>⌕</span>
+              <input id="userSearch" type="search" placeholder="Search name or email...">
+            </div>
+
+            <select id="userStatusFilter">
+              <option value="all">All users</option>
+              <option value="active">Active</option>
+              <option value="disabled">Disabled</option>
+              <option value="unverified">Unverified</option>
+            </select>
+          </div>
+
+          <article class="panel-card">
+            <div class="table-wrap">
+              <table class="management-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Offers</th>
+                    <th>Joined</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <tr><td colspan="6" class="empty-cell">Loading users...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <!-- =========================
+             Orders
+        ========================== -->
+        <section class="admin-section" data-section-panel="orders">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">OPERATIONS</p>
+              <h2>Orders & Participation</h2>
+              <p>Monitor participation and order-related activity.</p>
+            </div>
+          </div>
+
+          <article class="panel-card placeholder-panel">
+            <div class="placeholder-icon">🛒</div>
+            <h3>Orders management</h3>
+            <p>This section is ready for the participation/order API.</p>
+          </article>
+        </section>
+
+        <!-- =========================
+             Restaurants
+        ========================== -->
+        <section class="admin-section" data-section-panel="restaurants">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">CONTENT</p>
+              <h2>Restaurants</h2>
+              <p>Manage restaurant information used by Food Hunt.</p>
+            </div>
+            <button class="button button-primary" id="addRestaurantButton">+ Add Restaurant</button>
+          </div>
+
+          <article class="panel-card placeholder-panel">
+            <div class="placeholder-icon">♨</div>
+            <h3>Restaurant management</h3>
+            <p>Restaurant CRUD can be connected when restaurant records are separated in the database.</p>
+          </article>
+        </section>
+
+        <!-- =========================
+             Reports
+        ========================== -->
+        <section class="admin-section" data-section-panel="reports">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">ANALYTICS</p>
+              <h2>Reports & Analytics</h2>
+              <p>Understand how Food Hunt is being used.</p>
+            </div>
+          </div>
+
+          <div class="stat-grid report-stats">
+            <article class="stat-card">
+              <span>Offers Created</span>
+              <strong id="reportOffers">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>Registered Users</span>
+              <strong id="reportUsers">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>Active Offers</span>
+              <strong id="reportActive">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>Participants</span>
+              <strong id="reportParticipants">0</strong>
+            </article>
+          </div>
+
+          <article class="panel-card">
+            <div class="panel-header">
+              <div>
+                <p class="section-kicker">INSIGHTS</p>
+                <h3>System summary</h3>
+              </div>
+            </div>
+            <div class="insight-grid">
+              <div><span>Most active offer</span><strong id="mostActiveOffer">—</strong></div>
+              <div><span>Average participants / offer</span><strong id="averageParticipants">0</strong></div>
+              <div><span>Offers currently active</span><strong id="reportActiveText">0</strong></div>
+              <div><span>System status</span><strong class="status-text-green">Healthy</strong></div>
+            </div>
+          </article>
+        </section>
+
+        <!-- =========================
+             Issues
+        ========================== -->
+        <section class="admin-section" data-section-panel="issues">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">MODERATION</p>
+              <h2>Reports / Issues</h2>
+              <p>Review problems reported by Food Hunt users.</p>
+            </div>
+          </div>
+
+          <article class="panel-card placeholder-panel">
+            <div class="placeholder-icon">⚑</div>
+            <h3>No issue system connected yet</h3>
+            <p>When user reporting is added, reported offers and accounts can appear here for moderation.</p>
+          </article>
+        </section>
+
+        <!-- =========================
+             Activity
+        ========================== -->
+        <section class="admin-section" data-section-panel="activity">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">SECURITY</p>
+              <h2>Activity Logs</h2>
+              <p>Keep a record of important administrative actions.</p>
+            </div>
+            <button class="button button-outline" id="clearActivityButton">Clear local log</button>
+          </div>
+
+          <article class="panel-card">
+            <div class="activity-list activity-page" id="activityList">
+              <div class="empty-state">No admin activity recorded yet.</div>
+            </div>
+          </article>
+        </section>
+
+        <!-- =========================
+             Settings
+        ========================== -->
+        <section class="admin-section" data-section-panel="settings">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">SYSTEM</p>
+              <h2>Admin Settings</h2>
+              <p>Basic settings for the Food Hunt administration area.</p>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <article class="panel-card">
+              <div class="panel-header">
+                <div>
+                  <p class="section-kicker">ACCOUNT</p>
+                  <h3>Admin account</h3>
+                </div>
+              </div>
+
+              <form id="adminSettingsForm" class="settings-form">
+                <label>
+                  Admin name
+                  <input id="settingsAdminName" type="text" placeholder="Admin">
+                </label>
+
+                <label>
+                  Admin email
+                  <input id="settingsAdminEmail" type="email" placeholder="admin@example.com">
+                </label>
+
+                <button class="button button-primary" type="submit">Save Changes</button>
+              </form>
+            </article>
+
+            <article class="panel-card danger-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="section-kicker">DANGER ZONE</p>
+                  <h3>Administrative actions</h3>
+                </div>
+              </div>
+              <p>Deleting offers or users is permanent. Always confirm destructive actions before continuing.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- =========================
+             Profile
+        ========================== -->
+        <section class="admin-section" data-section-panel="profile">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">ACCOUNT</p>
+              <h2>Admin Profile</h2>
+              <p>Manage the administrator account.</p>
+            </div>
+          </div>
+
+          <article class="panel-card profile-card">
+            <div class="profile-avatar">A</div>
+            <div>
+              <h3 id="profileName">Administrator</h3>
+              <p id="profileEmail">admin@example.com</p>
+              <span class="status-badge status-active">Administrator</span>
+            </div>
+          </article>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- =========================
+       Offer Modal
+  ========================== -->
+  <div class="modal" id="offerModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal="offerModal"></div>
+
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <p class="section-kicker">OFFER</p>
+          <h2 id="offerModalTitle">Edit Offer</h2>
+        </div>
+        <button class="modal-close" data-close-modal="offerModal">×</button>
+      </div>
+
+      <form id="offerEditForm" class="modal-form">
+        <input id="editOfferId" type="hidden">
+
+        <label>
+          Restaurant
+          <input id="editRestaurant" type="text">
+        </label>
+
+        <label>
+          Food
+          <input id="editFood" type="text">
+        </label>
+
+        <label>
+          Description
+          <textarea id="editDescription" rows="4"></textarea>
+        </label>
+
+        <div class="form-row">
+          <label>
+            Quantity
+            <input id="editQuantity" type="number" min="1">
+          </label>
+
+          <label>
+            Food price
+            <input id="editPrice" type="number" min="0" step="0.01">
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label>
+            Delivery charge
+            <input id="editDelivery" type="number" min="0" step="0.01">
+          </label>
+
+          <label>
+            Max participants
+            <input id="editMaxParticipants" type="number" min="1">
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label>
+            Start time
+            <input id="editStartTime" type="datetime-local">
+          </label>
+
+          <label>
+            End time
+            <input id="editEndTime" type="datetime-local">
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="button button-outline" data-close-modal="offerModal">Cancel</button>
+          <button type="submit" class="button button-primary">Save Offer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================
+       Confirm Modal
+  ========================== -->
+  <div class="modal" id="confirmModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal="confirmModal"></div>
+
+    <div class="modal-card confirm-card">
+      <div class="confirm-icon">!</div>
+      <p class="section-kicker">CONFIRM ACTION</p>
+      <h2 id="confirmTitle">Delete this offer?</h2>
+      <p id="confirmMessage">This action cannot be undone.</p>
+
+      <div class="modal-actions">
+        <button type="button" class="button button-outline" data-close-modal="confirmModal">Cancel</button>
+        <button type="button" class="button button-danger" id="confirmActionButton">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="Admin.js"></script>
+</body>
+</html>
