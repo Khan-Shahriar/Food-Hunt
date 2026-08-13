@@ -45,6 +45,7 @@ const authLimiter = rateLimit({
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/offers", offerRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/api/dashboard", requireAuth, (_req, res) => {
   return res.json({
