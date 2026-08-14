@@ -17,7 +17,7 @@ const deleteForm = document.querySelector("[data-delete-form]");
 const toastStack = document.querySelector("[data-toast-stack]");
 const resetTokenInput = document.querySelector("[data-reset-token]");
 const authTabs = document.querySelector(".auth-tabs");
-
+const adminPanelBtn = document.getElementById("adminPanelBtn");
 
 const API_BASE =
   window.location.hostname === "localhost"
@@ -130,13 +130,29 @@ function showLanding() {
 
 async function showDashboard(user) {
   currentUser = user;
+
   closeModal();
+
   landingPage.classList.remove("is-active");
   dashboardPage.classList.add("is-active");
-  profileInitial.textContent = user.fullName.trim().charAt(0).toUpperCase() || "U";
+
+  profileInitial.textContent =
+    user.fullName.trim().charAt(0).toUpperCase() || "U";
+
   userNameElement.textContent = user.fullName;
+
   populateProfileForm(user);
+
+  // ==========================================
+  // ADMIN PANEL
+  // ==========================================
+
+  if (adminPanelBtn) {
+    adminPanelBtn.hidden = user.role !== "admin";
+  }
+
   setDashboardView("home");
+
   await renderNews();
 }
 
@@ -416,6 +432,14 @@ const createOfferBtn = document.getElementById("createOfferBtn");
 if (createOfferBtn) {
   createOfferBtn.addEventListener("click", () => {
     window.location.href = "create-offer.html";
+  });
+}
+
+// Admin Panel Button
+
+if (adminPanelBtn) {
+  adminPanelBtn.addEventListener("click", () => {
+    window.location.href = "Admin.html";
   });
 }
 

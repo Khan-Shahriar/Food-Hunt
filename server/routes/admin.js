@@ -200,13 +200,13 @@ router.put("/offers/:id", (req, res) => {
   const {
     restaurantName,
     foodName,
-    foodDescription,
+    description,
     quantity,
-    foodPrice,
+    price,
     deliveryCharge,
     startTime,
     endTime,
-    maxPeople
+    maxParticipants
   } = req.body;
 
   if (
@@ -224,7 +224,7 @@ router.put("/offers/:id", (req, res) => {
     });
   }
 
-  if (Number(foodPrice) < 0) {
+  if (Number(price) < 0) {
     return res.status(400).json({
       error: "Food price cannot be negative."
     });
@@ -236,7 +236,7 @@ router.put("/offers/:id", (req, res) => {
     });
   }
 
-  if (Number(maxPeople) <= 0) {
+  if (Number(maxParticipants) <= 0) {
     return res.status(400).json({
       error: "Maximum participants must be greater than zero."
     });
@@ -259,30 +259,30 @@ router.put("/offers/:id", (req, res) => {
     }
 
     db.prepare(`
-      UPDATE offers
+  UPDATE offers
 
-      SET
-        restaurant_name = ?,
-        food_name = ?,
-        food_description = ?,
-        quantity = ?,
-        food_price = ?,
-        delivery_charge = ?,
-        start_time = ?,
-        end_time = ?,
-        max_people = ?
+  SET
+    restaurant_name = ?,
+    food_name = ?,
+    food_description = ?,
+    quantity = ?,
+    food_price = ?,
+    delivery_charge = ?,
+    start_time = ?,
+    end_time = ?,
+    max_people = ?
 
-      WHERE id = ?
-    `).run(
+  WHERE id = ?
+`).run(
       restaurantName.trim(),
       foodName.trim(),
-      foodDescription?.trim() || null,
+      description?.trim() || null,
       Number(quantity),
-      Number(foodPrice),
+      Number(price),
       Number(deliveryCharge),
       startTime,
       endTime,
-      Number(maxPeople),
+      Number(maxParticipants),
       offerId
     );
 

@@ -229,18 +229,20 @@ function normalizeOffers(payload) {
 
     restaurantName:
       offer.restaurantName ??
-      offer.restaurant ??
       offer.restaurant_name ??
+      offer.restaurant ??
       "Unknown restaurant",
 
     foodName:
       offer.foodName ??
-      offer.food ??
       offer.food_name ??
+      offer.food ??
       "Unknown food",
 
     description:
       offer.description ??
+      offer.foodDescription ??
+      offer.food_description ??
       "",
 
     price:
@@ -268,6 +270,7 @@ function normalizeOffers(payload) {
       Number(
         offer.maxParticipants ??
         offer.max_participants ??
+        offer.max_people ??
         0
       ),
 
@@ -275,6 +278,7 @@ function normalizeOffers(payload) {
       Number(
         offer.participantsCount ??
         offer.participantCount ??
+        offer.participant_count ??
         offer.participants ??
         0
       ),
@@ -293,6 +297,7 @@ function normalizeOffers(payload) {
 
     creatorName:
       offer.creatorName ??
+      offer.creator_name ??
       offer.createdByName ??
       offer.userName ??
       offer.creator ??
@@ -326,6 +331,7 @@ function normalizeUsers(payload) {
       "—",
 
     status:
+      user.account_status ??
       user.status ??
       "active",
 
@@ -391,9 +397,9 @@ function updateSummary() {
     "averageParticipants",
     state.offers.length
       ? (
-          participants /
-          state.offers.length
-        ).toFixed(1)
+        participants /
+        state.offers.length
+      ).toFixed(1)
       : "0"
   );
 }
@@ -537,45 +543,44 @@ function renderOffers() {
           <td>
             <strong>
               ${escapeHtml(
-                offer.restaurantName
-              )}
+        offer.restaurantName
+      )}
             </strong>
 
             <br>
 
             <span style="color:#777;font-size:.68rem">
               ${escapeHtml(
-                offer.foodName
-              )}
+        offer.foodName
+      )}
             </span>
           </td>
 
           <td>
             ${escapeHtml(
-              offer.creatorName
-            )}
+        offer.creatorName
+      )}
           </td>
 
           <td>
             ৳${formatMoney(
-              offer.price
-            )}
+        offer.price
+      )}
           </td>
 
           <td>
             ${offer.participants || 0}
             /
-            ${
-              offer.maxParticipants ||
-              offer.quantity ||
-              "—"
-            }
+            ${offer.maxParticipants ||
+        offer.quantity ||
+        "—"
+        }
           </td>
 
           <td>
             ${formatDate(
-              offer.endTime
-            )}
+          offer.endTime
+        )}
           </td>
 
           <td>
@@ -583,8 +588,8 @@ function renderOffers() {
               class="status-badge status-${offerStatus}"
             >
               ${capitalize(
-                offerStatus
-              )}
+          offerStatus
+        )}
             </span>
           </td>
 
@@ -595,8 +600,8 @@ function renderOffers() {
                 class="table-action"
                 data-offer-action="view"
                 data-offer-id="${escapeAttr(
-                  offer.id
-                )}"
+          offer.id
+        )}"
               >
                 View
               </button>
@@ -605,8 +610,8 @@ function renderOffers() {
                 class="table-action"
                 data-offer-action="edit"
                 data-offer-id="${escapeAttr(
-                  offer.id
-                )}"
+          offer.id
+        )}"
               >
                 Edit
               </button>
@@ -615,8 +620,8 @@ function renderOffers() {
                 class="table-action danger"
                 data-offer-action="delete"
                 data-offer-id="${escapeAttr(
-                  offer.id
-                )}"
+          offer.id
+        )}"
               >
                 Delete
               </button>
@@ -676,24 +681,24 @@ function renderDashboardOffers() {
 
             <strong>
               ${escapeHtml(
-                offer.foodName
-              )}
+        offer.foodName
+      )}
             </strong>
 
             <br>
 
             <span style="color:#777;font-size:.66rem">
               ${escapeHtml(
-                offer.restaurantName
-              )}
+        offer.restaurantName
+      )}
             </span>
 
           </td>
 
           <td>
             ${escapeHtml(
-              offer.creatorName
-            )}
+        offer.creatorName
+      )}
           </td>
 
           <td>
@@ -706,14 +711,14 @@ function renderDashboardOffers() {
 
             <span
               class="status-badge status-${getOfferStatus(
-                offer
-              )}"
+        offer
+      )}"
             >
               ${capitalize(
-                getOfferStatus(
-                  offer
-                )
-              )}
+        getOfferStatus(
+          offer
+        )
+      )}
             </span>
 
           </td>
@@ -968,12 +973,15 @@ async function saveOffer(event) {
       await apiRequest(
         `/admin/offers/${encodeURIComponent(
           id
-        )}`,
+        )}/status`,
         {
-          method: "PUT",
-          body: JSON.stringify(
-            payload
-          ),
+          method: "PATCH",
+
+          body: JSON.stringify({
+            status: nextDisabled
+              ? "DISABLED"
+              : "OPEN",
+          }),
         }
       );
 
@@ -1142,8 +1150,10 @@ async function toggleOfferDisabled(id) {
         method: "PATCH",
 
         body: JSON.stringify({
-          disabled:
-            nextDisabled,
+          accountStatus:
+            nextStatus === "disabled"
+              ? "banned"
+              : "active",
         }),
       }
     );
@@ -1152,10 +1162,9 @@ async function toggleOfferDisabled(id) {
       nextDisabled;
 
     addActivity(
-      `${
-        nextDisabled
-          ? "Disabled"
-          : "Enabled"
+      `${nextDisabled
+        ? "Disabled"
+        : "Enabled"
       } offer "${offer.foodName}"`
     );
 
@@ -1164,10 +1173,9 @@ async function toggleOfferDisabled(id) {
     updateSummary();
 
     showToast(
-      `Offer ${
-        nextDisabled
-          ? "disabled"
-          : "enabled"
+      `Offer ${nextDisabled
+        ? "disabled"
+        : "enabled"
       }.`,
       "success"
     );
@@ -1239,7 +1247,7 @@ function renderUsers() {
             )) &&
           (status === "all" ||
             user.status ===
-              status)
+            status)
         );
       }
     );
@@ -1265,15 +1273,15 @@ function renderUsers() {
             <td>
               <strong>
                 ${escapeHtml(
-                  user.name
-                )}
+          user.name
+        )}
               </strong>
             </td>
 
             <td>
               ${escapeHtml(
-                user.email
-              )}
+          user.email
+        )}
             </td>
 
             <td>
@@ -1282,23 +1290,22 @@ function renderUsers() {
 
             <td>
               ${formatDate(
-                user.joined
-              )}
+          user.joined
+        )}
             </td>
 
             <td>
 
               <span
-                class="status-badge status-${
-                  user.status ===
-                  "disabled"
-                    ? "disabled"
-                    : "active"
-                }"
+                class="status-badge status-${user.status ===
+            "banned"
+            ? "disabled"
+            : "active"
+          }"
               >
                 ${capitalize(
-                  user.status
-                )}
+            user.status
+          )}
               </span>
 
             </td>
@@ -1311,8 +1318,8 @@ function renderUsers() {
                   class="table-action"
                   data-user-action="view"
                   data-user-id="${escapeAttr(
-                    user.id
-                  )}"
+            user.id
+          )}"
                 >
                   View
                 </button>
@@ -1321,15 +1328,14 @@ function renderUsers() {
                   class="table-action"
                   data-user-action="disable"
                   data-user-id="${escapeAttr(
-                    user.id
-                  )}"
+            user.id
+          )}"
                 >
-                  ${
-                    user.status ===
-                    "disabled"
-                      ? "Enable"
-                      : "Disable"
-                  }
+                  ${user.status ===
+            "banned"
+            ? "Enable"
+            : "Disable"
+          }
                 </button>
 
               </div>
@@ -1398,7 +1404,7 @@ async function toggleUserDisabled(id) {
 
   const nextStatus =
     user.status ===
-    "disabled"
+      "disabled"
       ? "active"
       : "disabled";
 
@@ -1421,11 +1427,10 @@ async function toggleUserDisabled(id) {
       nextStatus;
 
     addActivity(
-      `${
-        nextStatus ===
+      `${nextStatus ===
         "disabled"
-          ? "Disabled"
-          : "Enabled"
+        ? "Disabled"
+        : "Enabled"
       } user "${user.name}"`
     );
 
@@ -1433,11 +1438,10 @@ async function toggleUserDisabled(id) {
     updateSummary();
 
     showToast(
-      `User ${
-        nextStatus ===
+      `User ${nextStatus ===
         "disabled"
-          ? "disabled"
-          : "enabled"
+        ? "disabled"
+        : "enabled"
       }.`,
       "success"
     );
@@ -1618,14 +1622,14 @@ function renderActivity() {
 
               <p>
                 ${escapeHtml(
-                  item.message
-                )}
+          item.message
+        )}
               </p>
 
               <time>
                 ${formatDate(
-                  item.timestamp
-                )}
+          item.timestamp
+        )}
               </time>
 
             </div>
@@ -1671,14 +1675,14 @@ function renderDashboardActivity() {
 
               <p>
                 ${escapeHtml(
-                  item.message
-                )}
+          item.message
+        )}
               </p>
 
               <time>
                 ${formatDate(
-                  item.timestamp
-                )}
+          item.timestamp
+        )}
               </time>
 
             </div>
