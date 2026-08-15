@@ -1,3 +1,27 @@
+/* ==========================================
+   Admin Typography
+========================================== */
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
 /* =========================================================
    FOOD HUNT — ADMIN PANEL
    Matches Food Hunt yellow / paper / ink visual system
@@ -1225,4 +1249,241 @@ label {
   .admin-header h1 {
     font-size: 1.1rem;
   }
+}
+  
+/* =========================================================
+   Admin Typography — Food Hunt
+   ========================================================= */
+
+.admin-title {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.admin-subtitle {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.admin-card h2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.admin-card h3 {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+/* Statistics */
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.stat-description {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Tables */
+
+.admin-table {
+  font-size: 15px;
+}
+
+.admin-table th {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.admin-table td {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Buttons */
+
+.admin-button {
+  font-size: 15px;
+  font-weight: 700;
+  min-height: 42px;
+  padding: 10px 17px;
+}
+
+/* =========================================================
+   Admin Panel — Readable Typography Override
+   ========================================================= */
+
+.admin-sidebar {
+  font-size: 15px;
+}
+
+.admin-brand strong {
+  font-size: 16px;
+}
+
+.admin-brand small {
+  font-size: 13px;
+}
+
+.nav-label {
+  font-size: 12px;
+}
+
+.admin-nav-link,
+.logout-link {
+  font-size: 15px;
+}
+
+.nav-icon {
+  font-size: 18px;
+}
+
+.nav-count {
+  font-size: 13px;
+}
+
+.admin-header h1 {
+  font-size: clamp(22px, 2vw, 30px);
+}
+
+.header-eyebrow,
+.section-kicker {
+  font-size: 12px;
+}
+
+.admin-user-copy strong {
+  font-size: 14px;
+}
+
+.admin-user-copy small {
+  font-size: 12px;
+}
+
+.section-heading h2 {
+  font-size: clamp(26px, 3vw, 36px);
+}
+
+.section-heading p:not(.section-kicker) {
+  font-size: 15px;
+}
+
+.button {
+  font-size: 15px;
+}
+
+.stat-card > span {
+  font-size: 14px;
+}
+
+.stat-card > strong {
+  font-size: 32px;
+}
+
+.stat-card > small {
+  font-size: 13px;
+}
+
+.panel-header h3 {
+  font-size: 18px;
+}
+
+th {
+  font-size: 13px;
+}
+
+td {
+  font-size: 15px;
+}
+
+.table-action {
+  font-size: 13px;
+}
+
+.status-badge {
+  font-size: 13px;
+}
+
+.activity-item strong {
+  font-size: 15px;
+}
+
+.activity-item p {
+  font-size: 14px;
+}
+
+.activity-item time {
+  font-size: 12px;
+}
+
+.empty-state {
+  font-size: 14px;
+}
+
+.insight-grid span {
+  font-size: 14px;
+}
+
+.insight-grid strong {
+  font-size: 17px;
+}
+
+label {
+  font-size: 14px;
+}
+
+input,
+select,
+textarea {
+  font-size: 15px;
+}
+
+.placeholder-panel p {
+  font-size: 15px;
+}
+
+.profile-card h3 {
+  font-size: 22px;
+}
+
+.profile-card p {
+  font-size: 15px;
+}
+
+.toast {
+  font-size: 14px;
+}
+
+.admin-back-home {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+
+  background: transparent;
+  border: 1px solid #e8dfb5;
+  border-radius: 8px;
+
+  color: #555;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-back-home:hover {
+  background: #fff3a8;
+  color: #222;
 }

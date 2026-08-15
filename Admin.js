@@ -2107,3 +2107,11 @@ function escapeAttr(
     value
   );
 }
+
+const adminBackHome = document.getElementById("adminBackHome");
+
+if (adminBackHome) {
+  adminBackHome.addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
+}

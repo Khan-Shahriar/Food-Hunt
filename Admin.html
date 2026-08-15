@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Food Hunt — Admin Panel</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+
   <link rel="stylesheet" href="styles/Admin.css">
+
+  <title>Food Hunt — Admin Panel</title>
 </head>
+
 <body>
 
   <div class="admin-app">
@@ -79,6 +88,9 @@
       </nav>
 
       <div class="sidebar-bottom">
+        <button class="admin-back-home" id="adminBackHome">
+          ← Back to Home
+        </button>
         <button class="admin-nav-link" data-section="settings">
           <span class="nav-icon">⚙</span>
           <span>Settings</span>
@@ -204,7 +216,9 @@
                     </tr>
                   </thead>
                   <tbody id="dashboardOffersTable">
-                    <tr><td colspan="4" class="empty-cell">Loading offers...</td></tr>
+                    <tr>
+                      <td colspan="4" class="empty-cell">Loading offers...</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -270,7 +284,9 @@
                   </tr>
                 </thead>
                 <tbody id="offersTableBody">
-                  <tr><td colspan="7" class="empty-cell">Loading offers...</td></tr>
+                  <tr>
+                    <td colspan="7" class="empty-cell">Loading offers...</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -318,7 +334,9 @@
                   </tr>
                 </thead>
                 <tbody id="usersTableBody">
-                  <tr><td colspan="6" class="empty-cell">Loading users...</td></tr>
+                  <tr>
+                    <td colspan="6" class="empty-cell">Loading users...</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -624,4 +642,5 @@
 
   <script src="Admin.js"></script>
 </body>
+
 </html>
