@@ -87,6 +87,10 @@ CREATE TABLE IF NOT EXISTS offer_participants (
 
     joined_at TEXT DEFAULT CURRENT_TIMESTAMP,
 
+    food_received INTEGER NOT NULL DEFAULT 0,
+
+    received_at TEXT,
+
     FOREIGN KEY (offer_id)
     REFERENCES offers(id)
     ON DELETE CASCADE,

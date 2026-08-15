@@ -111,12 +111,12 @@ ORDER BY offers.created_at DESC
 
     } catch (err) {
 
-       console.error("CREATE OFFER ERROR:", err);
+        console.error("CREATE OFFER ERROR:", err);
 
-    return res.status(500).json({
-        success: false,
-        message: err.message
-    });
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
 
     }
 
@@ -142,6 +142,25 @@ router.post("/:id/join", requireAuth, (req, res) => {
         if (!offer) {
             return res.status(404).json({
                 message: "Offer not found."
+            });
+        }
+
+        if (offer.status !== "OPEN") {
+            return res.status(400).json({
+                message: "This offer is no longer available."
+            });
+        }
+
+        if (new Date(offer.end_time).getTime() <= Date.now()) {
+
+            db.prepare(`
+                UPDATE offers
+                SET status = 'ENDED'
+                WHERE id = ?
+            `).run(offerId);
+
+            return res.status(400).json({
+                message: "This offer has already ended."
             });
         }
 
@@ -199,3 +218,244 @@ router.post("/:id/join", requireAuth, (req, res) => {
 });
 
 export default router;
+
+/*
+ * Get Offer Participants
+ */
+router.get("/:id/participants", requireAuth, (req, res) => {
+
+    const offerId = Number(req.params.id);
+
+    try {
+
+        const offer = db.prepare(`
+            SELECT *
+            FROM offers
+            WHERE id = ?
+        `).get(offerId);
+
+        if (!offer) {
+            return res.status(404).json({
+                success: false,
+                message: "Offer not found."
+            });
+        }
+
+        // Only the creator can manage participants.
+        if (offer.user_id !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Only the offer creator can view participants."
+            });
+        }
+
+        const participants = db.prepare(`
+            SELECT
+                offer_participants.user_id,
+                users.full_name,
+                users.profile_picture,
+                offer_participants.joined_at,
+                offer_participants.food_received,
+                offer_participants.received_at
+
+            FROM offer_participants
+
+            JOIN users
+            ON users.id = offer_participants.user_id
+
+            WHERE offer_participants.offer_id = ?
+
+            ORDER BY offer_participants.joined_at ASC
+        `).all(offerId);
+
+        return res.json({
+            success: true,
+            participants
+        });
+
+    } catch (err) {
+
+        console.error("GET PARTICIPANTS ERROR:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to load participants."
+        });
+
+    }
+
+});
+
+
+/*
+ * End Offer
+ */
+router.post("/:id/end", requireAuth, (req, res) => {
+
+    const offerId = Number(req.params.id);
+
+    try {
+
+        const offer = db.prepare(`
+            SELECT *
+            FROM offers
+            WHERE id = ?
+        `).get(offerId);
+
+        if (!offer) {
+            return res.status(404).json({
+                success: false,
+                message: "Offer not found."
+            });
+        }
+
+        if (offer.user_id !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Only the creator can end this offer."
+            });
+        }
+
+        if (offer.status !== "OPEN") {
+            return res.status(400).json({
+                success: false,
+                message: "This offer is no longer active."
+            });
+        }
+
+        db.prepare(`
+            UPDATE offers
+            SET status = 'ENDED'
+            WHERE id = ?
+        `).run(offerId);
+
+        return res.json({
+            success: true,
+            message: "Offer ended successfully."
+        });
+
+    } catch (err) {
+
+        console.error("END OFFER ERROR:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to end offer."
+        });
+
+    }
+
+});
+
+
+/*
+ * Mark Participant Food Received
+ */
+router.patch(
+    "/:id/participants/:userId/received",
+    requireAuth,
+    (req, res) => {
+
+        const offerId = Number(req.params.id);
+        const participantUserId = Number(req.params.userId);
+
+        try {
+
+            const offer = db.prepare(`
+                SELECT *
+                FROM offers
+                WHERE id = ?
+            `).get(offerId);
+
+            if (!offer) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Offer not found."
+                });
+            }
+
+            if (offer.user_id !== req.user.id) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Only the creator can update food status."
+                });
+            }
+
+            const participant = db.prepare(`
+                SELECT *
+                FROM offer_participants
+                WHERE offer_id = ?
+                AND user_id = ?
+            `).get(offerId, participantUserId);
+
+            if (!participant) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Participant not found."
+                });
+            }
+
+            const received = req.body.received === true;
+
+            db.prepare(`
+                UPDATE offer_participants
+                SET
+                    food_received = ?,
+                    received_at = ?
+                WHERE offer_id = ?
+                AND user_id = ?
+            `).run(
+                received ? 1 : 0,
+                received ? new Date().toISOString() : null,
+                offerId,
+                participantUserId
+            );
+
+            /*
+             * Check whether everyone received their food.
+             */
+            const totals = db.prepare(`
+                SELECT
+                    COUNT(*) AS total,
+                    SUM(food_received) AS received
+                FROM offer_participants
+                WHERE offer_id = ?
+            `).get(offerId);
+
+            let successful = false;
+
+            if (
+                totals.total > 0 &&
+                Number(totals.received) === Number(totals.total)
+            ) {
+
+                db.prepare(`
+                    UPDATE offers
+                    SET status = 'SUCCESSFUL'
+                    WHERE id = ?
+                `).run(offerId);
+
+                successful = true;
+            }
+
+            return res.json({
+                success: true,
+                successful,
+                message: received
+                    ? "Food marked as received."
+                    : "Food marked as not received."
+            });
+
+        } catch (err) {
+
+            console.error("FOOD RECEIVED ERROR:", err);
+
+            return res.status(500).json({
+                success: false,
+                message: "Failed to update food status."
+            });
+
+        }
+
+    }
+);
