@@ -43,6 +43,7 @@ export function requireAuth(req, res, next) {
     const payload = verifyToken(token);
 
     req.user = {
+      sub: payload.sub,
       id: payload.sub,
       email: payload.email,
       role: payload.role,
