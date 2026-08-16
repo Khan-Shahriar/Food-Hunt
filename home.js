@@ -213,7 +213,7 @@ async function loadCurrentUser() {
     try {
 
         const response = await fetch(
-            API + "/user/me",
+            API + "/auth/me",
             {
                 credentials: "include"
             }
@@ -255,6 +255,7 @@ function updateUserUI() {
     }
 
     const name =
+        currentUser.fullName ||
         currentUser.full_name ||
         currentUser.name ||
         "User";
@@ -359,19 +360,17 @@ function renderOffers() {
 
     if (activeCountElement) {
         activeCountElement.textContent =
-            `${myOffers.length} ${
-                myOffers.length === 1
-                    ? "offer"
-                    : "offers"
+            `${myOffers.length} ${myOffers.length === 1
+                ? "offer"
+                : "offers"
             }`;
     }
 
     if (joinedCountElement) {
         joinedCountElement.textContent =
-            `${joinedOffers.length} ${
-                joinedOffers.length === 1
-                    ? "offer"
-                    : "offers"
+            `${joinedOffers.length} ${joinedOffers.length === 1
+                ? "offer"
+                : "offers"
             }`;
     }
 
@@ -488,8 +487,8 @@ function createMyOfferCard(offer) {
 
                     <p class="offer-restaurant">
                         ${escapeHTML(
-                            offer.restaurant_name
-                        )}
+        offer.restaurant_name
+    )}
                     </p>
 
                 </div>
@@ -528,8 +527,8 @@ function createMyOfferCard(offer) {
                         <strong
                             data-countdown="${offer.id}">
                             ${formatCountdown(
-                                offer.end_time
-                            )}
+        offer.end_time
+    )}
                         </strong>
 
                     </div>
@@ -585,8 +584,8 @@ function createJoinedOfferCard(offer) {
 
                     <p class="offer-restaurant">
                         ${escapeHTML(
-                            offer.restaurant_name
-                        )}
+        offer.restaurant_name
+    )}
                     </p>
 
                 </div>
@@ -611,9 +610,9 @@ function createJoinedOfferCard(offer) {
 
                         <strong>
                             ${escapeHTML(
-                                offer.full_name ||
-                                "Unknown"
-                            )}
+        offer.full_name ||
+        "Unknown"
+    )}
                         </strong>
 
                     </div>
@@ -643,8 +642,8 @@ function createJoinedOfferCard(offer) {
                     <strong
                         data-countdown="${offer.id}">
                         ${formatCountdown(
-                            offer.end_time
-                        )}
+        offer.end_time
+    )}
                     </strong>
 
                 </div>
@@ -849,9 +848,9 @@ async function loadParticipants(offerId) {
         participantsList.innerHTML = `
             <div class="loading-state">
                 ${escapeHTML(
-                    error.message ||
-                    "Failed to load participants."
-                )}
+            error.message ||
+            "Failed to load participants."
+        )}
             </div>
         `;
 
@@ -945,8 +944,8 @@ function createParticipantRow(participant) {
             ? `
                 <img
                     src="${escapeHTML(
-                        participant.profile_picture
-                    )}"
+                participant.profile_picture
+            )}"
                     alt=""
                 />
             `
@@ -969,8 +968,8 @@ function createParticipantRow(participant) {
                 <span class="participant-time">
                     Joined
                     ${formatDateTime(
-                        participant.joined_at
-                    )}
+        participant.joined_at
+    )}
                 </span>
 
             </div>

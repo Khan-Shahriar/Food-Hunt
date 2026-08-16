@@ -19,10 +19,7 @@ const resetTokenInput = document.querySelector("[data-reset-token]");
 const authTabs = document.querySelector(".auth-tabs");
 const adminPanelBtn = document.getElementById("adminPanelBtn");
 
-const API_BASE =
-  window.location.hostname === "localhost"
-    ? "http://localhost:8080/api"
-    : `${window.location.origin}/api`;
+const API_BASE = "/api";
 let currentUser = null;
 let refreshTimer = null;
 
@@ -129,31 +126,126 @@ function showLanding() {
 }
 
 async function showDashboard(user) {
-  currentUser = user;
+
+  console.log("showDashboard received:", user);
+
+  const normalizedUser = {
+    id: user?.id,
+
+    fullName:
+      user?.fullName ||
+      user?.full_name ||
+      user?.name ||
+      "User",
+
+    email:
+      user?.email ||
+      "",
+
+    officeName:
+      user?.officeName ||
+      user?.office_name ||
+      "",
+
+    profilePicture:
+      user?.profilePicture ||
+      user?.profile_picture ||
+      null,
+
+    role:
+      user?.role ||
+      "user",
+
+    emailVerified:
+      user?.emailVerified ??
+      Boolean(user?.email_verified),
+
+    accountStatus:
+      user?.accountStatus ||
+      user?.account_status ||
+      "active"
+  };
+
+  console.log(
+    "NORMALIZED USER:",
+    normalizedUser
+  );
+
+  currentUser = normalizedUser;
 
   closeModal();
 
   landingPage.classList.remove("is-active");
   dashboardPage.classList.add("is-active");
 
-  profileInitial.textContent =
-    user.fullName.trim().charAt(0).toUpperCase() || "U";
 
-  userNameElement.textContent = user.fullName;
+  // ==========================================
+  // USER HEADER
+  // ==========================================
 
-  populateProfileForm(user);
+  const fullName =
+    String(normalizedUser.fullName || "User").trim();
+
+  if (profileInitial) {
+    profileInitial.textContent =
+      fullName.charAt(0).toUpperCase() || "U";
+  }
+
+  if (userNameElement) {
+    userNameElement.textContent =
+      fullName;
+  }
+
+
+  // ==========================================
+  // PROFILE
+  // ==========================================
+
+  populateProfileForm(normalizedUser);
+
 
   // ==========================================
   // ADMIN PANEL
   // ==========================================
 
   if (adminPanelBtn) {
-    adminPanelBtn.hidden = user.role !== "admin";
+
+    adminPanelBtn.hidden =
+      normalizedUser.role !== "admin";
+
+    console.log(
+      "Admin button:",
+      normalizedUser.role,
+      "hidden:",
+      adminPanelBtn.hidden
+    );
   }
+
+
+  // ==========================================
+  // DASHBOARD
+  // ==========================================
 
   setDashboardView("home");
 
-  await renderNews();
+
+  // ==========================================
+  // NEWS
+  // ==========================================
+
+  try {
+
+    await renderNews();
+
+  } catch (error) {
+
+    console.error(
+      "NEWS RENDER ERROR:",
+      error
+    );
+
+  }
+
 }
 
 function setDashboardView(viewName) {
@@ -167,20 +259,57 @@ function setDashboardView(viewName) {
 }
 
 function populateProfileForm(user) {
-  profileForm.fullName.value = user.fullName || "";
-  profileForm.email.value = user.email || "";
-  profileForm.officeName.value = user.officeName || "";
-  profileForm.role.value = user.role || "user";
+
+  if (!profileForm) {
+    return;
+  }
+
+  if (profileForm.fullName) {
+    profileForm.fullName.value =
+      user.fullName || "";
+  }
+
+  if (profileForm.email) {
+    profileForm.email.value =
+      user.email || "";
+  }
+
+  if (profileForm.officeName) {
+    profileForm.officeName.value =
+      user.officeName || "";
+  }
+
+  if (profileForm.role) {
+    profileForm.role.value =
+      user.role || "user";
+  }
 }
 
 
 
 async function restoreSession() {
   try {
+    console.log("Checking authentication...");
+
     const data = await api("/auth/me");
-    showDashboard(data.user);
-  } catch {
-    showLanding();
+
+    console.log("AUTH RESPONSE:", data);
+
+    if (!data || !data.user) {
+      console.error("No user returned from /auth/me:", data);
+      return;
+    }
+
+    console.log("AUTH USER:", data.user);
+
+    await showDashboard(data.user);
+
+  } catch (error) {
+    console.error("AUTH RESTORE ERROR:", error);
+
+    // Do not force the dashboard back to the landing page here.
+    // A failed session check should not destroy the current UI state.
+    return;
   }
 }
 

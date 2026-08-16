@@ -112,3 +112,26 @@ CREATE TABLE IF NOT EXISTS offer_participants (
 `);
 
 export default db;
+
+
+/*
+ * Database migration
+ * Add food delivery tracking to existing databases.
+ */
+try {
+  db.exec(`
+    ALTER TABLE offer_participants
+    ADD COLUMN food_received INTEGER NOT NULL DEFAULT 0
+  `);
+} catch (error) {
+  // Column already exists — nothing to do.
+}
+
+try {
+  db.exec(`
+    ALTER TABLE offer_participants
+    ADD COLUMN received_at TEXT
+  `);
+} catch (error) {
+  // Column already exists — nothing to do.
+}
