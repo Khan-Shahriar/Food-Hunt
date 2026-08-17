@@ -200,6 +200,10 @@
   border-radius: 8px;
   box-shadow: 0 18px 44px rgba(22, 22, 22, 0.08);
   padding: clamp(20px, 3vw, 30px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
 
 .welcome-card h2,

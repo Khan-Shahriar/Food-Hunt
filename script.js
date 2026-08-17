@@ -557,9 +557,16 @@ bootstrap();
 // Create Offer Button
 
 const createOfferBtn = document.getElementById("createOfferBtn");
+const welcomeCreateOfferBtn = document.getElementById("welcomeCreateOfferBtn");
 
 if (createOfferBtn) {
   createOfferBtn.addEventListener("click", () => {
+    window.location.href = "create-offer.html";
+  });
+}
+
+if (welcomeCreateOfferBtn) {
+  welcomeCreateOfferBtn.addEventListener("click", () => {
     window.location.href = "create-offer.html";
   });
 }
