@@ -20,6 +20,11 @@ const db = new Database(dbPath);
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
+/*
+ * Create existing tables if they do not exist.
+ * IMPORTANT:
+ * We never delete or recreate existing tables.
+ */
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -77,9 +82,9 @@ db.exec(`
     FOREIGN KEY (user_id)
     REFERENCES users(id)
     ON DELETE CASCADE
-);
+  );
 
-CREATE TABLE IF NOT EXISTS offer_participants (
+  CREATE TABLE IF NOT EXISTS offer_participants (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
     offer_id INTEGER NOT NULL,
@@ -98,11 +103,16 @@ CREATE TABLE IF NOT EXISTS offer_participants (
     FOREIGN KEY (user_id)
     REFERENCES users(id)
     ON DELETE CASCADE
-);
+  );
 
-  CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-  CREATE INDEX IF NOT EXISTS idx_verification_token ON verification_tokens(token);
-  CREATE INDEX IF NOT EXISTS idx_reset_token ON password_reset_tokens(token);
+  CREATE INDEX IF NOT EXISTS idx_users_email
+  ON users(email);
+
+  CREATE INDEX IF NOT EXISTS idx_verification_token
+  ON verification_tokens(token);
+
+  CREATE INDEX IF NOT EXISTS idx_reset_token
+  ON password_reset_tokens(token);
 
   CREATE INDEX IF NOT EXISTS idx_offers_user
   ON offers(user_id);
@@ -111,27 +121,178 @@ CREATE TABLE IF NOT EXISTS offer_participants (
   ON offer_participants(offer_id);
 `);
 
-export default db;
+
+/*
+ * ============================================================
+ * SAFE DATABASE MIGRATION HELPERS
+ * ============================================================
+ */
+
+function columnExists(tableName, columnName) {
+  const columns = db
+    .prepare(`PRAGMA table_info(${tableName})`)
+    .all();
+
+  return columns.some(column => column.name === columnName);
+}
+
+function addColumnIfMissing(tableName, columnName, definition) {
+  if (!columnExists(tableName, columnName)) {
+    db.exec(`
+      ALTER TABLE ${tableName}
+      ADD COLUMN ${columnName} ${definition}
+    `);
+
+    console.log(
+      `Database migration: added ${tableName}.${columnName}`
+    );
+  }
+}
 
 
 /*
- * Database migration
- * Add food delivery tracking to existing databases.
+ * ============================================================
+ * OFFERS — PAYMENT & LIFECYCLE FIELDS
+ * ============================================================
  */
-try {
+
+addColumnIfMissing(
+  "offers",
+  "payment_bkash_enabled",
+  "INTEGER NOT NULL DEFAULT 0"
+);
+
+addColumnIfMissing(
+  "offers",
+  "bkash_number",
+  "TEXT"
+);
+
+addColumnIfMissing(
+  "offers",
+  "payment_citybank_enabled",
+  "INTEGER NOT NULL DEFAULT 0"
+);
+
+addColumnIfMissing(
+  "offers",
+  "citybank_account_name",
+  "TEXT"
+);
+
+addColumnIfMissing(
+  "offers",
+  "citybank_account_number",
+  "TEXT"
+);
+
+addColumnIfMissing(
+  "offers",
+  "citybank_phone",
+  "TEXT"
+);
+
+addColumnIfMissing(
+  "offers",
+  "payment_cash_enabled",
+  "INTEGER NOT NULL DEFAULT 0"
+);
+
+addColumnIfMissing(
+  "offers",
+  "cash_account_name",
+  "TEXT"
+);
+
+addColumnIfMissing(
+  "offers",
+  "updated_at",
+  "TEXT"
+);
+
+
+/*
+ * ============================================================
+ * PARTICIPANTS — PAYMENT INFORMATION
+ * ============================================================
+ */
+
+addColumnIfMissing(
+  "offer_participants",
+  "payment_method",
+  "TEXT"
+);
+
+addColumnIfMissing(
+  "offer_participants",
+  "amount",
+  "REAL"
+);
+
+
+/*
+ * ============================================================
+ * PARTICIPANT UNIQUE CONSTRAINT
+ *
+ * SQLite cannot safely add a UNIQUE constraint to an
+ * existing table with ALTER TABLE.
+ *
+ * Therefore we use a UNIQUE INDEX.
+ *
+ * Existing duplicate data is checked first.
+ * ============================================================
+ */
+
+const duplicateParticipants = db.prepare(`
+  SELECT offer_id, user_id, COUNT(*) AS total
+  FROM offer_participants
+  GROUP BY offer_id, user_id
+  HAVING COUNT(*) > 1
+`).all();
+
+if (duplicateParticipants.length === 0) {
+
   db.exec(`
-    ALTER TABLE offer_participants
-    ADD COLUMN food_received INTEGER NOT NULL DEFAULT 0
+    CREATE UNIQUE INDEX IF NOT EXISTS
+    idx_offer_participants_unique
+    ON offer_participants(offer_id, user_id)
   `);
-} catch (error) {
-  // Column already exists — nothing to do.
+
+} else {
+
+  console.warn(
+    "Database migration warning: duplicate offer participants found."
+  );
+
+  console.warn(duplicateParticipants);
 }
 
-try {
-  db.exec(`
-    ALTER TABLE offer_participants
-    ADD COLUMN received_at TEXT
-  `);
-} catch (error) {
-  // Column already exists — nothing to do.
-}
+
+/*
+ * ============================================================
+ * EXISTING FOOD DELIVERY MIGRATION
+ * ============================================================
+ */
+
+addColumnIfMissing(
+  "offer_participants",
+  "food_received",
+  "INTEGER NOT NULL DEFAULT 0"
+);
+
+addColumnIfMissing(
+  "offer_participants",
+  "received_at",
+  "TEXT"
+);
+
+
+/*
+ * ============================================================
+ * FINISH
+ * ============================================================
+ */
+
+console.log("Database schema check completed.");
+
+export default db;
