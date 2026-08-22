@@ -5,8 +5,7 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Create Offer</title>
 
@@ -19,255 +18,313 @@
 
 <body>
 
-<header class="dashboard-nav">
+    <header class="dashboard-nav">
 
-    <a href="index.html" class="brand">
+        <a href="index.html" class="brand">
 
-        <span class="brand-mark">
-            <img src="assets/fh-icon.png" alt="Food Hunt">
-        </span>
+            <span class="brand-mark">
+                <img src="assets/fh-icon.png" alt="Food Hunt">
+            </span>
 
-        Food Hunt
+            Food Hunt
 
-    </a>
+        </a>
 
-    <button
-        class="button button-secondary"
-        onclick="window.location='index.html'">
+        <button class="button button-secondary" onclick="window.location='index.html'">
 
-        ← Back to Dashboard
+            ← Back to Dashboard
 
-    </button>
+        </button>
 
-</header>
+    </header>
 
 
-<main class="create-offer-page">
+    <main class="create-offer-page">
 
-    <section class="create-offer-banner">
+        <section class="create-offer-banner">
 
-    <div class="banner-pill">
+            <div class="banner-pill">
 
-        🍽 OFFICE GROUP ORDER
+                🍽 OFFICE GROUP ORDER
 
-    </div>
+            </div>
 
-    <div class="banner-divider"></div>
+            <div class="banner-divider"></div>
 
-    <div class="banner-content">
+            <div class="banner-content">
 
-        <h1>Create Group Order</h1>
+                <h1>Create Group Order</h1>
 
-        <p>
-            Start a food order for your office and let your colleagues join to share delivery costs.
-        </p>
+                <p>
+                    Start a food order for your office and let your colleagues join to share delivery costs.
+                </p>
 
-    </div>
+            </div>
 
-</section>
+        </section>
 
 
-    <div class="create-offer-layout">
+        <div class="create-offer-layout">
 
-    <section class="create-offer-card">
+            <section class="create-offer-card">
 
-        <form id="offerForm">
+                <form id="offerForm">
 
-            <h2 class="form-section-title">
-                Restaurant Information
-            </h2>
+                    <h2 class="form-section-title">
+                        Restaurant Information
+                    </h2>
 
-            <!-- Restaurant -->
-            
-            <div class="form-row">
+                    <!-- Restaurant -->
 
-            <label>
-    Restaurant Name
-    <input
-        type="text"
-        id="restaurantName"
-        required>
-</label>
+                    <div class="form-row">
 
-<label>
-    Food Name
-    <input
-        type="text"
-        id="foodName"
-        required>
-</label>
+                        <label>
+                            Restaurant Name
+                            <input type="text" id="restaurantName" required>
+                        </label>
 
-</div>
+                        <label>
+                            Food Name
+                            <input type="text" id="foodName" required>
+                        </label>
 
-<label>
-    Food Description
-    <textarea
-        id="foodDescription"></textarea>
-</label>
+                    </div>
 
-<div class="form-row">
+                    <!-- Payment Methods -->
 
-    <label>
-        Quantity
-        <input
-            type="number"
-            id="quantity"
-            min="1"
-            required>
-    </label>
+                    <h2 class="form-section-title">
+                        Payment Methods
+                    </h2>
 
-    <label>
-        Maximum Participants
-        <input
-            type="number"
-            id="maxPeople"
-            min="2"
-            required>
-    </label>
+                    <div class="payment-methods">
 
-</div>
+                        <label class="payment-option">
+                            <input type="checkbox" name="paymentMethods" value="bkash" id="payment-bkash">
 
-<div class="form-row">
+                            <span>bKash</span>
+                        </label>
 
-    <label>
-        Food Price
-        <input
-            type="number"
-            id="foodPrice"
-            required>
-    </label>
+                        <label class="payment-option">
+                            <input type="checkbox" name="paymentMethods" value="citybank" id="payment-citybank">
 
-    <label>
-        Delivery Charge
-        <input
-            type="number"
-            id="deliveryCharge"
-            required>
-    </label>
+                            <span>City Bank</span>
+                        </label>
 
-</div>
+                        <label class="payment-option">
+                            <input type="checkbox" name="paymentMethods" value="cash" id="payment-cash">
 
-<div class="form-row">
+                            <span>Cash</span>
+                        </label>
 
-    <label>
-        Start Time
-        <input
-            type="datetime-local"
-            id="startTime"
-            required>
-    </label>
+                    </div>
 
-    <label>
-        End Time
-        <input
-            type="datetime-local"
-            id="endTime"
-            required>
-    </label>
+                    <!-- bKash Payment Details -->
 
-</div>
+                    <div id="bkashFields" class="payment-details" hidden>
 
+                        <label>
+                            bKash Number
 
-            <button
-                type="submit"
-                class="button button-primary create-offer-btn">
+                            <input type="tel" id="bkashNumber" name="bkashNumber" placeholder="01XXXXXXXXX"
+                                autocomplete="tel">
+                        </label>
 
-                Create Group Order
+                    </div>
 
-            </button>
+                    <!-- City Bank Payment Details -->
 
-        </form>
+                    <div id="cityBankFields" class="payment-details" hidden>
 
-    </section>
+                        <label>
+                            Account Name
 
-    <aside class="offer-preview">
+                            <input type="text" id="cityBankAccountName" name="cityBankAccountName" autocomplete="name">
+                        </label>
 
-    <div class="preview-logo">
+                        <label>
+                            Account Number
 
-        <img
-            id="previewLogo"
-            src="assets/restaurants/default.png"
-            alt="Restaurant">
+                            <input type="text" id="cityBankAccountNumber" name="cityBankAccountNumber"
+                                inputmode="numeric">
+                        </label>
 
-    </div>
+                        <div class="payment-or">
+                            OR
+                        </div>
 
-    <h2 id="previewRestaurant">
-        Restaurant Name
-    </h2>
+                        <label>
+                            Phone Number
 
-    <p id="previewFood" class="preview-food">
-        Food Name
-    </p>
+                            <input type="tel" id="cityBankPhone" name="cityBankPhone" placeholder="01XXXXXXXXX"
+                                autocomplete="tel">
+                        </label>
 
-    <div class="preview-divider"></div>
+                    </div>
 
-    <div class="preview-row">
+                    <!-- Cash Payment Details -->
 
-        <span>Quantity</span>
+                    <div id="cashFields" class="payment-details" hidden>
 
-        <strong id="previewQty">0</strong>
+                        <div class="cash-payment-info">
 
-    </div>
+                            <span class="cash-payment-label">
+                                Cash
+                            </span>
 
-    <div class="preview-row">
+                            <span class="cash-payment-creator">
+                                Creator:
+                                <strong id="cashCreatorName">
+                                    Loading...
+                                </strong>
+                            </span>
 
-        <span>Participants</span>
+                        </div>
 
-        <strong>
+                    </div>
 
-            <span id="previewPeople">0</span>
+                    <label>
+                        Food Description
+                        <textarea id="foodDescription"></textarea>
+                    </label>
 
-            People
+                    <div class="form-row">
 
-        </strong>
+                        <label>
+                            Quantity
+                            <input type="number" id="quantity" min="1" required>
+                        </label>
 
-    </div>
+                        <label>
+                            Maximum Participants
+                            <input type="number" id="maxPeople" min="2" required>
+                        </label>
 
-    <div class="preview-row">
+                    </div>
 
-        <span>Food Price</span>
+                    <div class="form-row">
 
-        <strong id="previewPrice">
+                        <label>
+                            Food Price
+                            <input type="number" id="foodPrice" required>
+                        </label>
 
-            ৳0
+                        <label>
+                            Delivery Charge
+                            <input type="number" id="deliveryCharge" required>
+                        </label>
 
-        </strong>
+                    </div>
 
-    </div>
+                    <div class="form-row">
 
-    <div class="preview-row">
+                        <label>
+                            Start Time
+                            <input type="datetime-local" id="startTime" required>
+                        </label>
 
-        <span>Delivery Charge</span>
+                        <label>
+                            End Time
+                            <input type="datetime-local" id="endTime" required>
+                        </label>
 
-        <strong id="previewDelivery">
+                    </div>
 
-            ৳0
 
-        </strong>
+                    <button type="submit" class="button button-primary create-offer-btn">
 
-    </div>
+                        Create Group Order
 
-    <div class="preview-divider"></div>
+                    </button>
 
-    <div class="preview-total">
+                </form>
 
-        <span>Estimated Per Person</span>
+            </section>
 
-        <strong id="previewTotal">
+            <aside class="offer-preview">
 
-            ৳0
+                <div class="preview-logo">
 
-        </strong>
+                    <img id="previewLogo" src="assets/restaurants/default.png" alt="Restaurant">
 
-    </div>
+                </div>
 
-</aside>
+                <h2 id="previewRestaurant">
+                    Restaurant Name
+                </h2>
 
-</div>
+                <p id="previewFood" class="preview-food">
+                    Food Name
+                </p>
 
-</main>
+                <div class="preview-divider"></div>
 
-<script src="offer.js"></script>
+                <div class="preview-row">
+
+                    <span>Quantity</span>
+
+                    <strong id="previewQty">0</strong>
+
+                </div>
+
+                <div class="preview-row">
+
+                    <span>Participants</span>
+
+                    <strong>
+
+                        <span id="previewPeople">0</span>
+
+                        People
+
+                    </strong>
+
+                </div>
+
+                <div class="preview-row">
+
+                    <span>Food Price</span>
+
+                    <strong id="previewPrice">
+
+                        ৳0
+
+                    </strong>
+
+                </div>
+
+                <div class="preview-row">
+
+                    <span>Delivery Charge</span>
+
+                    <strong id="previewDelivery">
+
+                        ৳0
+
+                    </strong>
+
+                </div>
+
+                <div class="preview-divider"></div>
+
+                <div class="preview-total">
+
+                    <span>Estimated Per Person</span>
+
+                    <strong id="previewTotal">
+
+                        ৳0
+
+                    </strong>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <script src="offer.js"></script>
 
 </body>
 

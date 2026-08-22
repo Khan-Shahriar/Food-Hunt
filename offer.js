@@ -22,7 +22,31 @@ const peopleInput = document.getElementById("maxPeople");
 
 const startInput = document.getElementById("startTime");
 const endInput = document.getElementById("endTime");
+const bkashCheckbox = document.getElementById("payment-bkash");
+const bkashFields = document.getElementById("bkashFields");
+const bkashNumberInput = document.getElementById("bkashNumber");
 
+const cityBankCheckbox = document.getElementById("payment-citybank");
+
+const cityBankFields = document.getElementById("cityBankFields");
+
+const cityBankAccountName =
+    document.getElementById("cityBankAccountName");
+
+const cityBankAccountNumber =
+    document.getElementById("cityBankAccountNumber");
+
+const cityBankPhone =
+    document.getElementById("cityBankPhone");
+
+const cashCheckbox =
+    document.getElementById("payment-cash");
+
+const cashFields =
+    document.getElementById("cashFields");
+
+const cashCreatorName =
+    document.getElementById("cashCreatorName");
 
 /* ==========================================
    Preview Elements
@@ -124,12 +148,126 @@ updatePreview();
 
 
 /* ==========================================
+   Payment Methods
+========================================== */
+
+function toggleBkashFields() {
+
+    if (bkashCheckbox.checked) {
+
+        bkashFields.hidden = false;
+        bkashNumberInput.disabled = false;
+        bkashNumberInput.required = true;
+
+    } else {
+
+        bkashFields.hidden = true;
+        bkashNumberInput.disabled = true;
+        bkashNumberInput.required = false;
+        bkashNumberInput.value = "";
+
+    }
+
+}
+
+function toggleCityBankFields() {
+
+    if (cityBankCheckbox.checked) {
+
+        cityBankFields.hidden = false;
+
+        cityBankAccountName.disabled = false;
+        cityBankAccountNumber.disabled = false;
+        cityBankPhone.disabled = false;
+
+    } else {
+
+        cityBankFields.hidden = true;
+
+        cityBankAccountName.disabled = true;
+        cityBankAccountNumber.disabled = true;
+        cityBankPhone.disabled = true;
+
+        cityBankAccountName.required = false;
+        cityBankAccountNumber.required = false;
+        cityBankPhone.required = false;
+
+        cityBankAccountName.value = "";
+        cityBankAccountNumber.value = "";
+        cityBankPhone.value = "";
+
+    }
+
+}
+
+function toggleCashFields() {
+
+    if (cashCheckbox.checked) {
+
+        cashFields.hidden = false;
+
+    } else {
+
+        cashFields.hidden = true;
+
+    }
+
+}
+
+cashCheckbox.addEventListener(
+    "change",
+    toggleCashFields
+);
+
+toggleCashFields();
+
+cityBankCheckbox.addEventListener(
+    "change",
+    toggleCityBankFields
+);
+
+toggleCityBankFields();
+
+function validateCityBank() {
+
+    if (!cityBankCheckbox.checked) {
+        return true;
+    }
+
+    const hasAccountDetails =
+        cityBankAccountName.value.trim() !== "" &&
+        cityBankAccountNumber.value.trim() !== "";
+
+    const hasPhone =
+        cityBankPhone.value.trim() !== "";
+
+    if (!hasAccountDetails && !hasPhone) {
+
+        alert(
+            "For City Bank, provide Account Name + Account Number OR Phone Number."
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+bkashCheckbox.addEventListener("change", toggleBkashFields);
+
+toggleBkashFields();
+
+
+/* ==========================================
    Create Offer
 ========================================== */
 
 form.addEventListener("submit", async (e) => {
 
     e.preventDefault();
+    if (!validateCityBank()) {
+        return;
+    }
 
     const data = {
 
