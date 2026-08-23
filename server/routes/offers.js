@@ -9,6 +9,12 @@ const router = express.Router();
  */
 router.post("/", requireAuth, (req, res) => {
 
+    console.log("\n========== CREATE OFFER DEBUG ==========");
+    console.log("User:", req.user);
+    console.log("Request body:", JSON.stringify(req.body, null, 2));
+    console.log("Payment methods:", JSON.stringify(req.body.paymentMethods, null, 2));
+    console.log("========================================\n");
+
     const {
         restaurantName,
         foodName,
@@ -18,8 +24,124 @@ router.post("/", requireAuth, (req, res) => {
         deliveryCharge,
         startTime,
         endTime,
-        maxPeople
+        maxPeople,
+        paymentMethods
     } = req.body;
+
+    const selectedPayments = paymentMethods || {};
+
+    const bkashEnabled =
+        selectedPayments.bkash?.enabled === true;
+
+    const cityBankEnabled =
+        selectedPayments.cityBank?.enabled === true;
+
+    const cashEnabled =
+        selectedPayments.cash?.enabled === true;
+
+    console.log("\n========== PAYMENT CALCULATION ==========");
+    console.log("bkashEnabled:", bkashEnabled);
+    console.log("cityBankEnabled:", cityBankEnabled);
+    console.log("cashEnabled:", cashEnabled);
+    console.log(
+        "bkashNumber:",
+        bkashEnabled ? selectedPayments.bkash.number : null
+    );
+    console.log("=========================================\n");
+
+
+    /*
+     * At least one payment method is required.
+     */
+    if (
+        !bkashEnabled &&
+        !cityBankEnabled &&
+        !cashEnabled
+    ) {
+
+        return res.status(400).json({
+            success: false,
+            message: "At least one payment method is required."
+        });
+
+    }
+
+
+    /*
+     * Validate bKash.
+     */
+    if (
+        bkashEnabled &&
+        !selectedPayments.bkash?.number?.trim()
+    ) {
+
+        return res.status(400).json({
+            success: false,
+            message: "bKash number is required."
+        });
+
+    }
+
+
+    /*
+     * Validate City Bank.
+     *
+     * Account Name + Account Number
+     * OR
+     * Phone Number
+     */
+    if (cityBankEnabled) {
+
+        const accountName =
+            selectedPayments.cityBank?.accountName?.trim() || "";
+
+        const accountNumber =
+            selectedPayments.cityBank?.accountNumber?.trim() || "";
+
+        const phoneNumber =
+            selectedPayments.cityBank?.phoneNumber?.trim() || "";
+
+        const hasAccountDetails =
+            accountName !== "" &&
+            accountNumber !== "";
+
+        const hasPhone =
+            phoneNumber !== "";
+
+        if (!hasAccountDetails && !hasPhone) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "For City Bank, provide Account Name + Account Number OR Phone Number."
+            });
+
+        }
+
+    }
+
+
+    /*
+     * Get creator from authenticated user.
+     *
+     * The frontend cannot control the Cash account name.
+     */
+    const creator = db.prepare(`
+        SELECT full_name
+        FROM users
+        WHERE id = ?
+    `).get(req.user.id);
+
+
+    if (!creator) {
+
+        return res.status(401).json({
+            success: false,
+            message: "Authenticated user not found."
+        });
+
+    }
+
 
     try {
 
@@ -27,46 +149,131 @@ router.post("/", requireAuth, (req, res) => {
             INSERT INTO offers
             (
                 user_id,
+
                 restaurant_name,
                 food_name,
                 food_description,
+
                 quantity,
                 food_price,
                 delivery_charge,
+
                 start_time,
                 end_time,
-                max_people
+
+                max_people,
+                payment_methods,
+
+                payment_bkash_enabled,
+                bkash_number,
+
+                payment_citybank_enabled,
+                citybank_account_name,
+                citybank_account_number,
+                citybank_phone,
+
+                payment_cash_enabled,
+                cash_account_name
             )
             VALUES
-            (?,?,?,?,?,?,?,?,?,?)
+            (
+                ?,?,?,?,?,?,?,?,?,?,
+                ?,
+                ?,?,
+                ?,?,?,?,
+                ?,?
+        )
         `);
 
+
         const result = stmt.run(
+
             req.user.id,
+
             restaurantName,
             foodName,
             foodDescription,
+
             quantity,
             foodPrice,
             deliveryCharge,
+
             startTime,
             endTime,
-            maxPeople
+
+            maxPeople,
+
+            JSON.stringify(
+                [
+                    ...(bkashEnabled ? ["bkash"] : []),
+                    ...(cityBankEnabled ? ["citybank"] : []),
+                    ...(cashEnabled ? ["cash"] : [])
+                ]
+            ),
+
+
+
+            /*
+             * bKash
+             */
+            bkashEnabled ? 1 : 0,
+
+            bkashEnabled
+                ? selectedPayments.bkash.number.trim()
+                : null,
+
+
+            /*
+             * City Bank
+             */
+            cityBankEnabled ? 1 : 0,
+
+            cityBankEnabled
+                ? selectedPayments.cityBank.accountName?.trim() || null
+                : null,
+
+            cityBankEnabled
+                ? selectedPayments.cityBank.accountNumber?.trim() || null
+                : null,
+
+            cityBankEnabled
+                ? selectedPayments.cityBank.phoneNumber?.trim() || null
+                : null,
+
+
+            /*
+             * Cash
+             */
+            cashEnabled ? 1 : 0,
+
+            cashEnabled
+                ? creator.full_name
+                : null
+
         );
 
+
         return res.json({
+
             success: true,
+
             offerId: result.lastInsertRowid,
+
             message: "Offer created successfully."
+
         });
+
 
     } catch (err) {
 
-        console.error(err);
+        console.error("CREATE OFFER ERROR:", err);
 
         return res.status(500).json({
+
             success: false,
+
             message: "Failed to create offer."
+
         });
 
     }

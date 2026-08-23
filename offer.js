@@ -221,6 +221,41 @@ cashCheckbox.addEventListener(
 
 toggleCashFields();
 
+async function loadCashCreatorName() {
+
+    try {
+
+        const res = await fetch(API + "/auth/me", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        const result = await res.json();
+
+        if (!res.ok || !result.user) {
+
+            cashCreatorName.textContent =
+                "Unable to load creator";
+
+            return;
+        }
+
+        cashCreatorName.textContent =
+            result.user.fullName;
+
+    } catch (err) {
+
+        console.error("Failed to load creator:", err);
+
+        cashCreatorName.textContent =
+            "Unable to load creator";
+
+    }
+
+}
+
+loadCashCreatorName();
+
 cityBankCheckbox.addEventListener(
     "change",
     toggleCityBankFields
@@ -253,6 +288,23 @@ function validateCityBank() {
     return true;
 }
 
+function validatePaymentMethods() {
+
+    const hasPaymentMethod =
+        bkashCheckbox.checked ||
+        cityBankCheckbox.checked ||
+        cashCheckbox.checked;
+
+    if (!hasPaymentMethod) {
+
+        alert("Please select at least one payment method.");
+
+        return false;
+    }
+
+    return true;
+}
+
 bkashCheckbox.addEventListener("change", toggleBkashFields);
 
 toggleBkashFields();
@@ -265,17 +317,22 @@ toggleBkashFields();
 form.addEventListener("submit", async (e) => {
 
     e.preventDefault();
+
+    if (!validatePaymentMethods()) {
+        return;
+    }
+
     if (!validateCityBank()) {
         return;
     }
 
     const data = {
 
-        restaurantName: restaurantInput.value,
+        restaurantName: restaurantInput.value.trim(),
 
-        foodName: foodInput.value,
+        foodName: foodInput.value.trim(),
 
-        foodDescription: descriptionInput.value,
+        foodDescription: descriptionInput.value.trim(),
 
         quantity: Number(quantityInput.value),
 
@@ -287,7 +344,38 @@ form.addEventListener("submit", async (e) => {
 
         endTime: endInput.value,
 
-        maxPeople: Number(peopleInput.value)
+        maxPeople: Number(peopleInput.value),
+
+        paymentMethods: {
+
+            bkash: {
+                enabled: bkashCheckbox.checked,
+                number: bkashCheckbox.checked
+                    ? bkashNumberInput.value.trim()
+                    : null
+            },
+
+            cityBank: {
+                enabled: cityBankCheckbox.checked,
+                accountName: cityBankCheckbox.checked
+                    ? cityBankAccountName.value.trim()
+                    : null,
+
+                accountNumber: cityBankCheckbox.checked
+                    ? cityBankAccountNumber.value.trim()
+                    : null,
+
+                phoneNumber: cityBankCheckbox.checked
+                    ? cityBankPhone.value.trim()
+                    : null
+            },
+
+            cash: {
+                enabled:
+                    document.getElementById("payment-cash")?.checked || false
+            }
+
+        }
 
     };
 
