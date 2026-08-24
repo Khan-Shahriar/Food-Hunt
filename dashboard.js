@@ -514,17 +514,19 @@ async function confirmPaymentAndJoin() {
 
 
         /*
-         * Refresh offers after joining.
-         */
-        await loadOffers();
+ * Refresh offers after joining.
+ */
+        await renderNews();
 
         /*
          * Refresh the currently selected offer.
          */
         if (selectedOffer) {
 
+            const offers = await api("/offers");
+
             const updatedOffer =
-                allOffers.find(
+                offers.find(
                     offer =>
                         Number(offer.id) ===
                         Number(selectedOffer.id)
@@ -532,15 +534,11 @@ async function confirmPaymentAndJoin() {
 
             if (updatedOffer) {
 
-                selectedOffer =
-                    updatedOffer;
+                selectedOffer = updatedOffer;
 
-                updateSummary(
-                    updatedOffer
-                );
+                showOfferSummary(updatedOffer);
 
             }
-
         }
 
 

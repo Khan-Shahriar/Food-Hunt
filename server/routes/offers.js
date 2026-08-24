@@ -6,6 +6,8 @@ import {
     validatePaymentMethods
 } from "../utils/validation.js";
 
+import { calculateOfferTotals } from "../utils/calculation.js";
+
 const router = express.Router();
 
 /*
@@ -430,9 +432,16 @@ router.post("/:id/join", requireAuth, (req, res) => {
             });
         }
 
-        const costPerPerson =
-            Number(offer.food_price) +
-            (Number(offer.delivery_charge) / Number(offer.max_people));
+        const totals = calculateOfferTotals(
+            {
+                foodPrice: offer.food_price,
+                deliveryCharge: offer.delivery_charge,
+                maxPeople: offer.max_people
+            },
+            []
+        );
+
+        const costPerPerson = totals.costPerPerson;
 
         db.prepare(`
             INSERT INTO offer_participants
@@ -514,7 +523,9 @@ router.get("/:id/participants", requireAuth, (req, res) => {
                 users.profile_picture,
                 offer_participants.joined_at,
                 offer_participants.food_received,
-                offer_participants.received_at
+                offer_participants.received_at,
+                offer_participants.payment_method,
+                offer_participants.amount
 
             FROM offer_participants
 
@@ -526,9 +537,19 @@ router.get("/:id/participants", requireAuth, (req, res) => {
             ORDER BY offer_participants.joined_at ASC
         `).all(offerId);
 
+        const totals = calculateOfferTotals(
+            {
+                foodPrice: offer.food_price,
+                deliveryCharge: offer.delivery_charge,
+                maxPeople: offer.max_people
+            },
+            participants
+        );
+
         return res.json({
             success: true,
-            participants
+            participants,
+            totals
         });
 
     } catch (err) {
