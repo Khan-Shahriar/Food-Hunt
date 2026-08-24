@@ -343,6 +343,13 @@ router.post("/:id/join", requireAuth, (req, res) => {
 
     const { paymentMethod } = req.body;
 
+    if (!["bkash", "city_bank", "cash"].includes(paymentMethod)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid payment method."
+        });
+    }
+
     try {
 
         const offer = db.prepare(`
@@ -417,7 +424,8 @@ router.post("/:id/join", requireAuth, (req, res) => {
         `).get(offerId, userId);
 
         if (alreadyJoined) {
-            return res.status(400).json({
+            return res.status(409).json({
+                success: false,
                 message: "You already joined this order."
             });
         }
