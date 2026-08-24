@@ -566,6 +566,81 @@
   </div>
   <script src="dashboard.js" defer></script>
   <script src="script.js" defer></script>
+
+  <!-- ==========================
+     Payment Selection Modal
+========================== -->
+
+  <div class="modal-backdrop" id="paymentModal" aria-hidden="true">
+
+    <div class="auth-modal payment-modal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+
+      <button class="close-button" type="button" id="closePaymentModal" aria-label="Close payment selection">
+        X
+      </button>
+
+      <p class="eyebrow">
+        JOIN OFFER
+      </p>
+
+      <h2 id="paymentModalTitle">
+        Select Payment Method
+      </h2>
+
+      <p>
+        Choose how you will pay for this order.
+      </p>
+
+
+      <div class="payment-selection">
+
+        <label class="payment-selection-option">
+
+          <input type="radio" name="joinPaymentMethod" value="bkash">
+
+          <span>
+            bKash
+          </span>
+
+        </label>
+
+
+        <label class="payment-selection-option">
+
+          <input type="radio" name="joinPaymentMethod" value="city_bank">
+
+          <span>
+            City Bank
+          </span>
+
+        </label>
+
+
+        <label class="payment-selection-option">
+
+          <input type="radio" name="joinPaymentMethod" value="cash">
+
+          <span>
+            Cash
+          </span>
+
+        </label>
+
+      </div>
+
+
+      <p id="paymentModalError" class="form-error" role="alert"></p>
+
+
+      <button type="button" class="button button-primary" id="confirmPaymentButton">
+        Confirm & Join
+      </button>
+
+    </div>
+
+  </div>
+
+
 </body>
 
 </html>

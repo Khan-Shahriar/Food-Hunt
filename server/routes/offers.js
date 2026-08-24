@@ -338,6 +338,8 @@ router.post("/:id/join", requireAuth, (req, res) => {
     const offerId = Number(req.params.id);
     const userId = req.user.id;
 
+    const { paymentMethod } = req.body;
+
     try {
 
         const offer = db.prepare(`
@@ -383,6 +385,15 @@ router.post("/:id/join", requireAuth, (req, res) => {
             });
         }
 
+
+        const allowedPaymentMethods = ["bkash", "city_bank", "cash"];
+
+        if (!allowedPaymentMethods.includes(paymentMethod)) {
+            return res.status(400).json({
+                message: "Please select a valid payment method."
+            });
+        }
+
         const alreadyJoined = db.prepare(`
             SELECT id
             FROM offer_participants
@@ -396,15 +407,26 @@ router.post("/:id/join", requireAuth, (req, res) => {
             });
         }
 
+        const costPerPerson =
+            Number(offer.food_price) +
+            (Number(offer.delivery_charge) / Number(offer.max_people));
+
         db.prepare(`
             INSERT INTO offer_participants
             (
                 offer_id,
-                user_id
+                user_id,
+                payment_method,
+                amount
             )
             VALUES
-            (?,?)
-        `).run(offerId, userId);
+            (?, ?, ?, ?)
+        `).run(
+            offerId,
+            userId,
+            paymentMethod,
+            costPerPerson
+        );
 
         res.json({
             success: true,

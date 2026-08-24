@@ -11,6 +11,18 @@ const joinButton = document.querySelector(".join-btn");
 let countdownInterval = null;
 let selectedOffer = null;
 
+const paymentModal =
+    document.getElementById("paymentModal");
+
+const closePaymentModalButton =
+    document.getElementById("closePaymentModal");
+
+const confirmPaymentButton =
+    document.getElementById("confirmPaymentButton");
+
+const paymentModalError =
+    document.getElementById("paymentModalError");
+
 function getRestaurantLogo(name) {
 
     const restaurant = name.toLowerCase().trim();
@@ -274,29 +286,263 @@ function showOfferSummary(offer) {
 
 /*------------------------------------*/
 
-async function joinOffer() {
+function openPaymentModal() {
+
+    if (!paymentModal || !selectedOffer) {
+        return;
+    }
+
+    paymentModalError.textContent = "";
+
+    const paymentMethods =
+        selectedOffer.payment_methods;
+
+    let methods = [];
+
+    try {
+
+        methods =
+            typeof paymentMethods === "string"
+                ? JSON.parse(paymentMethods)
+                : paymentMethods || [];
+
+    } catch (error) {
+
+        methods = [];
+
+    }
+
+
+    document
+        .querySelectorAll(
+            'input[name="joinPaymentMethod"]'
+        )
+        .forEach(input => {
+
+            input.checked = false;
+            input.closest(
+                ".payment-selection-option"
+            ).style.display = "none";
+
+        });
+
+
+    const methodMap = {
+        bkash: "bkash",
+        citybank: "city_bank",
+        city_bank: "city_bank",
+        cash: "cash"
+    };
+
+
+    methods.forEach(method => {
+
+        const value =
+            methodMap[method];
+
+        if (!value) {
+            return;
+        }
+
+        const input =
+            document.querySelector(
+                `input[name="joinPaymentMethod"][value="${value}"]`
+            );
+
+        if (input) {
+
+            input
+                .closest(
+                    ".payment-selection-option"
+                )
+                .style.display = "";
+
+        }
+
+    });
+
+
+    paymentModal.classList.add("is-open");
+
+    paymentModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+}
+
+function joinOffer() {
+
+    if (!selectedOffer) {
+        return;
+    }
+
+    openPaymentModal();
+
+}
+
+async function confirmPaymentAndJoin() {
 
     if (!selectedOffer) {
         return;
     }
 
 
+    const selectedPayment =
+        document.querySelector(
+            'input[name="joinPaymentMethod"]:checked'
+        );
+
+
+    if (!selectedPayment) {
+
+        paymentModalError.textContent =
+            "Please select a payment method.";
+
+        return;
+
+    }
+
+
     try {
 
-        const data = await api(`/offers/${selectedOffer.id}/join`, {
+        confirmPaymentButton.disabled = true;
 
-            method: "POST"
+        confirmPaymentButton.textContent =
+            "Joining...";
 
-        });
 
-        showToast(data.message, "success");
+        const data = await api(
+            `/offers/${selectedOffer.id}/join`,
+            {
+                method: "POST",
+
+                body: JSON.stringify({
+                    paymentMethod:
+                        selectedPayment.value
+                })
+            }
+        );
+
+
+        closePaymentModal();
+
+        showToast(
+            data.message ||
+            "Successfully joined the offer.",
+            "success"
+        );
+
+
+        /*
+         * Refresh offers after joining.
+         */
+        await loadOffers();
+
+        /*
+         * Refresh the currently selected offer.
+         */
+        if (selectedOffer) {
+
+            const updatedOffer =
+                allOffers.find(
+                    offer =>
+                        Number(offer.id) ===
+                        Number(selectedOffer.id)
+                );
+
+            if (updatedOffer) {
+
+                selectedOffer =
+                    updatedOffer;
+
+                updateSummary(
+                    updatedOffer
+                );
+
+            }
+
+        }
+
 
     } catch (err) {
 
-        showToast(err.message, "error");
+        paymentModalError.textContent =
+            err.message ||
+            "Failed to join offer.";
+
+    } finally {
+
+        confirmPaymentButton.disabled =
+            false;
+
+        confirmPaymentButton.textContent =
+            "Confirm & Join";
 
     }
+
 }
+
+
+function closePaymentModal() {
+
+    if (!paymentModal) {
+        return;
+    }
+
+    paymentModal.classList.remove(
+        "is-open"
+    );
+
+    paymentModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    paymentModalError.textContent = "";
+
+}
+
+if (closePaymentModalButton) {
+
+    closePaymentModalButton.addEventListener(
+        "click",
+        closePaymentModal
+    );
+
+}
+
+
+if (confirmPaymentButton) {
+
+    confirmPaymentButton.addEventListener(
+        "click",
+        confirmPaymentAndJoin
+    );
+
+}
+
+
+if (paymentModal) {
+
+    paymentModal.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target ===
+                paymentModal
+            ) {
+
+                closePaymentModal();
+
+            }
+
+        }
+    );
+
+}
+
 
 
 
@@ -496,23 +742,23 @@ const profileAvatarInput = document.querySelector("[data-profile-avatar-input]")
 const profileAvatar = document.querySelector("[data-profile-avatar]");
 
 if (profileAvatarInput && profileAvatar) {
-  profileAvatarInput.addEventListener("change", () => {
-    const file = profileAvatarInput.files[0];
+    profileAvatarInput.addEventListener("change", () => {
+        const file = profileAvatarInput.files[0];
 
-    if (!file) return;
+        if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      return;
-    }
+        if (!file.type.startsWith("image/")) {
+            return;
+        }
 
-    const reader = new FileReader();
+        const reader = new FileReader();
 
-    reader.onload = () => {
-      profileAvatar.innerHTML = `
+        reader.onload = () => {
+            profileAvatar.innerHTML = `
         <img src="${reader.result}" alt="Profile photo">
       `;
-    };
+        };
 
-    reader.readAsDataURL(file);
-  });
+        reader.readAsDataURL(file);
+    });
 }
