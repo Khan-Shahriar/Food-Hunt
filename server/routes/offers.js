@@ -567,6 +567,151 @@ router.get("/:id/participants", requireAuth, (req, res) => {
 
 
 /*
+ * Complete Offer
+ */
+router.post("/:id/complete", requireAuth, (req, res) => {
+
+    const offerId = Number(req.params.id);
+
+    try {
+
+        const offer = db.prepare(`
+            SELECT *
+            FROM offers
+            WHERE id = ?
+        `).get(offerId);
+
+        if (!offer) {
+            return res.status(404).json({
+                success: false,
+                message: "Offer not found."
+            });
+        }
+
+        /*
+         * Only the creator can complete the offer.
+         */
+        if (offer.user_id !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Only the creator can complete this offer."
+            });
+        }
+
+        /*
+         * Do not require the offer to be full.
+         *
+         * Example:
+         * max_people = 8
+         * joined = 5
+         *
+         * The creator can still complete it.
+         */
+
+        if (offer.status !== "OPEN") {
+            return res.status(400).json({
+                success: false,
+                message: "This offer is no longer active."
+            });
+        }
+
+        db.prepare(`
+            UPDATE offers
+            SET
+                status = 'completed',
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        `).run(offerId);
+
+        return res.json({
+            success: true,
+            message: "Offer completed successfully."
+        });
+
+    } catch (err) {
+
+        console.error("COMPLETE OFFER ERROR:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to complete offer."
+        });
+
+    }
+
+});
+
+
+/*
+ * Dismiss Offer
+ */
+router.post("/:id/dismiss", requireAuth, (req, res) => {
+
+    const offerId = Number(req.params.id);
+
+    try {
+
+        const offer = db.prepare(`
+            SELECT *
+            FROM offers
+            WHERE id = ?
+        `).get(offerId);
+
+        if (!offer) {
+            return res.status(404).json({
+                success: false,
+                message: "Offer not found."
+            });
+        }
+
+        /*
+         * Only the creator can dismiss the offer.
+         */
+        if (offer.user_id !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Only the creator can dismiss this offer."
+            });
+        }
+
+        /*
+         * Only an active offer can be dismissed.
+         */
+        if (offer.status !== "OPEN") {
+            return res.status(400).json({
+                success: false,
+                message: "This offer is no longer active."
+            });
+        }
+
+        db.prepare(`
+            UPDATE offers
+            SET
+                status = 'dismissed',
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        `).run(offerId);
+
+        return res.json({
+            success: true,
+            message: "Offer dismissed successfully."
+        });
+
+    } catch (err) {
+
+        console.error("DISMISS OFFER ERROR:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to dismiss offer."
+        });
+
+    }
+
+});
+
+
+/*
  * End Offer
  */
 router.post("/:id/end", requireAuth, (req, res) => {
