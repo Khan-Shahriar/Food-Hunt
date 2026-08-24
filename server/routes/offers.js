@@ -451,9 +451,15 @@ router.post("/:id/join", requireAuth, (req, res) => {
             costPerPerson
         );
 
-        res.json({
+        return res.json({
             success: true,
             message: "Joined successfully.",
+            participant: {
+                offerId: offerId,
+                userId: userId,
+                paymentMethod: paymentMethod,
+                amount: costPerPerson
+            },
             participantCount: participantCount + 1
         });
 
