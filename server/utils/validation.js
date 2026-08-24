@@ -83,3 +83,110 @@ export function validateLogin({ email, password }) {
 
   return "";
 }
+
+
+export function validateOfferFields({
+  restaurantName,
+  foodName,
+  foodDescription,
+  quantity,
+  foodPrice,
+  deliveryCharge,
+  startTime,
+  endTime,
+  maxPeople
+}) {
+  if (!restaurantName?.trim()) {
+    return "Restaurant name is required.";
+  }
+
+  if (!foodName?.trim()) {
+    return "Food name is required.";
+  }
+
+  if (
+    foodDescription !== undefined &&
+    foodDescription !== null &&
+    typeof foodDescription !== "string"
+  ) {
+    return "Food description must be text.";
+  }
+
+  if (
+    !Number.isInteger(Number(quantity)) ||
+    Number(quantity) <= 0
+  ) {
+    return "Quantity must be a positive integer.";
+  }
+
+  if (
+    !Number.isFinite(Number(foodPrice)) ||
+    Number(foodPrice) < 0
+  ) {
+    return "Food price must be a valid non-negative number.";
+  }
+
+  if (
+    !Number.isFinite(Number(deliveryCharge)) ||
+    Number(deliveryCharge) < 0
+  ) {
+    return "Delivery charge must be a valid non-negative number.";
+  }
+
+  if (!startTime) {
+    return "Start time is required.";
+  }
+
+  if (!endTime) {
+    return "End time is required.";
+  }
+
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+
+  if (Number.isNaN(start.getTime())) {
+    return "Start time is invalid.";
+  }
+
+  if (Number.isNaN(end.getTime())) {
+    return "End time is invalid.";
+  }
+
+  if (end <= start) {
+    return "End time must be after start time.";
+  }
+
+  if (
+    !Number.isInteger(Number(maxPeople)) ||
+    Number(maxPeople) <= 0
+  ) {
+    return "Maximum participants must be a positive integer.";
+  }
+
+  return "";
+} 
+
+export function validatePaymentMethods(paymentMethods) {
+    if (
+        !paymentMethods ||
+        typeof paymentMethods !== "object" ||
+        Array.isArray(paymentMethods)
+    ) {
+        return "Payment methods are required.";
+    }
+
+    const bkashEnabled =
+        paymentMethods.bkash?.enabled === true;
+
+    const cityBankEnabled =
+        paymentMethods.cityBank?.enabled === true;
+
+    const cashEnabled =
+        paymentMethods.cash?.enabled === true;
+
+    if (!bkashEnabled && !cityBankEnabled && !cashEnabled) {
+        return "At least one payment method is required.";
+    }
+
+    return "";
+}

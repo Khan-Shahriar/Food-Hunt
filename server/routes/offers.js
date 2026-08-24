@@ -1,6 +1,10 @@
 import express from "express";
 import db from "../db.js";
 import { requireAuth } from "../middleware/auth.js";
+import {
+    validateOfferFields,
+    validatePaymentMethods
+} from "../utils/validation.js";
 
 const router = express.Router();
 
@@ -22,7 +26,36 @@ router.post("/", requireAuth, (req, res) => {
         paymentMethods
     } = req.body;
 
-    const selectedPayments = paymentMethods || {};
+    const validationError = validateOfferFields({
+        restaurantName,
+        foodName,
+        foodDescription,
+        quantity,
+        foodPrice,
+        deliveryCharge,
+        startTime,
+        endTime,
+        maxPeople
+    });
+
+    if (validationError) {
+        return res.status(400).json({
+            success: false,
+            message: validationError
+        });
+    }
+
+    const paymentValidationError =
+        validatePaymentMethods(paymentMethods);
+
+    if (paymentValidationError) {
+        return res.status(400).json({
+            success: false,
+            message: paymentValidationError
+        });
+    }
+
+    const selectedPayments = paymentMethods;
 
     const bkashEnabled =
         selectedPayments.bkash?.enabled === true;
@@ -32,22 +65,6 @@ router.post("/", requireAuth, (req, res) => {
 
     const cashEnabled =
         selectedPayments.cash?.enabled === true;
-
-    /*
-     * At least one payment method is required.
-     */
-    if (
-        !bkashEnabled &&
-        !cityBankEnabled &&
-        !cashEnabled
-    ) {
-
-        return res.status(400).json({
-            success: false,
-            message: "At least one payment method is required."
-        });
-
-    }
 
 
     /*
@@ -157,6 +174,7 @@ router.post("/", requireAuth, (req, res) => {
 
                 payment_cash_enabled,
                 cash_account_name
+                
             )
             VALUES
             (
@@ -165,7 +183,7 @@ router.post("/", requireAuth, (req, res) => {
                 ?,?,
                 ?,?,?,?,
                 ?,?
-        )
+            )
         `);
 
 
@@ -232,6 +250,8 @@ router.post("/", requireAuth, (req, res) => {
             cashEnabled
                 ? creator.full_name
                 : null
+
+
 
         );
 
