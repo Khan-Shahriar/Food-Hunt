@@ -17,11 +17,23 @@ const paymentModal =
 const closePaymentModalButton =
     document.getElementById("closePaymentModal");
 
+const cancelPaymentButton =
+    document.getElementById("cancelPaymentButton");
+
 const confirmPaymentButton =
     document.getElementById("confirmPaymentButton");
 
 const paymentModalError =
     document.getElementById("paymentModalError");
+
+const paymentModalTitle =
+    document.getElementById("paymentModalTitle");
+
+const paymentModalDescription =
+    document.getElementById("paymentModalDescription");
+
+const paymentModalAmount =
+    document.getElementById("paymentModalAmount");
 
 function getRestaurantLogo(name) {
 
@@ -52,7 +64,7 @@ async function renderNews() {
 
         offers.forEach((offer) => {
 
-            
+
             newsList.innerHTML += `
       <li class="offer-card"
       data-offer-id="${offer.id}">
@@ -138,7 +150,7 @@ async function renderNews() {
 
         });
 
-        
+
         updateOfferTimes();
 
     } catch (err) {
@@ -293,6 +305,69 @@ function openPaymentModal() {
 
     paymentModalError.textContent = "";
 
+    /*
+     * Show offer name.
+     */
+    if (paymentModalTitle) {
+
+        paymentModalTitle.textContent =
+            `Join ${selectedOffer.food_name || "Offer"}`;
+
+    }
+
+
+    /*
+     * Show calculated amount.
+     *
+     * Cost per person =
+     * food price +
+     * delivery charge / max people
+     */
+    const foodPrice =
+        Number(selectedOffer.food_price) || 0;
+
+    const deliveryCharge =
+        Number(selectedOffer.delivery_charge) || 0;
+
+    const maxPeople =
+        Number(selectedOffer.max_people) || 1;
+
+    const deliveryPerPerson =
+        deliveryCharge / maxPeople;
+
+    const costPerPerson =
+        foodPrice + deliveryPerPerson;
+
+
+    if (paymentModalAmount) {
+
+        paymentModalAmount.textContent =
+            "৳" + costPerPerson.toFixed(2);
+
+    }
+
+
+    /*
+     * Reset all payment options.
+     */
+    document
+        .querySelectorAll(
+            'input[name="joinPaymentMethod"]'
+        )
+        .forEach(input => {
+
+            input.checked = false;
+
+            input.closest(
+                ".payment-selection-option"
+            ).style.display = "none";
+
+        });
+
+
+    /*
+     * Read creator-enabled payment methods.
+     */
     const paymentMethods =
         selectedOffer.payment_methods;
 
@@ -307,33 +382,35 @@ function openPaymentModal() {
 
     } catch (error) {
 
+        console.error(
+            "PAYMENT METHODS PARSE ERROR:",
+            error
+        );
+
         methods = [];
 
     }
 
 
-    document
-        .querySelectorAll(
-            'input[name="joinPaymentMethod"]'
-        )
-        .forEach(input => {
-
-            input.checked = false;
-            input.closest(
-                ".payment-selection-option"
-            ).style.display = "none";
-
-        });
-
-
+    /*
+     * Map backend values to radio values.
+     */
     const methodMap = {
+
         bkash: "bkash",
+
         citybank: "city_bank",
+
         city_bank: "city_bank",
+
         cash: "cash"
+
     };
 
 
+    /*
+     * Show only enabled methods.
+     */
     methods.forEach(method => {
 
         const value =
@@ -361,6 +438,9 @@ function openPaymentModal() {
     });
 
 
+    /*
+     * Open modal.
+     */
     paymentModal.classList.add("is-open");
 
     paymentModal.setAttribute(
@@ -511,6 +591,14 @@ if (closePaymentModalButton) {
 
 }
 
+if (cancelPaymentButton) {
+
+    cancelPaymentButton.addEventListener(
+        "click",
+        closePaymentModal
+    );
+
+}
 
 if (confirmPaymentButton) {
 

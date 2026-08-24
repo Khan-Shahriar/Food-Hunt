@@ -568,7 +568,7 @@
   <script src="script.js" defer></script>
 
   <!-- ==========================
-     Payment Selection Modal
+   Payment Selection Modal
 ========================== -->
 
   <div class="modal-backdrop" id="paymentModal" aria-hidden="true">
@@ -584,11 +584,11 @@
       </p>
 
       <h2 id="paymentModalTitle">
-        Select Payment Method
+        Join Offer
       </h2>
 
-      <p>
-        Choose how you will pay for this order.
+      <p id="paymentModalDescription">
+        Choose your payment method.
       </p>
 
 
@@ -629,12 +629,33 @@
       </div>
 
 
+      <div class="payment-amount">
+
+        <span>
+          Amount
+        </span>
+
+        <strong id="paymentModalAmount">
+          ৳0.00
+        </strong>
+
+      </div>
+
+
       <p id="paymentModalError" class="form-error" role="alert"></p>
 
 
-      <button type="button" class="button button-primary" id="confirmPaymentButton">
-        Confirm & Join
-      </button>
+      <div class="payment-modal-actions">
+
+        <button type="button" class="button button-secondary" id="cancelPaymentButton">
+          Cancel
+        </button>
+
+        <button type="button" class="button button-primary" id="confirmPaymentButton">
+          Join Offer
+        </button>
+
+      </div>
 
     </div>
 
