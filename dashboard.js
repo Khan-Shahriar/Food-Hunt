@@ -52,8 +52,7 @@ async function renderNews() {
 
         offers.forEach((offer) => {
 
-            console.log(offer);
-
+            
             newsList.innerHTML += `
       <li class="offer-card"
       data-offer-id="${offer.id}">
@@ -139,7 +138,7 @@ async function renderNews() {
 
         });
 
-        console.log("renderNews finished");
+        
         updateOfferTimes();
 
     } catch (err) {

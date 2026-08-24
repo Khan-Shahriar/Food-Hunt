@@ -24,12 +24,7 @@ export function verifyToken(token) {
 export function requireAuth(req, res, next) {
   const token = req.cookies?.fh_token;
 
-  console.log("\n========== AUTH CHECK ==========");
-  console.log("Request:", req.method, req.originalUrl);
-  console.log("Cookie header:", req.headers.cookie);
-  console.log("Parsed cookies:", req.cookies);
-  console.log("fh_token exists:", !!token);
-
+  
   if (!token) {
     console.log("❌ NO fh_token RECEIVED");
     console.log("================================\n");

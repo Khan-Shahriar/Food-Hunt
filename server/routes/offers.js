@@ -9,12 +9,6 @@ const router = express.Router();
  */
 router.post("/", requireAuth, (req, res) => {
 
-    console.log("\n========== CREATE OFFER DEBUG ==========");
-    console.log("User:", req.user);
-    console.log("Request body:", JSON.stringify(req.body, null, 2));
-    console.log("Payment methods:", JSON.stringify(req.body.paymentMethods, null, 2));
-    console.log("========================================\n");
-
     const {
         restaurantName,
         foodName,
@@ -38,17 +32,6 @@ router.post("/", requireAuth, (req, res) => {
 
     const cashEnabled =
         selectedPayments.cash?.enabled === true;
-
-    console.log("\n========== PAYMENT CALCULATION ==========");
-    console.log("bkashEnabled:", bkashEnabled);
-    console.log("cityBankEnabled:", cityBankEnabled);
-    console.log("cashEnabled:", cashEnabled);
-    console.log(
-        "bkashNumber:",
-        bkashEnabled ? selectedPayments.bkash.number : null
-    );
-    console.log("=========================================\n");
-
 
     /*
      * At least one payment method is required.
@@ -206,7 +189,7 @@ router.post("/", requireAuth, (req, res) => {
             JSON.stringify(
                 [
                     ...(bkashEnabled ? ["bkash"] : []),
-                    ...(cityBankEnabled ? ["citybank"] : []),
+                    ...(cityBankEnabled ? ["city_bank"] : []),
                     ...(cashEnabled ? ["cash"] : [])
                 ]
             ),
@@ -386,11 +369,23 @@ router.post("/:id/join", requireAuth, (req, res) => {
         }
 
 
-        const allowedPaymentMethods = ["bkash", "city_bank", "cash"];
+        const allowedPaymentMethods = [];
+
+        if (offer.payment_bkash_enabled === 1) {
+            allowedPaymentMethods.push("bkash");
+        }
+
+        if (offer.payment_citybank_enabled === 1) {
+            allowedPaymentMethods.push("city_bank");
+        }
+
+        if (offer.payment_cash_enabled === 1) {
+            allowedPaymentMethods.push("cash");
+        }
 
         if (!allowedPaymentMethods.includes(paymentMethod)) {
             return res.status(400).json({
-                message: "Please select a valid payment method."
+                message: "Selected payment method is not available for this offer."
             });
         }
 

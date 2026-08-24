@@ -127,8 +127,6 @@ function showLanding() {
 
 async function showDashboard(user) {
 
-  console.log("showDashboard received:", user);
-
   const normalizedUser = {
     id: user?.id,
 
@@ -293,14 +291,12 @@ async function restoreSession() {
 
     const data = await api("/auth/me");
 
-    console.log("AUTH RESPONSE:", data);
-
     if (!data || !data.user) {
       console.error("No user returned from /auth/me:", data);
       return;
     }
 
-    console.log("AUTH USER:", data.user);
+   
 
     await showDashboard(data.user);
 
