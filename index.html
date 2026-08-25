@@ -66,18 +66,89 @@
         </div>
       </header>
       <div class="dashboard-shell">
+        ```html
         <section class="dashboard-view is-active" data-view-panel="home">
-          <article class="welcome-card">
+
+          <!-- ==========================
+       Welcome
+  =========================== -->
+
+          <article class="welcome-card home-welcome-card">
+
             <div>
-              <p class="eyebrow">Welcome back</p>
-              <h2>Hi, <span data-user-name>User</span></h2>
-              <p>Use the dashboard to follow group orders, costs, and office lunch updates.</p>
+              <p class="eyebrow">WELCOME BACK</p>
+
+              <h2>
+                Hi, <span data-user-name>User</span>
+              </h2>
+
+              <p>
+                Manage your food offers, track costs, and see who has joined.
+              </p>
             </div>
+
             <button class="button button-primary" type="button" id="welcomeCreateOfferBtn">
               Create Offer
             </button>
+
           </article>
+
+
+          <!-- ==========================
+       My Offers
+  =========================== -->
+
+          <section class="home-offers-section">
+
+            <div class="panel-heading home-section-heading">
+
+              <div>
+                <p class="eyebrow">
+                  FOOD HUNT
+                </p>
+
+                <h2>
+                  My Offers
+                </h2>
+              </div>
+
+              <span class="live-pill">
+                Active Offers
+              </span>
+
+            </div>
+
+
+            <!--
+              Home offers will be inserted
+              by the Home offer JavaScript.
+            -->
+
+            <div class="home-offers-list" id="homeOffersList" data-my-offers>
+            </div>
+
+            <section class="home-section">
+              <div class="home-section-header">
+                <div>
+                  <h2>Joined Offers</h2>
+                  <p>Offers you have joined.</p>
+                </div>
+
+                <span class="home-section-count" data-joined-count>
+                  0 offers
+                </span>
+              </div>
+
+              <div class="home-offers-list" id="homeJoinedOffersList" data-joined-offers>
+              </div>
+            </section>
+
+          </section>
+
+
         </section>
+        ```
+
         <section class="dashboard-view" data-view-panel="dashboard">
 
           <!-- ==========================
@@ -566,6 +637,7 @@
   </div>
   <script src="dashboard.js" defer></script>
   <script src="script.js" defer></script>
+  <script src="home.js" defer></script>
 
   <!-- ==========================
    Payment Selection Modal

@@ -1,519 +1,1283 @@
-/* ==========================================
-   Food Hunt Home
-========================================== */
+/* =========================================================
+   FOOD HUNT — HOME PAGE
+   Scoped to prevent conflicts with script.js
+========================================================= */
 
-const API = "/api";
+(() => {
+    "use strict";
 
+    const API = "/api";
 
-/* ==========================================
-   State
-========================================== */
+    /* =====================================================
+       STATE
+    ===================================================== */
 
-let currentUser = null;
-let allOffers = [];
-let currentManageOffer = null;
-let countdownTimer = null;
+    let currentUser = null;
+    let allOffers = [];
+    let currentManageOffer = null;
+    let countdownTimer = null;
 
 
-/* ==========================================
-   Elements
-========================================== */
+    /* =====================================================
+       DOM ELEMENTS
+    ===================================================== */
 
-const myOffersContainer =
-    document.querySelector("[data-my-offers]");
+    const myOffersContainer =
+        document.querySelector("[data-my-offers]");
 
-const joinedOffersContainer =
-    document.querySelector("[data-joined-offers]");
+    const joinedOffersContainer =
+        document.querySelector("[data-joined-offers]");
 
-const activeCountElement =
-    document.querySelector("[data-active-count]");
+    const activeCountElement =
+        document.querySelector("[data-active-count]");
 
-const joinedCountElement =
-    document.querySelector("[data-joined-count]");
+    const joinedCountElement =
+        document.querySelector("[data-joined-count]");
 
-const userNameElement =
-    document.querySelector("[data-user-name]");
+    const userNameElementHome =
+        document.querySelector("[data-user-name]");
 
-const profileInitialElement =
-    document.querySelector("[data-profile-initial]");
+    const profileInitialElementHome =
+        document.querySelector("[data-profile-initial]");
 
-const manageSection =
-    document.querySelector("[data-manage-section]");
+    const manageSection =
+        document.querySelector("[data-manage-section]");
 
-const manageFoodElement =
-    document.querySelector("[data-manage-food]");
+    const manageFoodElement =
+        document.querySelector("[data-manage-food]");
 
-const manageRestaurantElement =
-    document.querySelector("[data-manage-restaurant]");
+    const manageRestaurantElement =
+        document.querySelector("[data-manage-restaurant]");
 
-const manageStatusElement =
-    document.querySelector("[data-manage-status]");
+    const manageStatusElement =
+        document.querySelector("[data-manage-status]");
 
-const manageCountElement =
-    document.querySelector("[data-manage-count]");
+    const manageCountElement =
+        document.querySelector("[data-manage-count]");
 
-const manageTimeElement =
-    document.querySelector("[data-manage-time]");
+    const manageTimeElement =
+        document.querySelector("[data-manage-time]");
 
-const manageEndElement =
-    document.querySelector("[data-manage-end]");
+    const manageEndElement =
+        document.querySelector("[data-manage-end]");
 
-const participantsList =
-    document.querySelector("[data-participants-list]");
+    const participantsList =
+        document.querySelector("[data-participants-list]");
 
-const successBox =
-    document.querySelector("[data-success-box]");
+    const successBox =
+        document.querySelector("[data-success-box]");
 
-const endOfferButton =
-    document.querySelector("[data-end-offer]");
+    const endOfferButton =
+        document.querySelector("[data-end-offer]");
 
-const closeManageButton =
-    document.querySelector("[data-close-manage]");
+    const closeManageButton =
+        document.querySelector("[data-close-manage]");
 
-const toastStack =
-    document.querySelector("[data-toast-stack]");
+    const toastStack =
+        document.querySelector("[data-toast-stack]");
 
-const logoutButton =
-    document.querySelector("[data-logout]");
+    const logoutButtonHome =
+        document.querySelector("[data-logout]");
 
 
-/* ==========================================
-   Helpers
-========================================== */
+    /* =====================================================
+       HELPERS
+    ===================================================== */
 
-function escapeHTML(value) {
+    function escapeHTML(value) {
 
-    if (value === null || value === undefined) {
-        return "";
-    }
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-}
-
-
-function formatDateTime(value) {
-
-    if (!value) {
-        return "-";
-    }
-
-    const date = new Date(
-        value.includes("T")
-            ? value
-            : value.replace(" ", "T") + "Z"
-    );
-
-    if (Number.isNaN(date.getTime())) {
-        return value;
-    }
-
-    return date.toLocaleString([], {
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit"
-    });
-
-}
-
-
-function formatCountdown(endTime) {
-
-    if (!endTime) {
-        return "--";
-    }
-
-    const end = new Date(
-        endTime.includes("T")
-            ? endTime
-            : endTime.replace(" ", "T") + "Z"
-    );
-
-    const difference = end.getTime() - Date.now();
-
-    if (difference <= 0) {
-        return "Ended";
-    }
-
-    const totalSeconds =
-        Math.floor(difference / 1000);
-
-    const hours =
-        Math.floor(totalSeconds / 3600);
-
-    const minutes =
-        Math.floor((totalSeconds % 3600) / 60);
-
-    const seconds =
-        totalSeconds % 60;
-
-    return (
-        String(hours).padStart(2, "0") +
-        ":" +
-        String(minutes).padStart(2, "0") +
-        ":" +
-        String(seconds).padStart(2, "0")
-    );
-
-}
-
-
-function getInitials(name) {
-
-    if (!name) {
-        return "U";
-    }
-
-    return name
-        .trim()
-        .split(/\s+/)
-        .slice(0, 2)
-        .map(word => word[0])
-        .join("")
-        .toUpperCase();
-
-}
-
-
-function showToast(message) {
-
-    if (!toastStack) {
-        alert(message);
-        return;
-    }
-
-    const toast =
-        document.createElement("div");
-
-    toast.className = "toast";
-
-    toast.textContent = message;
-
-    toastStack.appendChild(toast);
-
-    setTimeout(() => {
-        toast.remove();
-    }, 3500);
-
-}
-
-
-/* ==========================================
-   Authentication
-========================================== */
-
-async function loadCurrentUser() {
-
-    try {
-
-        const response = await fetch(
-            API + "/auth/me",
-            {
-                credentials: "include"
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error("Authentication required.");
+        if (value === null || value === undefined) {
+            return "";
         }
 
-        const data = await response.json();
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
 
-        currentUser =
-            data.user || data;
 
-        updateUserUI();
+    function getInitials(name) {
 
-    } catch (error) {
+        if (!name) {
+            return "U";
+        }
 
-        console.error(
-            "USER LOAD ERROR:",
-            error
-        );
+        return String(name)
+            .trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .map(word => word.charAt(0))
+            .join("")
+            .toUpperCase();
+    }
+
+
+    function parseDate(value) {
+
+        if (!value) {
+            return null;
+        }
+
+        let dateString = String(value);
 
         /*
-         * Keep the existing application behavior:
-         * send unauthenticated users to login.
+         * SQLite often returns:
+         *
+         * 2026-08-25 06:40:00
+         *
+         * Convert it to ISO-style format.
          */
-        window.location.href = "index.html";
 
+        if (
+            !dateString.includes("T") &&
+            !dateString.endsWith("Z")
+        ) {
+            dateString =
+                dateString.replace(" ", "T") + "Z";
+        }
+
+        const date = new Date(dateString);
+
+        if (Number.isNaN(date.getTime())) {
+            return null;
+        }
+
+        return date;
     }
 
-}
 
+    function formatDateTime(value) {
 
-function updateUserUI() {
+        const date = parseDate(value);
 
-    if (!currentUser) {
-        return;
+        if (!date) {
+            return value || "-";
+        }
+
+        return date.toLocaleString([], {
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit"
+        });
     }
 
-    const name =
-        currentUser.fullName ||
-        currentUser.full_name ||
-        currentUser.name ||
-        "User";
 
-    if (userNameElement) {
-        userNameElement.textContent = name;
-    }
+    function formatCountdown(value) {
 
-    if (profileInitialElement) {
-        profileInitialElement.textContent =
-            getInitials(name);
-    }
+        const endDate = parseDate(value);
 
-}
+        if (!endDate) {
+            return "--";
+        }
 
+        const difference =
+            endDate.getTime() - Date.now();
 
-/* ==========================================
-   Load Offers
-========================================== */
+        if (difference <= 0) {
+            return "Ended";
+        }
 
-async function loadOffers() {
+        const totalSeconds =
+            Math.floor(difference / 1000);
 
-    try {
+        const hours =
+            Math.floor(totalSeconds / 3600);
 
-        const response = await fetch(
-            API + "/offers",
-            {
-                credentials: "include"
-            }
+        const minutes =
+            Math.floor(
+                (totalSeconds % 3600) / 60
+            );
+
+        const seconds =
+            totalSeconds % 60;
+
+        return (
+            String(hours).padStart(2, "0") +
+            ":" +
+            String(minutes).padStart(2, "0") +
+            ":" +
+            String(seconds).padStart(2, "0")
         );
+    }
 
-        if (response.status === 401) {
-            window.location.href = "index.html";
+
+    function showToast(message) {
+
+        if (!toastStack) {
+            console.log(message);
             return;
         }
 
-        if (!response.ok) {
-            throw new Error(
-                "Failed to load offers."
+        const toast =
+            document.createElement("div");
+
+        toast.className = "toast";
+        toast.textContent = message;
+
+        toastStack.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3500);
+    }
+
+
+    /* =====================================================
+       AUTHENTICATION
+    ===================================================== */
+
+    async function loadCurrentUser() {
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API}/auth/me`,
+                    {
+                        credentials: "include"
+                    }
+                );
+
+            if (!response.ok) {
+
+                if (response.status === 401) {
+                    window.location.href = "index.html";
+                    return false;
+                }
+
+                throw new Error(
+                    "Failed to load current user."
+                );
+            }
+
+            const data =
+                await response.json();
+
+            currentUser =
+                data.user || data;
+
+            updateUserUI();
+
+            return true;
+
+        } catch (error) {
+
+            console.error(
+                "HOME USER ERROR:",
+                error
             );
+
+            window.location.href =
+                "index.html";
+
+            return false;
+        }
+    }
+
+
+    function updateUserUI() {
+
+        if (!currentUser) {
+            return;
         }
 
-        allOffers = await response.json();
+        const name =
+            currentUser.fullName ||
+            currentUser.full_name ||
+            currentUser.name ||
+            "User";
 
-        renderOffers();
+        if (userNameElementHome) {
+            userNameElementHome.textContent =
+                name;
+        }
 
-    } catch (error) {
-
-        console.error(
-            "OFFERS LOAD ERROR:",
-            error
-        );
-
-        showToast(
-            "Failed to load offers."
-        );
-
+        if (profileInitialElementHome) {
+            profileInitialElementHome.textContent =
+                getInitials(name);
+        }
     }
 
-}
 
+    /* =====================================================
+       OFFERS
+    ===================================================== */
 
-/* ==========================================
-   Determine Offer Ownership
-========================================== */
+    async function loadOffers() {
 
-function isMyOffer(offer) {
+        try {
 
-    if (!currentUser || !offer) {
-        return false;
+            const response =
+                await fetch(
+                    `${API}/offers`,
+                    {
+                        credentials: "include"
+                    }
+                );
+
+            if (response.status === 401) {
+
+                window.location.href =
+                    "index.html";
+
+                return;
+            }
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load offers."
+                );
+            }
+
+            const data =
+                await response.json();
+
+            /*
+             * Important:
+             *
+             * Do NOT redeclare allOffers here.
+             * We must update the state variable.
+             */
+
+            if (Array.isArray(data)) {
+                allOffers = data;
+            } else if (Array.isArray(data.offers)) {
+                allOffers = data.offers;
+            } else {
+                allOffers = [];
+            }
+
+            renderOffers();
+
+            return allOffers;
+
+        } catch (error) {
+
+            console.error(
+                "HOME OFFERS ERROR:",
+                error
+            );
+
+            showToast(
+                "Failed to load offers."
+            );
+
+            return [];
+        }
     }
 
-    return Number(offer.user_id) ===
-        Number(currentUser.id);
 
-}
+    /* =====================================================
+       OFFER OWNERSHIP
+    ===================================================== */
+
+    function isMyOffer(offer) {
+
+        if (!currentUser || !offer) {
+            return false;
+        }
+
+        return (
+            Number(offer.user_id) ===
+            Number(currentUser.id)
+        );
+    }
 
 
-/* ==========================================
-   Render Offers
-========================================== */
+    /* =====================================================
+   RENDER OFFERS
+    ===================================================== */
 
-function renderOffers() {
+    function renderOffers() {
 
-    const myOffers =
-        allOffers.filter(
+        const myOffers = allOffers.filter(
             offer =>
                 isMyOffer(offer) &&
-                offer.status === "OPEN"
+                isActiveOffer(offer)
         );
 
-    const joinedOffers =
-        allOffers.filter(
+        const joinedOffers = allOffers.filter(
             offer =>
                 !isMyOffer(offer) &&
                 Number(offer.joined) === 1
         );
 
-    renderMyOffers(myOffers);
+        renderMyOffers(myOffers);
+        renderJoinedOffers(joinedOffers);
 
-    renderJoinedOffers(joinedOffers);
+        myOffers.forEach(offer => {
+            loadHomeOfferDetails(offer.id);
+        });
 
-    if (activeCountElement) {
-        activeCountElement.textContent =
-            `${myOffers.length} ${myOffers.length === 1
-                ? "offer"
-                : "offers"
-            }`;
+        if (activeCountElement) {
+            activeCountElement.textContent =
+                `${myOffers.length} ${myOffers.length === 1
+                    ? "offer"
+                    : "offers"
+                }`;
+        }
+
+        if (joinedCountElement) {
+            joinedCountElement.textContent =
+                `${joinedOffers.length} ${joinedOffers.length === 1
+                    ? "offer"
+                    : "offers"
+                }`;
+        }
     }
 
-    if (joinedCountElement) {
-        joinedCountElement.textContent =
-            `${joinedOffers.length} ${joinedOffers.length === 1
-                ? "offer"
-                : "offers"
-            }`;
-    }
 
-}
+    /* =====================================================
+       LOAD HOME OFFER DETAILS
+    ===================================================== */
 
+    async function loadHomeOfferDetails(offerId) {
 
-/* ==========================================
-   My Offers
-========================================== */
+        try {
 
-function renderMyOffers(offers) {
+            const response = await fetch(
+                `${API}/offers/${offerId}/participants`,
+                {
+                    credentials: "include"
+                }
+            );
 
-    if (!myOffersContainer) {
-        return;
-    }
+            const result = await response.json();
 
-    if (!offers.length) {
+            if (!response.ok || result.success === false) {
+                throw new Error(
+                    result.message ||
+                    "Failed to load offer details."
+                );
+            }
 
-        myOffersContainer.innerHTML = `
-            <div class="empty-state">
+            renderHomeOfferDetails(
+                offerId,
+                result
+            );
 
-                <div class="empty-icon">
-                    🍽️
+        } catch (error) {
+
+            console.error(
+                `HOME OFFER ${offerId} DETAILS ERROR:`,
+                error
+            );
+
+            const participantsContainer =
+                document.querySelector(
+                    `[data-home-participants="${offerId}"]`
+                );
+
+            if (participantsContainer) {
+
+                participantsContainer.innerHTML = `
+                <div class="home-participants-loading">
+                    Failed to load participants.
                 </div>
-
-                <h3>
-                    No active offers
-                </h3>
-
-                <p>
-                    Create an offer and invite your
-                    office colleagues to join.
-                </p>
-
-                <a
-                    class="button button-primary"
-                    href="create-offer.html">
-                    Create Offer
-                </a>
-
-            </div>
-        `;
-
-        return;
+            `;
+            }
+        }
     }
 
-    myOffersContainer.innerHTML =
-        offers.map(createMyOfferCard).join("");
 
-}
+    /* =====================================================
+       RENDER HOME OFFER DETAILS
+    ===================================================== */
+
+    function renderHomeOfferDetails(
+        offerId,
+        result
+    ) {
+
+        /*
+         * Safely read API response.
+         */
+        const participants =
+            Array.isArray(result?.participants)
+                ? result.participants
+                : [];
 
 
-/* ==========================================
-   Joined Offers
-========================================== */
+        const totals =
+            result?.totals || {};
 
-function renderJoinedOffers(offers) {
 
-    if (!joinedOffersContainer) {
-        return;
-    }
+        /*
+         * =================================================
+         * PARTICIPANTS
+         * =================================================
+         */
 
-    if (!offers.length) {
+        const participantsContainer =
+            document.querySelector(
+                `[data-home-participants="${offerId}"]`
+            );
 
-        joinedOffersContainer.innerHTML = `
-            <div class="empty-state">
 
-                <div class="empty-icon">
-                    👥
+        if (participantsContainer) {
+
+            /*
+             * No participants.
+             */
+            if (!participants.length) {
+
+                participantsContainer.innerHTML = `
+                <div class="home-participants-loading">
+                    No one has joined this offer yet.
                 </div>
+            `;
 
-                <h3>
-                    No joined offers
-                </h3>
+            }
 
-                <p>
-                    Offers you join will appear here.
-                </p>
+            /*
+             * Participants exist.
+             */
+            else {
 
-            </div>
-        `;
+                participantsContainer.innerHTML =
+                    participants
+                        .map(
+                            participant =>
+                                createHomeParticipantRow(
+                                    participant
+                                )
+                        )
+                        .join("");
 
-        return;
+            }
+
+        }
+
+
+        /*
+         * =================================================
+         * PAYMENT TOTALS
+         * =================================================
+         */
+
+        const paymentTotals =
+            totals.paymentTotals || {};
+
+
+        /*
+         * bKash
+         */
+        updateHomePaymentSummary(
+            offerId,
+            "bkash",
+            paymentTotals.bkash
+        );
+
+
+        /*
+         * City Bank
+         *
+         * Backend returns cityBank.
+         * HTML uses city_bank.
+         */
+        updateHomePaymentSummary(
+            offerId,
+            "city_bank",
+            paymentTotals.cityBank
+        );
+
+
+        /*
+         * Cash
+         */
+        updateHomePaymentSummary(
+            offerId,
+            "cash",
+            paymentTotals.cash
+        );
+
+
+        /*
+         * Grand total.
+         *
+         * Your API currently returns:
+         *
+         * totals.totalAmount
+         *
+         * Example:
+         * 0
+         */
+        updateHomePaymentSummary(
+            offerId,
+            "total",
+            totals.totalAmount
+        );
+
     }
 
-    joinedOffersContainer.innerHTML =
-        offers.map(createJoinedOfferCard).join("");
 
-}
+    /* =====================================================
+       CREATE PARTICIPANT ROW
+    ===================================================== */
+
+    function createHomeParticipantRow(participant) {
+
+        if (!participant) {
+            return "";
+        }
 
 
-/* ==========================================
-   My Offer Card
-========================================== */
+        const name =
+            participant.full_name ||
+            participant.fullName ||
+            participant.name ||
+            "Unknown";
 
-function createMyOfferCard(offer) {
 
-    const participantCount =
-        Number(offer.participant_count) || 0;
+        const paymentMethod =
+            participant.payment_method ||
+            participant.paymentMethod ||
+            "-";
 
-    const maxPeople =
-        Number(offer.max_people) || 0;
 
-    return `
-        <article class="offer-card">
+        /*
+         * Make payment method user-friendly.
+         */
+        let paymentLabel =
+            String(paymentMethod);
 
-            <div class="offer-card-header">
 
-                <div>
+        if (paymentLabel === "bkash") {
+            paymentLabel = "bKash";
+        }
+
+        else if (
+            paymentLabel === "city_bank" ||
+            paymentLabel === "cityBank"
+        ) {
+            paymentLabel = "City Bank";
+        }
+
+        else if (paymentLabel === "cash") {
+            paymentLabel = "Cash";
+        }
+
+
+        return `
+        <div class="home-participant-row">
+
+            <span class="home-participant-name">
+                ${escapeHTML(name)}
+            </span>
+
+            <span class="home-participant-payment">
+                ${escapeHTML(paymentLabel)}
+            </span>
+
+        </div>
+    `;
+
+    }
+
+
+    /* =====================================================
+       UPDATE HOME PAYMENT SUMMARY
+    ===================================================== */
+
+    function updateHomePaymentSummary(
+        offerId,
+        method,
+        amount
+    ) {
+
+        const element =
+            document.querySelector(
+                `[data-payment-summary="${method}"][data-offer="${offerId}"]`
+            );
+
+
+        if (!element) {
+            return;
+        }
+
+
+        const value =
+            Number(amount) || 0;
+
+
+        element.textContent =
+            `৳${value.toFixed(2)}`;
+
+    }
+
+
+    /* =====================================================
+       ACTIVE OFFER CHECK
+    ===================================================== */
+
+    function isActiveOffer(offer) {
+
+        if (!offer) {
+            return false;
+        }
+
+
+        const status =
+            String(offer.status || "")
+                .trim()
+                .toUpperCase();
+
+
+        /*
+         * Your current backend data shows:
+         *
+         * OPEN
+         * ENDED
+         * completed
+         * dismissed
+         *
+         * Only OPEN should appear under
+         * "My Offers".
+         */
+        return status === "OPEN";
+
+    }
+
+
+    /* =====================================================
+       MY OFFERS
+    ===================================================== */
+
+    function renderMyOffers(offers) {
+
+        if (!myOffersContainer) {
+            return;
+        }
+
+        if (!offers.length) {
+
+            myOffersContainer.innerHTML = `
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        🍽️
+                    </div>
 
                     <h3>
-                        ${escapeHTML(offer.food_name)}
+                        No active offers
                     </h3>
 
-                    <p class="offer-restaurant">
-                        ${escapeHTML(
-        offer.restaurant_name
-    )}
+                    <p>
+                        Create an offer and invite your
+                        office colleagues to join.
+                    </p>
+
+                    <a
+                        class="button button-primary"
+                        href="create-offer.html">
+                        Create Offer
+                    </a>
+
+                </div>
+            `;
+
+            return;
+        }
+
+        myOffersContainer.innerHTML =
+            offers
+                .map(createMyOfferCard)
+                .join("");
+    }
+
+
+    /* =====================================================
+       JOINED OFFERS
+    ===================================================== */
+
+    function renderJoinedOffers(offers) {
+
+        if (!joinedOffersContainer) {
+            return;
+        }
+
+        if (!offers.length) {
+
+            joinedOffersContainer.innerHTML = `
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        👥
+                    </div>
+
+                    <h3>
+                        No joined offers
+                    </h3>
+
+                    <p>
+                        Offers you join will appear here.
                     </p>
 
                 </div>
+            `;
 
-                <span
-                    class="home-status home-status-active">
-                    Active
-                </span>
+            return;
+        }
 
-            </div>
+        joinedOffersContainer.innerHTML =
+            offers
+                .map(createJoinedOfferCard)
+                .join("");
+    }
 
 
-            <div class="offer-card-body">
+    /* =====================================================
+       MY OFFER CARD
+    ===================================================== */
 
-                <div class="offer-stat-row">
+    function createMyOfferCard(offer) {
 
-                    <div class="offer-stat">
+        const participantCount =
+            Number(
+                offer.participant_count ??
+                offer.joined_count ??
+                offer.joined ??
+                0
+            );
+
+        const maxPeople =
+            Number(
+                offer.max_people ??
+                offer.maxParticipants ??
+                offer.max_participants ??
+                0
+            );
+
+        const foodPrice =
+            Number(
+                offer.food_price ??
+                offer.foodPrice ??
+                0
+            );
+
+        const deliveryCharge =
+            Number(
+                offer.delivery_charge ??
+                offer.deliveryCharge ??
+                0
+            );
+
+        const deliveryPerPerson =
+            maxPeople > 0
+                ? deliveryCharge / maxPeople
+                : 0;
+
+        const costPerPerson =
+            foodPrice + deliveryPerPerson;
+
+        const totalAmount =
+            costPerPerson * participantCount;
+
+        const progress =
+            maxPeople > 0
+                ? Math.min(
+                    100,
+                    Math.round(
+                        (
+                            participantCount /
+                            maxPeople
+                        ) * 100
+                    )
+                )
+                : 0;
+
+        return `
+            <article
+                class="home-offer-card"
+                data-home-offer-id="${offer.id}">
+
+                <div class="home-offer-header">
+
+                    <div class="home-offer-title">
+
+                        <h3>
+                            ${escapeHTML(
+            offer.food_name ||
+            offer.foodName ||
+            "Food Offer"
+        )}
+                        </h3>
+
+                        <p>
+                            ${escapeHTML(
+            offer.restaurant_name ||
+            offer.restaurantName ||
+            "-"
+        )}
+                        </p>
+
+                    </div>
+
+                    <div class="home-offer-status">
+
+                        <span
+                            class="home-status home-status-active">
+                            ● Active
+                        </span>
+
+                        <span
+                            class="home-offer-countdown"
+                            data-countdown="${offer.id}">
+                            ${formatCountdown(
+            offer.end_time ||
+            offer.endTime
+        )}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="home-offer-stats">
+
+                    <div class="home-offer-stat">
 
                         <span>
-                            Participants
+                            Joined
                         </span>
 
                         <strong>
                             ${participantCount} / ${maxPeople}
                         </strong>
+
+                    </div>
+
+
+                    <div class="home-offer-stat">
+
+                        <span>
+                            Progress
+                        </span>
+
+                        <strong>
+                            ${progress}%
+                        </strong>
+
+                    </div>
+
+
+                    <div class="home-offer-stat">
+
+                        <span>
+                            Cost per person
+                        </span>
+
+                        <strong>
+                            ৳${costPerPerson.toFixed(2)}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="home-offer-progress">
+
+                    <div
+                        class="home-offer-progress-track">
+
+                        <div
+                            class="home-offer-progress-fill"
+                            style="width:${progress}%">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="home-offer-management">
+
+                    <button
+                        class="button button-primary button-small"
+                        type="button"
+                        data-manage-offer="${offer.id}">
+                        Manage Offer
+                    </button>
+
+                    <button
+                        class="button button-secondary button-small"
+                        type="button"
+                        data-edit-offer="${offer.id}">
+                        Edit Offer
+                    </button>
+
+                    <button
+                        class="button button-danger button-small"
+                        type="button"
+                        data-dismiss-offer="${offer.id}">
+                        Dismiss Offer
+                    </button>
+
+                </div>
+
+
+                <div class="home-financial-section">
+
+                    <div class="home-subsection-heading">
+                        <span>
+                            Financial Summary
+                        </span>
+                    </div>
+
+                    <div class="home-financial-grid">
+
+                        <div class="home-financial-item">
+
+                            <span>
+                                Food Price
+                            </span>
+
+                            <strong>
+                                ৳${foodPrice.toFixed(2)}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="home-financial-item">
+
+                            <span>
+                                Delivery Charge
+                            </span>
+
+                            <strong>
+                                ৳${deliveryCharge.toFixed(2)}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="home-financial-item">
+
+                            <span>
+                                Total Amount
+                            </span>
+
+                            <strong>
+                                ৳${totalAmount.toFixed(2)}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="home-financial-item">
+
+                            <span>
+                                Max Participants
+                            </span>
+
+                            <strong>
+                                ${maxPeople}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="home-people-section">
+
+                    <div class="home-subsection-heading">
+
+                        <span>
+                            People Joined
+                        </span>
+
+                        <strong>
+                            (${participantCount})
+                        </strong>
+
+                    </div>
+
+                    <div
+                        class="home-participants-list"
+                        data-home-participants="${offer.id}">
+
+                        <div class="home-participants-loading">
+                            Open Manage Offer to view participants.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="home-payment-section">
+
+    <div class="home-subsection-heading">
+        <span>
+            Payment Summary
+        </span>
+    </div>
+
+    <div class="home-payment-summary">
+
+        <div class="home-payment-summary-item">
+
+            <span>
+                bKash
+            </span>
+
+            <strong
+                data-payment-summary="bkash"
+                data-offer="${offer.id}">
+                ৳0.00
+            </strong>
+
+        </div>
+
+        <div class="home-payment-summary-item">
+
+            <span>
+                City Bank
+            </span>
+
+            <strong
+                data-payment-summary="city_bank"
+                data-offer="${offer.id}">
+                ৳0.00
+            </strong>
+
+        </div>
+
+        <div class="home-payment-summary-item">
+
+            <span>
+                Cash
+            </span>
+
+            <strong
+                data-payment-summary="cash"
+                data-offer="${offer.id}">
+                ৳0.00
+            </strong>
+
+        </div>
+
+        <div class="home-payment-summary-item home-payment-total">
+
+            <span>
+                Total Collected
+            </span>
+
+            <strong
+                data-payment-summary="total"
+                data-offer="${offer.id}">
+                ৳0.00
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+            </article>
+        `;
+    }
+
+
+    /* =====================================================
+       JOINED OFFER CARD
+    ===================================================== */
+
+    function createJoinedOfferCard(offer) {
+
+        const participantCount =
+            Number(
+                offer.participant_count ??
+                offer.joined_count ??
+                offer.joined ??
+                0
+            );
+
+        const maxPeople =
+            Number(
+                offer.max_people ??
+                offer.maxParticipants ??
+                offer.max_participants ??
+                0
+            );
+
+        return `
+            <article class="offer-card">
+
+                <div class="offer-card-header">
+
+                    <div>
+
+                        <h3>
+                            ${escapeHTML(
+            offer.food_name ||
+            offer.foodName ||
+            "Food Offer"
+        )}
+                        </h3>
+
+                        <p class="offer-restaurant">
+                            ${escapeHTML(
+            offer.restaurant_name ||
+            offer.restaurantName ||
+            "-"
+        )}
+                        </p>
+
+                    </div>
+
+                    <span
+                        class="home-status home-status-joined">
+                        Joined
+                    </span>
+
+                </div>
+
+
+                <div class="offer-card-body">
+
+                    <div class="offer-stat-row">
+
+                        <div class="offer-stat">
+
+                            <span>
+                                Created By
+                            </span>
+
+                            <strong>
+                                ${escapeHTML(
+            offer.full_name ||
+            offer.fullName ||
+            "Unknown"
+        )}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="offer-stat">
+
+                            <span>
+                                Participants
+                            </span>
+
+                            <strong>
+                                ${participantCount} / ${maxPeople}
+                            </strong>
+
+                        </div>
 
                     </div>
 
@@ -527,105 +1291,9 @@ function createMyOfferCard(offer) {
                         <strong
                             data-countdown="${offer.id}">
                             ${formatCountdown(
-        offer.end_time
-    )}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="offer-card-footer">
-
-                <span class="offer-creator">
-                    Created by You
-                </span>
-
-                <button
-                    class="button button-primary button-small"
-                    type="button"
-                    data-manage-offer="${offer.id}">
-                    Manage Offer
-                </button>
-
-            </div>
-
-        </article>
-    `;
-
-}
-
-
-/* ==========================================
-   Joined Offer Card
-========================================== */
-
-function createJoinedOfferCard(offer) {
-
-    const participantCount =
-        Number(offer.participant_count) || 0;
-
-    const maxPeople =
-        Number(offer.max_people) || 0;
-
-    return `
-        <article class="offer-card">
-
-            <div class="offer-card-header">
-
-                <div>
-
-                    <h3>
-                        ${escapeHTML(offer.food_name)}
-                    </h3>
-
-                    <p class="offer-restaurant">
-                        ${escapeHTML(
-        offer.restaurant_name
-    )}
-                    </p>
-
-                </div>
-
-                <span
-                    class="home-status home-status-joined">
-                    Joined
-                </span>
-
-            </div>
-
-
-            <div class="offer-card-body">
-
-                <div class="offer-stat-row">
-
-                    <div class="offer-stat">
-
-                        <span>
-                            Created By
-                        </span>
-
-                        <strong>
-                            ${escapeHTML(
-        offer.full_name ||
-        "Unknown"
-    )}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="offer-stat">
-
-                        <span>
-                            Participants
-                        </span>
-
-                        <strong>
-                            ${participantCount} / ${maxPeople}
+            offer.end_time ||
+            offer.endTime
+        )}
                         </strong>
 
                     </div>
@@ -633,727 +1301,844 @@ function createJoinedOfferCard(offer) {
                 </div>
 
 
-                <div class="offer-stat">
+                <div class="offer-card-footer">
 
-                    <span>
-                        Time Left
+                    <span class="offer-creator">
+                        You joined this offer
                     </span>
 
-                    <strong
-                        data-countdown="${offer.id}">
-                        ${formatCountdown(
-        offer.end_time
-    )}
-                    </strong>
+                    <span
+                        class="home-status home-status-joined">
+                        ✓ Joined
+                    </span>
 
                 </div>
 
-            </div>
+            </article>
+        `;
+    }
 
 
-            <div class="offer-card-footer">
+    /* =====================================================
+       MANAGE OFFER
+    ===================================================== */
 
-                <span class="offer-creator">
-                    You joined this offer
-                </span>
+    async function openManageOffer(offerId) {
 
-                <span
-                    class="home-status home-status-joined">
-                    ✓ Joined
-                </span>
+        const offer =
+            allOffers.find(
+                item =>
+                    Number(item.id) ===
+                    Number(offerId)
+            );
 
-            </div>
+        if (!offer) {
 
-        </article>
-    `;
+            showToast(
+                "Offer not found."
+            );
 
-}
+            return;
+        }
 
+        if (!isMyOffer(offer)) {
 
-/* ==========================================
-   Manage Offer
-========================================== */
+            showToast(
+                "Only the creator can manage this offer."
+            );
 
-async function openManageOffer(offerId) {
+            return;
+        }
 
-    const offer =
-        allOffers.find(
-            item =>
-                Number(item.id) ===
-                Number(offerId)
+        currentManageOffer = offer;
+
+        if (manageSection) {
+            manageSection.hidden = false;
+        }
+
+        if (manageFoodElement) {
+            manageFoodElement.textContent =
+                offer.food_name ||
+                offer.foodName ||
+                "-";
+        }
+
+        if (manageRestaurantElement) {
+            manageRestaurantElement.textContent =
+                offer.restaurant_name ||
+                offer.restaurantName ||
+                "-";
+        }
+
+        if (manageEndElement) {
+            manageEndElement.textContent =
+                formatDateTime(
+                    offer.end_time ||
+                    offer.endTime
+                );
+        }
+
+        updateManageStatus();
+
+        await loadParticipants(
+            offer.id
         );
 
-    if (!offer) {
-        showToast("Offer not found.");
-        return;
+        if (manageSection) {
+
+            manageSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
     }
 
-    if (!isMyOffer(offer)) {
-        showToast(
-            "Only the creator can manage this offer."
-        );
-        return;
+
+    function closeManageOffer() {
+
+        currentManageOffer = null;
+
+        if (manageSection) {
+            manageSection.hidden = true;
+        }
     }
 
-    currentManageOffer = offer;
 
-    manageSection.hidden = false;
+    /* =====================================================
+       MANAGE STATUS
+    ===================================================== */
 
-    manageFoodElement.textContent =
-        offer.food_name || "-";
+    function updateManageStatus() {
 
-    manageRestaurantElement.textContent =
-        offer.restaurant_name || "-";
+        if (
+            !currentManageOffer ||
+            !manageStatusElement
+        ) {
+            return;
+        }
 
-    manageEndElement.textContent =
-        formatDateTime(offer.end_time);
+        const status =
+            String(
+                currentManageOffer.status ||
+                "OPEN"
+            ).toUpperCase();
 
-    updateManageStatus();
+        manageStatusElement.className =
+            "status-pill";
 
-    await loadParticipants(offer.id);
+        if (status === "SUCCESSFUL") {
 
-    manageSection.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
+            manageStatusElement.textContent =
+                "Successful";
 
-}
+            manageStatusElement.classList.add(
+                "home-status",
+                "home-status-successful"
+            );
 
-
-/* ==========================================
-   Close Manage
-========================================== */
-
-function closeManageOffer() {
-
-    currentManageOffer = null;
-
-    if (manageSection) {
-        manageSection.hidden = true;
-    }
-
-    if (countdownTimer) {
-        clearInterval(countdownTimer);
-        countdownTimer = null;
-    }
-
-}
-
-
-/* ==========================================
-   Manage Status
-========================================== */
-
-function updateManageStatus() {
-
-    if (!currentManageOffer) {
-        return;
-    }
-
-    const status =
-        currentManageOffer.status;
-
-    manageStatusElement.className =
-        "status-pill";
-
-    if (status === "SUCCESSFUL") {
-
-        manageStatusElement.textContent =
-            "Successful";
-
-        manageStatusElement.classList.add(
-            "home-status",
-            "home-status-successful"
-        );
-
-        endOfferButton.disabled = true;
-
-        return;
-    }
-
-    if (status === "ENDED") {
-
-        manageStatusElement.textContent =
-            "Ended";
-
-        manageStatusElement.classList.add(
-            "home-status",
-            "home-status-ended"
-        );
-
-        endOfferButton.disabled = true;
-
-        return;
-    }
-
-    manageStatusElement.textContent =
-        "Active";
-
-    manageStatusElement.classList.add(
-        "home-status",
-        "home-status-active"
-    );
-
-    endOfferButton.disabled = false;
-
-}
-
-
-/* ==========================================
-   Participants
-========================================== */
-
-async function loadParticipants(offerId) {
-
-    if (!participantsList) {
-        return;
-    }
-
-    participantsList.innerHTML = `
-        <div class="loading-state">
-            Loading participants...
-        </div>
-    `;
-
-    try {
-
-        const response = await fetch(
-            `${API}/offers/${offerId}/participants`,
-            {
-                credentials: "include"
+            if (endOfferButton) {
+                endOfferButton.disabled = true;
             }
+
+            return;
+        }
+
+
+        if (
+            status === "ENDED" ||
+            status === "DISMISSED" ||
+            status === "COMPLETED"
+        ) {
+
+            manageStatusElement.textContent =
+                "Ended";
+
+            manageStatusElement.classList.add(
+                "home-status",
+                "home-status-ended"
+            );
+
+            if (endOfferButton) {
+                endOfferButton.disabled = true;
+            }
+
+            return;
+        }
+
+
+        manageStatusElement.textContent =
+            "Active";
+
+        manageStatusElement.classList.add(
+            "home-status",
+            "home-status-active"
         );
 
-        const result =
-            await response.json();
+        if (endOfferButton) {
+            endOfferButton.disabled = false;
+        }
+    }
 
-        if (!response.ok) {
-            throw new Error(
-                result.message ||
+
+    /* =====================================================
+       PARTICIPANTS
+    ===================================================== */
+
+    async function loadParticipants(offerId) {
+
+        if (!participantsList) {
+            return;
+        }
+
+        participantsList.innerHTML = `
+            <div class="loading-state">
+                Loading participants...
+            </div>
+        `;
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API}/offers/${offerId}/participants`,
+                    {
+                        credentials: "include"
+                    }
+                );
+
+            const result =
+                await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.message ||
+                    "Failed to load participants."
+                );
+            }
+
+            const participants =
+                Array.isArray(result)
+                    ? result
+                    : (
+                        result.participants ||
+                        []
+                    );
+
+            renderParticipants(
+                participants
+            );
+
+        } catch (error) {
+
+            console.error(
+                "HOME PARTICIPANTS ERROR:",
+                error
+            );
+
+            participantsList.innerHTML = `
+                <div class="loading-state">
+                    ${escapeHTML(
+                error.message ||
                 "Failed to load participants."
+            )}
+                </div>
+            `;
+        }
+    }
+
+
+    function renderParticipants(
+        participants
+    ) {
+
+        const total =
+            participants.length;
+
+        const received =
+            participants.filter(
+                participant =>
+                    Number(
+                        participant.food_received
+                    ) === 1
+            ).length;
+
+        const maxPeople =
+            Number(
+                currentManageOffer?.max_people
+            ) || total;
+
+        if (manageCountElement) {
+
+            manageCountElement.textContent =
+                `${total} / ${maxPeople}`;
+        }
+
+        if (successBox) {
+
+            successBox.hidden = !(
+                total > 0 &&
+                received === total
             );
         }
 
-        renderParticipants(
-            result.participants || []
-        );
 
-    } catch (error) {
+        if (!participants.length) {
 
-        console.error(
-            "PARTICIPANTS ERROR:",
-            error
-        );
+            participantsList.innerHTML = `
+                <div class="loading-state">
+                    No one has joined this offer yet.
+                </div>
+            `;
 
-        participantsList.innerHTML = `
-            <div class="loading-state">
-                ${escapeHTML(
-            error.message ||
-            "Failed to load participants."
-        )}
-            </div>
-        `;
+            return;
+        }
 
+
+        participantsList.innerHTML =
+            participants
+                .map(createParticipantRow)
+                .join("");
     }
 
-}
 
-
-/* ==========================================
-   Render Participants
-========================================== */
-
-function renderParticipants(participants) {
-
-    const total =
-        participants.length;
-
-    const received =
-        participants.filter(
-            participant =>
-                Number(
-                    participant.food_received
-                ) === 1
-        ).length;
-
-    const maxPeople =
-        Number(
-            currentManageOffer?.max_people
-        ) || total;
-
-    manageCountElement.textContent =
-        `${total} / ${maxPeople}`;
-
-    /*
-     * Everyone received food.
-     */
-    if (
-        total > 0 &&
-        received === total
+    function createParticipantRow(
+        participant
     ) {
 
-        successBox.hidden = false;
+        const received =
+            Number(
+                participant.food_received
+            ) === 1;
 
-    } else {
+        const name =
+            participant.full_name ||
+            participant.fullName ||
+            "Unknown";
 
-        successBox.hidden = true;
+        const initials =
+            getInitials(name);
 
-    }
+        let avatar = initials;
 
+        if (participant.profile_picture) {
 
-    if (!participants.length) {
-
-        participantsList.innerHTML = `
-            <div class="loading-state">
-                No one has joined this offer yet.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    participantsList.innerHTML =
-        participants.map(
-            createParticipantRow
-        ).join("");
-
-}
-
-
-/* ==========================================
-   Participant Row
-========================================== */
-
-function createParticipantRow(participant) {
-
-    const received =
-        Number(
-            participant.food_received
-        ) === 1;
-
-    const name =
-        participant.full_name ||
-        "Unknown";
-
-    const initials =
-        getInitials(name);
-
-    const avatar =
-        participant.profile_picture
-            ? `
+            avatar = `
                 <img
                     src="${escapeHTML(
                 participant.profile_picture
             )}"
                     alt=""
                 />
-            `
-            : initials;
-
-    return `
-        <div class="participant-row">
-
-            <div class="participant-avatar">
-                ${avatar}
-            </div>
-
-
-            <div class="participant-info">
-
-                <span class="participant-name">
-                    ${escapeHTML(name)}
-                </span>
-
-                <span class="participant-time">
-                    Joined
-                    ${formatDateTime(
-        participant.joined_at
-    )}
-                </span>
-
-            </div>
-
-
-            <label class="received-control">
-
-                <input
-                    type="checkbox"
-                    data-received-user="${participant.user_id}"
-                    ${received ? "checked" : ""}
-                />
-
-                <span>
-                    Food Received
-                </span>
-
-            </label>
-
-        </div>
-    `;
-
-}
-
-
-/* ==========================================
-   Food Received
-========================================== */
-
-async function updateFoodReceived(
-    userId,
-    received
-) {
-
-    if (!currentManageOffer) {
-        return;
-    }
-
-    try {
-
-        const response = await fetch(
-            `${API}/offers/${currentManageOffer.id}/participants/${userId}/received`,
-            {
-                method: "PATCH",
-
-                credentials: "include",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                    received
-                })
-            }
-        );
-
-        const result =
-            await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                result.message ||
-                "Failed to update food status."
-            );
+            `;
         }
 
-        showToast(
-            received
-                ? "Food marked as received."
-                : "Food marked as not received."
-        );
+        return `
+            <div class="participant-row">
 
-        if (result.successful) {
+                <div class="participant-avatar">
+                    ${avatar}
+                </div>
+
+
+                <div class="participant-info">
+
+                    <span class="participant-name">
+                        ${escapeHTML(name)}
+                    </span>
+
+                    <span class="participant-time">
+                        Joined
+                        ${formatDateTime(
+            participant.joined_at
+        )}
+                    </span>
+
+                </div>
+
+
+                <label class="received-control">
+
+                    <input
+                        type="checkbox"
+                        data-received-user="${participant.user_id}"
+                        ${received ? "checked" : ""}
+                    />
+
+                    <span>
+                        Food Received
+                    </span>
+
+                </label>
+
+            </div>
+        `;
+    }
+
+
+    /* =====================================================
+       FOOD RECEIVED
+    ===================================================== */
+
+    async function updateFoodReceived(
+        userId,
+        received
+    ) {
+
+        if (!currentManageOffer) {
+            return;
+        }
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API}/offers/${currentManageOffer.id}/participants/${userId}/received`,
+                    {
+                        method: "PATCH",
+
+                        credentials: "include",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            received
+                        })
+                    }
+                );
+
+            const result =
+                await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.message ||
+                    "Failed to update food status."
+                );
+            }
+
+            showToast(
+                received
+                    ? "Food marked as received."
+                    : "Food marked as not received."
+            );
+
+
+            if (result.successful) {
+
+                currentManageOffer.status =
+                    "SUCCESSFUL";
+
+                updateManageStatus();
+            }
+
+
+            await loadParticipants(
+                currentManageOffer.id
+            );
+
+            await loadOffers();
+
+        } catch (error) {
+
+            console.error(
+                "HOME FOOD RECEIVED ERROR:",
+                error
+            );
+
+            showToast(
+                error.message ||
+                "Failed to update food status."
+            );
+
+            await loadParticipants(
+                currentManageOffer.id
+            );
+        }
+    }
+
+
+    /* =====================================================
+       END OFFER
+    ===================================================== */
+
+    async function endCurrentOffer() {
+
+        if (!currentManageOffer) {
+            return;
+        }
+
+        const status =
+            String(
+                currentManageOffer.status ||
+                "OPEN"
+            ).toUpperCase();
+
+        if (status !== "OPEN") {
+            return;
+        }
+
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to end this offer?\n\nPeople will no longer be able to join it."
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API}/offers/${currentManageOffer.id}/end`,
+                    {
+                        method: "POST",
+                        credentials: "include"
+                    }
+                );
+
+            const result =
+                await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.message ||
+                    "Failed to end offer."
+                );
+            }
 
             currentManageOffer.status =
-                "SUCCESSFUL";
+                "ENDED";
 
             updateManageStatus();
 
-        }
+            showToast(
+                "Offer ended successfully."
+            );
 
-        await loadParticipants(
-            currentManageOffer.id
-        );
+            await loadOffers();
 
-        await loadOffers();
+            await loadParticipants(
+                currentManageOffer.id
+            );
 
-    } catch (error) {
+        } catch (error) {
 
-        console.error(
-            "FOOD STATUS ERROR:",
-            error
-        );
+            console.error(
+                "HOME END OFFER ERROR:",
+                error
+            );
 
-        showToast(
-            error.message ||
-            "Failed to update food status."
-        );
-
-        await loadParticipants(
-            currentManageOffer.id
-        );
-
-    }
-
-}
-
-
-/* ==========================================
-   End Offer
-========================================== */
-
-async function endCurrentOffer() {
-
-    if (!currentManageOffer) {
-        return;
-    }
-
-    if (
-        currentManageOffer.status !==
-        "OPEN"
-    ) {
-        return;
-    }
-
-    const confirmed =
-        confirm(
-            "Are you sure you want to end this offer?\n\nPeople will no longer be able to join it."
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-    try {
-
-        const response = await fetch(
-            `${API}/offers/${currentManageOffer.id}/end`,
-            {
-                method: "POST",
-                credentials: "include"
-            }
-        );
-
-        const result =
-            await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                result.message ||
+            showToast(
+                error.message ||
                 "Failed to end offer."
             );
         }
-
-        currentManageOffer.status =
-            "ENDED";
-
-        updateManageStatus();
-
-        showToast(
-            "Offer ended successfully."
-        );
-
-        await loadOffers();
-
-        await loadParticipants(
-            currentManageOffer.id
-        );
-
-    } catch (error) {
-
-        console.error(
-            "END OFFER ERROR:",
-            error
-        );
-
-        showToast(
-            error.message ||
-            "Failed to end offer."
-        );
-
     }
 
-}
 
+    /* =====================================================
+       DISMISS OFFER
+    ===================================================== */
 
-/* ==========================================
-   Countdown
-========================================== */
+    async function dismissOffer(offerId) {
 
-function updateCountdowns() {
+        const offer =
+            allOffers.find(
+                item =>
+                    Number(item.id) ===
+                    Number(offerId)
+            );
 
-    document
-        .querySelectorAll("[data-countdown]")
-        .forEach(element => {
+        if (!offer) {
+            return;
+        }
 
-            const offerId =
-                element.dataset.countdown;
+        if (!isMyOffer(offer)) {
+            return;
+        }
 
-            const offer =
-                allOffers.find(
-                    item =>
-                        String(item.id) ===
-                        String(offerId)
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to dismiss this offer?"
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API}/offers/${offerId}/dismiss`,
+                    {
+                        method: "POST",
+                        credentials: "include"
+                    }
                 );
 
-            if (!offer) {
+            const result =
+                await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.message ||
+                    "Failed to dismiss offer."
+                );
+            }
+
+            showToast(
+                "Offer dismissed successfully."
+            );
+
+            await loadOffers();
+
+        } catch (error) {
+
+            console.error(
+                "HOME DISMISS ERROR:",
+                error
+            );
+
+            showToast(
+                error.message ||
+                "Failed to dismiss offer."
+            );
+        }
+    }
+
+
+    /* =====================================================
+       EDIT OFFER
+    ===================================================== */
+
+    function editOffer(offerId) {
+
+        window.location.href =
+            `create-offer.html?edit=${encodeURIComponent(
+                offerId
+            )}`;
+    }
+
+
+    /* =====================================================
+       COUNTDOWN
+    ===================================================== */
+
+    function updateCountdowns() {
+
+        document
+            .querySelectorAll(
+                "[data-countdown]"
+            )
+            .forEach(element => {
+
+                const offerId =
+                    element.dataset.countdown;
+
+                const offer =
+                    allOffers.find(
+                        item =>
+                            String(item.id) ===
+                            String(offerId)
+                    );
+
+                if (!offer) {
+                    return;
+                }
+
+                element.textContent =
+                    formatCountdown(
+                        offer.end_time ||
+                        offer.endTime
+                    );
+            });
+
+
+        if (
+            currentManageOffer &&
+            manageTimeElement
+        ) {
+
+            manageTimeElement.textContent =
+                formatCountdown(
+                    currentManageOffer.end_time ||
+                    currentManageOffer.endTime
+                );
+        }
+    }
+
+
+    /* =====================================================
+       LOGOUT
+    ===================================================== */
+
+    async function logout() {
+
+        try {
+
+            await fetch(
+                `${API}/auth/logout`,
+                {
+                    method: "POST",
+                    credentials: "include"
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "HOME LOGOUT ERROR:",
+                error
+            );
+        }
+
+        window.location.href =
+            "index.html";
+    }
+
+
+    /* =====================================================
+       EVENT DELEGATION
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            const manageButton =
+                event.target.closest(
+                    "[data-manage-offer]"
+                );
+
+            if (manageButton) {
+
+                openManageOffer(
+                    manageButton.dataset.manageOffer
+                );
+
                 return;
             }
 
-            const time =
-                formatCountdown(
-                    offer.end_time
+
+            const editButton =
+                event.target.closest(
+                    "[data-edit-offer]"
                 );
 
-            element.textContent = time;
+            if (editButton) {
 
-        });
+                editOffer(
+                    editButton.dataset.editOffer
+                );
 
-
-    if (currentManageOffer) {
-
-        const time =
-            formatCountdown(
-                currentManageOffer.end_time
-            );
-
-        manageTimeElement.textContent =
-            time;
-
-        /*
-         * If the timer reaches zero,
-         * refresh the offer list so the
-         * backend status can be respected.
-         */
-        if (time === "Ended") {
-
-            manageTimeElement.textContent =
-                "Ended";
-
-        }
-
-    }
-
-}
-
-
-/* ==========================================
-   Logout
-========================================== */
-
-async function logout() {
-
-    try {
-
-        await fetch(
-            API + "/auth/logout",
-            {
-                method: "POST",
-                credentials: "include"
+                return;
             }
+
+
+            const dismissButton =
+                event.target.closest(
+                    "[data-dismiss-offer]"
+                );
+
+            if (dismissButton) {
+
+                dismissOffer(
+                    dismissButton.dataset.dismissOffer
+                );
+
+                return;
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "change",
+        event => {
+
+            const checkbox =
+                event.target.closest(
+                    "[data-received-user]"
+                );
+
+            if (!checkbox) {
+                return;
+            }
+
+            updateFoodReceived(
+                checkbox.dataset.receivedUser,
+                checkbox.checked
+            );
+        }
+    );
+
+
+    /* =====================================================
+       BUTTON LISTENERS
+    ===================================================== */
+
+    if (closeManageButton) {
+
+        closeManageButton.addEventListener(
+            "click",
+            closeManageOffer
         );
-
-    } catch (error) {
-
-        console.error(
-            "LOGOUT ERROR:",
-            error
-        );
-
     }
 
-    window.location.href =
-        "index.html";
 
-}
+    if (endOfferButton) {
+
+        endOfferButton.addEventListener(
+            "click",
+            endCurrentOffer
+        );
+    }
 
 
-/* ==========================================
-   Event Delegation
-========================================== */
+    if (logoutButtonHome) {
 
-document.addEventListener(
-    "click",
-    event => {
+        logoutButtonHome.addEventListener(
+            "click",
+            logout
+        );
+    }
 
-        const manageButton =
-            event.target.closest(
-                "[data-manage-offer]"
-            );
 
-        if (manageButton) {
+    /* =====================================================
+       INITIALIZATION
+    ===================================================== */
 
-            openManageOffer(
-                manageButton.dataset.manageOffer
-            );
+    async function initHome() {
 
+        const authenticated =
+            await loadCurrentUser();
+
+        if (!authenticated) {
             return;
         }
 
-    }
-);
+        await loadOffers();
 
+        updateCountdowns();
 
-document.addEventListener(
-    "change",
-    event => {
-
-        const checkbox =
-            event.target.closest(
-                "[data-received-user]"
+        countdownTimer =
+            setInterval(
+                updateCountdowns,
+                1000
             );
-
-        if (!checkbox) {
-            return;
-        }
-
-        updateFoodReceived(
-            checkbox.dataset.receivedUser,
-            checkbox.checked
-        );
-
-    }
-);
-
-
-/* ==========================================
-   Event Listeners
-========================================== */
-
-if (closeManageButton) {
-
-    closeManageButton.addEventListener(
-        "click",
-        closeManageOffer
-    );
-
-}
-
-
-if (endOfferButton) {
-
-    endOfferButton.addEventListener(
-        "click",
-        endCurrentOffer
-    );
-
-}
-
-
-if (logoutButton) {
-
-    logoutButton.addEventListener(
-        "click",
-        logout
-    );
-
-}
-
-
-/* ==========================================
-   Initialize
-========================================== */
-
-async function initHome() {
-
-    await loadCurrentUser();
-
-    if (!currentUser) {
-        return;
     }
 
-    await loadOffers();
 
-    updateCountdowns();
-
-    countdownTimer =
-        setInterval(
-            updateCountdowns,
-            1000
-        );
-
-}
+    initHome();
 
 
-initHome();
+})();
