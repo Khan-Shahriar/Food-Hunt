@@ -509,10 +509,24 @@ router.get("/:id/participants", requireAuth, (req, res) => {
         }
 
         // Only the creator can manage participants.
-        if (offer.user_id !== req.user.id) {
+        /*
+ * Private offer protection.
+ *
+ * Creator OR participant can access.
+ */
+        const isCreator = offer.user_id === req.user.id;
+
+        const isParticipant = db.prepare(`
+    SELECT 1
+    FROM offer_participants
+    WHERE offer_id = ?
+    AND user_id = ?
+`).get(offerId, req.user.id);
+
+        if (!isCreator && !isParticipant) {
             return res.status(403).json({
                 success: false,
-                message: "Only the offer creator can view participants."
+                message: "You do not have access to this offer."
             });
         }
 
