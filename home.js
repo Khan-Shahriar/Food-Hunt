@@ -393,6 +393,10 @@
    RENDER OFFERS
     ===================================================== */
 
+    /* =====================================================
+   RENDER OFFERS
+===================================================== */
+
     function renderOffers() {
 
         const myOffers = allOffers.filter(
@@ -408,6 +412,7 @@
         );
 
         renderMyOffers(myOffers);
+
         renderJoinedOffers(joinedOffers);
 
         myOffers.forEach(offer => {
@@ -1214,7 +1219,9 @@
             );
 
         return `
-            <article class="offer-card">
+            <article
+                class="offer-card"
+                data-home-offer-id="${offer.id}">
 
                 <div class="offer-card-header">
 
