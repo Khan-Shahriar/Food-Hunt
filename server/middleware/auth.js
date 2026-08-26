@@ -24,7 +24,6 @@ export function verifyToken(token) {
 export function requireAuth(req, res, next) {
   const token = req.cookies?.fh_token;
 
-  
   if (!token) {
     console.log("❌ NO fh_token RECEIVED");
     console.log("================================\n");
@@ -78,17 +77,28 @@ export function requireRole(...roles) {
 export function setAuthCookie(res, token, rememberMe = false) {
   res.cookie("fh_token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+
+    // Codespaces uses HTTPS.
+    secure: true,
+
+    // The frontend and API are served from the same origin.
+    sameSite: "lax",
+
     maxAge: rememberMe
       ? 30 * 24 * 60 * 60 * 1000
       : 24 * 60 * 60 * 1000,
+
     path: "/",
   });
+
+  console.log("✅ fh_token COOKIE SET");
 }
 
 export function clearAuthCookie(res) {
   res.clearCookie("fh_token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
     path: "/",
   });
 }
