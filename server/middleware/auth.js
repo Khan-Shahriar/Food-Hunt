@@ -79,7 +79,7 @@ export function setAuthCookie(res, token, rememberMe = false) {
     httpOnly: true,
 
     // Codespaces uses HTTPS.
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
 
     // The frontend and API are served from the same origin.
     sameSite: "lax",
@@ -97,7 +97,7 @@ export function setAuthCookie(res, token, rememberMe = false) {
 export function clearAuthCookie(res) {
   res.clearCookie("fh_token", {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
   });

@@ -558,6 +558,11 @@
 
         }
 
+        renderHomePaymentBreakdown(
+            offerId,
+            participants
+        );
+
 
         /*
          * =================================================
@@ -603,22 +608,38 @@
 
 
         /*
-         * Grand total.
-         *
-         * Your API currently returns:
-         *
-         * totals.totalAmount
-         *
-         * Example:
-         * 0
-         */
+        * Grand total.        
+        * Backend returns:        
+        * totals.grandTotal
+        */
+
         updateHomePaymentSummary(
             offerId,
             "total",
-            totals.totalAmount
+            totals.grandTotal
+        );
+
+        updateHomePaymentBreakdown(
+            offerId,
+            "bkash",
+            paymentTotals.bkash
+        );
+
+        updateHomePaymentBreakdown(
+            offerId,
+            "city_bank",
+            paymentTotals.cityBank
+        );
+
+        updateHomePaymentBreakdown(
+            offerId,
+            "cash",
+            paymentTotals.cash
         );
 
     }
+
+
 
 
     /* =====================================================
@@ -684,6 +705,204 @@
 
     }
 
+    /* =====================================================
+   PAYMENT BREAKDOWN
+===================================================== */
+
+    function renderHomePaymentBreakdown(
+        offerId,
+        participants
+    ) {
+
+        const paymentGroups = {
+            bkash: [],
+            city_bank: [],
+            cash: []
+        };
+
+
+        /*
+         * Group participants by payment method.
+         */
+
+        participants.forEach(participant => {
+
+            if (!participant) {
+                return;
+            }
+
+
+            const paymentMethod =
+                String(
+                    participant.payment_method ||
+                    participant.paymentMethod ||
+                    ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+
+            let method =
+                paymentMethod;
+
+
+            /*
+             * Normalize City Bank.
+             */
+
+            if (
+                paymentMethod === "citybank"
+            ) {
+                method = "city_bank";
+            }
+
+
+            /*
+             * Ignore unknown payment methods.
+             */
+
+            if (
+                !Object.prototype.hasOwnProperty.call(
+                    paymentGroups,
+                    method
+                )
+            ) {
+                return;
+            }
+
+
+            paymentGroups[method].push(
+                participant
+            );
+
+        });
+
+
+        /*
+         * Render each payment method.
+         */
+
+        Object.entries(
+            paymentGroups
+        ).forEach(
+            ([method, people]) => {
+
+                const peopleContainer =
+                    document.querySelector(
+                        `[data-payment-people="${method}"][data-offer="${offerId}"]`
+                    );
+
+
+                const countElement =
+                    document.querySelector(
+                        `[data-payment-count="${method}"][data-offer="${offerId}"]`
+                    );
+
+
+                /*
+                 * Update number of people.
+                 */
+
+                if (countElement) {
+
+                    countElement.textContent =
+                        `${people.length} ${people.length === 1
+                            ? "Person"
+                            : "People"
+                        }`;
+
+                }
+
+
+                if (!peopleContainer) {
+                    return;
+                }
+
+
+                /*
+                 * No payments.
+                 */
+
+                if (!people.length) {
+
+                    const emptyMessages = {
+                        bkash:
+                            "No bKash payments.",
+
+                        city_bank:
+                            "No City Bank payments.",
+
+                        cash:
+                            "No cash payments."
+                    };
+
+
+                    peopleContainer.innerHTML = `
+                    <div class="home-payment-empty">
+                        ${emptyMessages[method]}
+                    </div>
+                `;
+
+                    return;
+                }
+
+
+                /*
+                 * Render payment people.
+                 */
+
+                peopleContainer.innerHTML =
+                    people
+                        .map(
+                            participant =>
+                                createHomePaymentPersonRow(
+                                    participant
+                                )
+                        )
+                        .join("");
+
+            }
+        );
+
+    }
+
+    /* =====================================================
+   CREATE PAYMENT PERSON ROW
+===================================================== */
+
+    function createHomePaymentPersonRow(
+        participant
+    ) {
+
+        const name =
+            participant.full_name ||
+            participant.fullName ||
+            participant.name ||
+            "Unknown";
+
+
+        const amount =
+            Number(
+                participant.amount
+            ) || 0;
+
+
+        return `
+        <div class="home-payment-person">
+
+            <span class="home-payment-person-name">
+                ${escapeHTML(name)}
+            </span>
+
+            <strong class="home-payment-person-amount">
+                ৳${amount.toFixed(2)}
+            </strong>
+
+        </div>
+    `;
+
+    }
+
 
     /* =====================================================
        UPDATE HOME PAYMENT SUMMARY
@@ -695,24 +914,44 @@
         amount
     ) {
 
-        const element =
-            document.querySelector(
+        const elements =
+            document.querySelectorAll(
                 `[data-payment-summary="${method}"][data-offer="${offerId}"]`
             );
 
+        if (!elements.length) {
+            return;
+        }
+
+        const value =
+            Number(amount) || 0;
+
+        elements.forEach(element => {
+            element.textContent =
+                `৳${value.toFixed(2)}`;
+        });
+    }
+
+    function updateHomePaymentBreakdown(
+        offerId,
+        method,
+        amount
+    ) {
+
+        const element =
+            document.querySelector(
+                `[data-payment-breakdown="${method}"][data-offer="${offerId}"]`
+            );
 
         if (!element) {
             return;
         }
 
-
         const value =
             Number(amount) || 0;
 
-
         element.textContent =
             `৳${value.toFixed(2)}`;
-
     }
 
 
@@ -1121,20 +1360,184 @@
                 </div>
 
 
-                <div class="home-payment-section">
+        <div class="home-payment-section">
+
+    <!-- ==========================================
+         PAYMENT BREAKDOWN
+    =========================================== -->
 
     <div class="home-subsection-heading">
+
         <span>
-            Payment Summary
+            Payment Breakdown
         </span>
+
     </div>
 
-    <div class="home-payment-summary">
 
-        <div class="home-payment-summary-item">
+    <div
+        class="home-payment-breakdown"
+        data-payment-breakdown="${offer.id}">
+
+
+        <!-- ======================================
+             BKASH
+        ======================================= -->
+
+        <div class="home-payment-method home-payment-bkash">
+
+            <div class="home-payment-method-header">
+
+                <div class="home-payment-method-info">
+
+                    <span class="home-payment-method-title">
+                        bKash
+                    </span>
+
+                    <span
+                        class="home-payment-method-count"
+                        data-payment-count="bkash"
+                        data-offer="${offer.id}">
+                        0 People
+                    </span>
+
+                </div>
+
+                <strong
+                    class="home-payment-method-total"
+                    data-payment-breakdown="bkash"
+                    data-offer="${offer.id}">
+                    ৳0.00
+                </strong>
+
+            </div>
+
+
+            <div
+                class="home-payment-people"
+                data-payment-people="bkash"
+                data-offer="${offer.id}">
+
+                <div class="home-payment-empty">
+                    No bKash payments.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================
+             CITY BANK
+        ======================================= -->
+
+        <div class="home-payment-method home-payment-citybank">
+
+            <div class="home-payment-method-header">
+
+                <div class="home-payment-method-info">
+
+                    <span class="home-payment-method-title">
+                        City Bank
+                    </span>
+
+                    <span
+                        class="home-payment-method-count"
+                        data-payment-count="city_bank"
+                        data-offer="${offer.id}">
+                        0 People
+                    </span>
+
+                </div>
+
+                <strong
+                    class="home-payment-method-total"
+                    data-payment-breakdown="city_bank"
+                    data-offer="${offer.id}">
+                    ৳0.00
+                </strong>
+
+            </div>
+
+
+            <div
+                class="home-payment-people"
+                data-payment-people="city_bank"
+                data-offer="${offer.id}">
+
+                <div class="home-payment-empty">
+                    No City Bank payments.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================
+             CASH
+        ======================================= -->
+
+        <div class="home-payment-method home-payment-cash">
+
+            <div class="home-payment-method-header">
+
+                <div class="home-payment-method-info">
+
+                    <span class="home-payment-method-title">
+                        Cash
+                    </span>
+
+                    <span
+                        class="home-payment-method-count"
+                        data-payment-count="cash"
+                        data-offer="${offer.id}">
+                        0 People
+                    </span>
+
+                </div>
+
+                <strong
+                    class="home-payment-method-total"
+                    data-payment-breakdown="cash"
+                    data-offer="${offer.id}">
+                    ৳0.00
+                </strong>
+
+            </div>
+
+
+            <div
+                class="home-payment-people"
+                data-payment-people="cash"
+                data-offer="${offer.id}">
+
+                <div class="home-payment-empty">
+                    No cash payments.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         PAYMENT SUMMARY
+    =========================================== -->
+
+    <div class="home-payment-summary-card">
+
+        <div class="home-payment-summary-heading">
+            Payment Summary
+        </div>
+
+
+        <div class="home-payment-summary-row">
 
             <span>
-                bKash
+                bKash Total
             </span>
 
             <strong
@@ -1145,10 +1548,11 @@
 
         </div>
 
-        <div class="home-payment-summary-item">
+
+        <div class="home-payment-summary-row">
 
             <span>
-                City Bank
+                City Bank Total
             </span>
 
             <strong
@@ -1159,10 +1563,11 @@
 
         </div>
 
-        <div class="home-payment-summary-item">
+
+        <div class="home-payment-summary-row">
 
             <span>
-                Cash
+                Cash Total
             </span>
 
             <strong
@@ -1173,10 +1578,14 @@
 
         </div>
 
-        <div class="home-payment-summary-item home-payment-total">
+
+        <div class="home-payment-summary-divider"></div>
+
+
+        <div class="home-payment-summary-row home-payment-grand-total">
 
             <span>
-                Total Collected
+                Grand Total
             </span>
 
             <strong
