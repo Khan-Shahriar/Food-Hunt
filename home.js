@@ -507,6 +507,54 @@
                 ? result.participants
                 : [];
 
+        /* =================================================
+            PAYMENT METHOD COUNTS
+        ================================================= */
+
+        const bkashCount =
+            participants.filter(participant => {
+
+                const method =
+                    String(
+                        participant.payment_method ||
+                        participant.paymentMethod ||
+                        ""
+                    ).toLowerCase();
+
+                return method === "bkash";
+            }).length;
+
+
+        const cityBankCount =
+            participants.filter(participant => {
+
+                const method =
+                    String(
+                        participant.payment_method ||
+                        participant.paymentMethod ||
+                        ""
+                    ).toLowerCase();
+
+                return (
+                    method === "city_bank" ||
+                    method === "citybank"
+                );
+            }).length;
+
+
+        const cashCount =
+            participants.filter(participant => {
+
+                const method =
+                    String(
+                        participant.payment_method ||
+                        participant.paymentMethod ||
+                        ""
+                    ).toLowerCase();
+
+                return method === "cash";
+            }).length;
+
 
         const totals =
             result?.totals || {};
@@ -637,6 +685,28 @@
             paymentTotals.cash
         );
 
+        /* =================================================
+        UPDATE PAYMENT COUNTS
+        ================================================= */
+
+        updateHomePaymentCount(
+            offerId,
+            "bkash",
+            bkashCount
+        );
+
+        updateHomePaymentCount(
+            offerId,
+            "city_bank",
+            cityBankCount
+        );
+
+        updateHomePaymentCount(
+            offerId,
+            "cash",
+            cashCount
+        );
+
     }
 
 
@@ -714,155 +784,53 @@
         participants
     ) {
 
-        const paymentGroups = {
-            bkash: [],
-            city_bank: [],
-            cash: []
-        };
+        const methods = [
+            "bkash",
+            "city_bank",
+            "cash"
+        ];
 
+        methods.forEach(method => {
 
-        /*
-         * Group participants by payment method.
-         */
+            /*
+             * Find participants using this payment method.
+             */
+            const people =
+                participants.filter(participant => {
 
-        participants.forEach(participant => {
+                    const paymentMethod =
+                        String(
+                            participant.payment_method ||
+                            participant.paymentMethod ||
+                            ""
+                        )
+                            .trim()
+                            .toLowerCase();
 
-            if (!participant) {
-                return;
-            }
+                    if (method === "city_bank") {
 
+                        return (
+                            paymentMethod === "city_bank" ||
+                            paymentMethod === "citybank"
+                        );
 
-            const paymentMethod =
-                String(
-                    participant.payment_method ||
-                    participant.paymentMethod ||
-                    ""
-                )
-                    .trim()
-                    .toLowerCase();
+                    }
 
+                    return paymentMethod === method;
 
-            let method =
-                paymentMethod;
+                });
 
 
             /*
-             * Normalize City Bank.
+             * Update the people list.
              */
-
-            if (
-                paymentMethod === "citybank"
-            ) {
-                method = "city_bank";
-            }
-
-
-            /*
-             * Ignore unknown payment methods.
-             */
-
-            if (
-                !Object.prototype.hasOwnProperty.call(
-                    paymentGroups,
-                    method
-                )
-            ) {
-                return;
-            }
-
-
-            paymentGroups[method].push(
-                participant
+            updateHomePaymentPeople(
+                offerId,
+                method,
+                people
             );
 
         });
-
-
-        /*
-         * Render each payment method.
-         */
-
-        Object.entries(
-            paymentGroups
-        ).forEach(
-            ([method, people]) => {
-
-                const peopleContainer =
-                    document.querySelector(
-                        `[data-payment-people="${method}"][data-offer="${offerId}"]`
-                    );
-
-
-                const countElement =
-                    document.querySelector(
-                        `[data-payment-count="${method}"][data-offer="${offerId}"]`
-                    );
-
-
-                /*
-                 * Update number of people.
-                 */
-
-                if (countElement) {
-
-                    countElement.textContent =
-                        `${people.length} ${people.length === 1
-                            ? "Person"
-                            : "People"
-                        }`;
-
-                }
-
-
-                if (!peopleContainer) {
-                    return;
-                }
-
-
-                /*
-                 * No payments.
-                 */
-
-                if (!people.length) {
-
-                    const emptyMessages = {
-                        bkash:
-                            "No bKash payments.",
-
-                        city_bank:
-                            "No City Bank payments.",
-
-                        cash:
-                            "No cash payments."
-                    };
-
-
-                    peopleContainer.innerHTML = `
-                    <div class="home-payment-empty">
-                        ${emptyMessages[method]}
-                    </div>
-                `;
-
-                    return;
-                }
-
-
-                /*
-                 * Render payment people.
-                 */
-
-                peopleContainer.innerHTML =
-                    people
-                        .map(
-                            participant =>
-                                createHomePaymentPersonRow(
-                                    participant
-                                )
-                        )
-                        .join("");
-
-            }
-        );
 
     }
 
@@ -932,6 +900,33 @@
         });
     }
 
+    function updateHomePaymentSummary(
+        offerId,
+        method,
+        amount
+    ) {
+
+        const elements =
+            document.querySelectorAll(
+                `[data-payment-summary="${method}"][data-offer="${offerId}"]`
+            );
+
+        if (!elements.length) {
+            return;
+        }
+
+        const value =
+            Number(amount) || 0;
+
+        elements.forEach(element => {
+            element.textContent =
+                `৳${value.toFixed(2)}`;
+        });
+    }
+
+
+
+
     function updateHomePaymentBreakdown(
         offerId,
         method,
@@ -952,6 +947,101 @@
 
         element.textContent =
             `৳${value.toFixed(2)}`;
+    }
+
+    /* =====================================================
+   UPDATE HOME PAYMENT PEOPLE
+===================================================== */
+
+    function updateHomePaymentPeople(
+        offerId,
+        method,
+        participants
+    ) {
+
+        const container =
+            document.querySelector(
+                `[data-payment-people="${method}"][data-offer="${offerId}"]`
+            );
+
+        const countElement =
+            document.querySelector(
+                `[data-payment-count="${method}"][data-offer="${offerId}"]`
+            );
+
+        if (!container) {
+            return;
+        }
+
+        const people =
+            Array.isArray(participants)
+                ? participants
+                : [];
+
+        /* Update count */
+
+        if (countElement) {
+
+            countElement.textContent =
+                people.length === 1
+                    ? "1 Person"
+                    : `${people.length} People`;
+
+        }
+
+
+        /* Empty state */
+
+        if (!people.length) {
+
+            const labels = {
+                bkash: "bKash",
+                city_bank: "City Bank",
+                cash: "cash"
+            };
+
+            container.innerHTML = `
+            <div class="home-payment-empty">
+                No ${labels[method] || method} payments.
+            </div>
+        `;
+
+            return;
+        }
+
+
+        /* People list */
+
+        container.innerHTML =
+            people
+                .map(person => {
+
+                    const name =
+                        escapeHTML(
+                            person.full_name ||
+                            person.fullName ||
+                            "Unknown User"
+                        );
+
+                    const amount =
+                        Number(person.amount) || 0;
+
+                    return `
+                    <div class="home-payment-person">
+
+                        <span class="home-payment-person-name">
+                            ${name}
+                        </span>
+
+                        <strong class="home-payment-person-amount">
+                            ৳${amount.toFixed(2)}
+                        </strong>
+
+                    </div>
+                `;
+
+                })
+                .join("");
     }
 
 
