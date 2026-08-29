@@ -619,70 +619,110 @@
          */
 
         const paymentTotals =
-            totals.paymentTotals || {};
+            totals?.paymentTotals || {};
 
 
-        /*
-         * bKash
-         */
+        const bkashTotal =
+            Number(paymentTotals.bkash) || 0;
+
+
+        const cityBankTotal =
+            Number(paymentTotals.cityBank) || 0;
+
+
+        const cashTotal =
+            Number(paymentTotals.cash) || 0;
+
+
+        const grandTotal =
+            Number(totals.grandTotal) || 0;
+
+
+        /* =================================================
+   PAYMENT TOTAL CONSISTENCY CHECK
+================================================= */
+
+        const calculatedPaymentTotal =
+            bkashTotal +
+            cityBankTotal +
+            cashTotal;
+
+
+        if (
+            Math.abs(
+                calculatedPaymentTotal -
+                grandTotal
+            ) > 0.01
+        ) {
+
+            console.warn(
+                "HOME PAYMENT TOTAL MISMATCH:",
+                {
+                    offerId,
+                    bkashTotal,
+                    cityBankTotal,
+                    cashTotal,
+                    calculatedPaymentTotal,
+                    grandTotal
+                }
+            );
+
+        }
+
+
+        /* =================================================
+   PAYMENT SUMMARY
+================================================= */
+
         updateHomePaymentSummary(
             offerId,
             "bkash",
-            paymentTotals.bkash
+            bkashTotal
         );
 
 
-        /*
-         * City Bank
-         *
-         * Backend returns cityBank.
-         * HTML uses city_bank.
-         */
         updateHomePaymentSummary(
             offerId,
             "city_bank",
-            paymentTotals.cityBank
+            cityBankTotal
         );
 
 
-        /*
-         * Cash
-         */
         updateHomePaymentSummary(
             offerId,
             "cash",
-            paymentTotals.cash
+            cashTotal
         );
 
-
-        /*
-        * Grand total.        
-        * Backend returns:        
-        * totals.grandTotal
-        */
 
         updateHomePaymentSummary(
             offerId,
             "total",
-            totals.grandTotal
+            grandTotal
         );
+
+        /* =================================================
+   PAYMENT BREAKDOWN TOTALS
+================================================= */
 
         updateHomePaymentBreakdown(
             offerId,
             "bkash",
-            paymentTotals.bkash
+            bkashTotal
         );
+
 
         updateHomePaymentBreakdown(
             offerId,
             "city_bank",
-            paymentTotals.cityBank
+            cityBankTotal
         );
+
 
         updateHomePaymentBreakdown(
             offerId,
             "cash",
-            paymentTotals.cash
+            cashTotal
         );
 
         /* =================================================
@@ -775,7 +815,7 @@
     }
 
     /* =====================================================
-   PAYMENT BREAKDOWN
+   HOME PAYMENT BREAKDOWN
 ===================================================== */
 
     function renderHomePaymentBreakdown(
@@ -783,55 +823,170 @@
         participants
     ) {
 
-        const methods = [
-            "bkash",
-            "city_bank",
-            "cash"
-        ];
-
-        methods.forEach(method => {
-
-            /*
-             * Find participants using this payment method.
-             */
-            const people =
-                participants.filter(participant => {
-
-                    const paymentMethod =
-                        String(
-                            participant.payment_method ||
-                            participant.paymentMethod ||
-                            ""
-                        )
-                            .trim()
-                            .toLowerCase();
-
-                    if (method === "city_bank") {
-
-                        return (
-                            paymentMethod === "city_bank" ||
-                            paymentMethod === "citybank"
-                        );
-
-                    }
-
-                    return paymentMethod === method;
-
-                });
+        if (!Array.isArray(participants)) {
+            participants = [];
+        }
 
 
-            /*
-             * Update the people list.
-             */
-            updateHomePaymentPeople(
-                offerId,
-                method,
-                people
-            );
+        /* =================================================
+           PAYMENT GROUPS
+        ================================================= */
+
+        const groups = {
+            bkash: [],
+            city_bank: [],
+            cash: []
+        };
+
+
+        participants.forEach(participant => {
+
+            if (!participant) {
+                return;
+            }
+
+
+            const method =
+                String(
+                    participant.payment_method ||
+                    participant.paymentMethod ||
+                    ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+
+            if (method === "bkash") {
+
+                groups.bkash.push(participant);
+
+            }
+
+            else if (
+                method === "city_bank" ||
+                method === "citybank"
+            ) {
+
+                groups.city_bank.push(participant);
+
+            }
+
+            else if (method === "cash") {
+
+                groups.cash.push(participant);
+
+            }
 
         });
 
+
+        /* =================================================
+           RENDER EACH PAYMENT METHOD
+        ================================================= */
+
+        renderHomePaymentPeople(
+            offerId,
+            "bkash",
+            groups.bkash,
+            "No bKash payments."
+        );
+
+
+        renderHomePaymentPeople(
+            offerId,
+            "city_bank",
+            groups.city_bank,
+            "No City Bank payments."
+        );
+
+
+        renderHomePaymentPeople(
+            offerId,
+            "cash",
+            groups.cash,
+            "No cash payments."
+        );
+
     }
+
+    /* =====================================================
+   HOME PAYMENT PEOPLE
+===================================================== */
+
+    function renderHomePaymentPeople(
+        offerId,
+        method,
+        participants,
+        emptyMessage
+    ) {
+
+        const container =
+            document.querySelector(
+                `[data-payment-people="${method}"][data-offer="${offerId}"]`
+            );
+
+
+        if (!container) {
+            return;
+        }
+
+
+        /* =================================================
+           NO PAYMENTS
+        ================================================= */
+
+        if (!participants.length) {
+
+            container.innerHTML = `
+            <div class="home-payment-empty">
+                ${escapeHTML(emptyMessage)}
+            </div>
+        `;
+
+            return;
+        }
+
+
+        /* =================================================
+           PARTICIPANTS
+        ================================================= */
+
+        container.innerHTML =
+            participants
+                .map(participant => {
+
+                    const name =
+                        participant.full_name ||
+                        participant.fullName ||
+                        participant.name ||
+                        "Unknown";
+
+
+                    const amount =
+                        Number(
+                            participant.amount
+                        ) || 0;
+
+
+                    return `
+                    <div class="home-payment-person">
+
+                        <span class="home-payment-person-name">
+                            ${escapeHTML(name)}
+                        </span>
+
+                        <strong class="home-payment-person-amount">
+                            ৳${amount.toFixed(2)}
+                        </strong>
+
+                    </div>
+                `;
+
+                })
+                .join("");
+
+    }
+
 
     /* =====================================================
    CREATE PAYMENT PERSON ROW
@@ -899,32 +1054,7 @@
         });
     }
 
-    function updateHomePaymentSummary(
-        offerId,
-        method,
-        amount
-    ) {
-
-        const elements =
-            document.querySelectorAll(
-                `[data-payment-summary="${method}"][data-offer="${offerId}"]`
-            );
-
-        if (!elements.length) {
-            return;
-        }
-
-        const value =
-            Number(amount) || 0;
-
-        elements.forEach(element => {
-            element.textContent =
-                `৳${value.toFixed(2)}`;
-        });
-    }
-
-
-
+    
 
     function updateHomePaymentBreakdown(
         offerId,
@@ -952,96 +1082,7 @@
    UPDATE HOME PAYMENT PEOPLE
 ===================================================== */
 
-    function updateHomePaymentPeople(
-        offerId,
-        method,
-        participants
-    ) {
-
-        const container =
-            document.querySelector(
-                `[data-payment-people="${method}"][data-offer="${offerId}"]`
-            );
-
-        const countElement =
-            document.querySelector(
-                `[data-payment-count="${method}"][data-offer="${offerId}"]`
-            );
-
-        if (!container) {
-            return;
-        }
-
-        const people =
-            Array.isArray(participants)
-                ? participants
-                : [];
-
-        /* Update count */
-
-        if (countElement) {
-
-            countElement.textContent =
-                people.length === 1
-                    ? "1 Person"
-                    : `${people.length} People`;
-
-        }
-
-
-        /* Empty state */
-
-        if (!people.length) {
-
-            const labels = {
-                bkash: "bKash",
-                city_bank: "City Bank",
-                cash: "cash"
-            };
-
-            container.innerHTML = `
-            <div class="home-payment-empty">
-                No ${labels[method] || method} payments.
-            </div>
-        `;
-
-            return;
-        }
-
-
-        /* People list */
-
-        container.innerHTML =
-            people
-                .map(person => {
-
-                    const name =
-                        escapeHTML(
-                            person.full_name ||
-                            person.fullName ||
-                            "Unknown User"
-                        );
-
-                    const amount =
-                        Number(person.amount) || 0;
-
-                    return `
-                    <div class="home-payment-person">
-
-                        <span class="home-payment-person-name">
-                            ${name}
-                        </span>
-
-                        <strong class="home-payment-person-amount">
-                            ৳${amount.toFixed(2)}
-                        </strong>
-
-                    </div>
-                `;
-
-                })
-                .join("");
-    }
+    
 
     function updateHomePaymentCount(
         offerId,
@@ -1067,29 +1108,7 @@
                 : `${value} People`;
     }
 
-    function updateHomePaymentCount(
-        offerId,
-        method,
-        count
-    ) {
 
-        const element =
-            document.querySelector(
-                `[data-payment-count="${method}"][data-offer="${offerId}"]`
-            );
-
-        if (!element) {
-            return;
-        }
-
-        const value =
-            Number(count) || 0;
-
-        element.textContent =
-            value === 1
-                ? "1 Person"
-                : `${value} People`;
-    }
 
 
     /* =====================================================
@@ -1271,6 +1290,27 @@
                     )
                 )
                 : 0;
+
+        /* =================================================
+                 PAYMENT METHOD VISIBILITY
+        ================================================= */
+
+        const bkashEnabled =
+            Number(
+                offer.payment_bkash_enabled
+            ) === 1;
+
+
+        const cityBankEnabled =
+            Number(
+                offer.payment_citybank_enabled
+            ) === 1;
+
+
+        const cashEnabled =
+            Number(
+                offer.payment_cash_enabled
+            ) === 1;
 
         return `
             <article
@@ -1521,7 +1561,8 @@
              BKASH
         ======================================= -->
 
-        <div class="home-payment-method home-payment-bkash">
+        <div class="home-payment-method home-payment-bkash"
+        ${bkashEnabled ? "" : "hidden"}>
 
             <div class="home-payment-method-header">
 
@@ -1568,7 +1609,8 @@
              CITY BANK
         ======================================= -->
 
-        <div class="home-payment-method home-payment-citybank">
+        <div class="home-payment-method home-payment-citybank"
+        ${cityBankEnabled ? "" : "hidden"}>
 
             <div class="home-payment-method-header">
 
@@ -1615,7 +1657,8 @@
              CASH
         ======================================= -->
 
-        <div class="home-payment-method home-payment-cash">
+        <div class="home-payment-method home-payment-cash"
+        ${cashEnabled ? "" : "hidden"}>
 
             <div class="home-payment-method-header">
 
