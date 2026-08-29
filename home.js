@@ -722,48 +722,48 @@
             return "";
         }
 
-
         const name =
             participant.full_name ||
             participant.fullName ||
             participant.name ||
             "Unknown";
 
-
         const paymentMethod =
             participant.payment_method ||
             participant.paymentMethod ||
             "-";
 
-
-        /*
-         * Make payment method user-friendly.
-         */
         let paymentLabel =
-            String(paymentMethod);
-
+            String(paymentMethod)
+                .trim()
+                .toLowerCase();
 
         if (paymentLabel === "bkash") {
+
             paymentLabel = "bKash";
-        }
 
-        else if (
+        } else if (
             paymentLabel === "city_bank" ||
-            paymentLabel === "cityBank"
+            paymentLabel === "citybank"
         ) {
+
             paymentLabel = "City Bank";
-        }
 
-        else if (paymentLabel === "cash") {
+        } else if (paymentLabel === "cash") {
+
             paymentLabel = "Cash";
-        }
 
+        } else {
+
+            paymentLabel = "Unknown";
+
+        }
 
         return `
         <div class="home-participant-row">
 
             <span class="home-participant-name">
-                ${escapeHTML(name)}
+                ${escapeHTML(String(name))}
             </span>
 
             <span class="home-participant-payment">
@@ -772,7 +772,6 @@
 
         </div>
     `;
-
     }
 
     /* =====================================================
@@ -1042,6 +1041,54 @@
 
                 })
                 .join("");
+    }
+
+    function updateHomePaymentCount(
+        offerId,
+        method,
+        count
+    ) {
+
+        const element =
+            document.querySelector(
+                `[data-payment-count="${method}"][data-offer="${offerId}"]`
+            );
+
+        if (!element) {
+            return;
+        }
+
+        const value =
+            Number(count) || 0;
+
+        element.textContent =
+            value === 1
+                ? "1 Person"
+                : `${value} People`;
+    }
+
+    function updateHomePaymentCount(
+        offerId,
+        method,
+        count
+    ) {
+
+        const element =
+            document.querySelector(
+                `[data-payment-count="${method}"][data-offer="${offerId}"]`
+            );
+
+        if (!element) {
+            return;
+        }
+
+        const value =
+            Number(count) || 0;
+
+        element.textContent =
+            value === 1
+                ? "1 Person"
+                : `${value} People`;
     }
 
 
