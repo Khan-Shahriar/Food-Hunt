@@ -989,8 +989,8 @@
 
 
     /* =====================================================
-   CREATE PAYMENT PERSON ROW
-===================================================== */
+            CREATE PAYMENT PERSON ROW
+    ===================================================== */
 
     function createHomePaymentPersonRow(
         participant
