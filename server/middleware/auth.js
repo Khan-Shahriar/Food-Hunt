@@ -77,17 +77,11 @@ export function requireRole(...roles) {
 export function setAuthCookie(res, token, rememberMe = false) {
   res.cookie("fh_token", token, {
     httpOnly: true,
-
-    // Codespaces uses HTTPS.
-    secure: process.env.NODE_ENV === "production",
-
-    // The frontend and API are served from the same origin.
+    secure: true,
     sameSite: "lax",
-
     maxAge: rememberMe
       ? 30 * 24 * 60 * 60 * 1000
       : 24 * 60 * 60 * 1000,
-
     path: "/",
   });
 
@@ -97,7 +91,7 @@ export function setAuthCookie(res, token, rememberMe = false) {
 export function clearAuthCookie(res) {
   res.clearCookie("fh_token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     sameSite: "lax",
     path: "/",
   });

@@ -1921,83 +1921,143 @@
 
     async function openManageOffer(offerId) {
 
-        const offer =
-            allOffers.find(
-                item =>
-                    Number(item.id) ===
-                    Number(offerId)
-            );
+    console.log("MANAGE OFFER CLICKED:", offerId);
 
-        if (!offer) {
-
-            showToast(
-                "Offer not found."
-            );
-
-            return;
-        }
-
-        if (!isMyOffer(offer)) {
-
-            showToast(
-                "Only the creator can manage this offer."
-            );
-
-            return;
-        }
-
-        currentManageOffer = offer;
-
-        if (manageSection) {
-            manageSection.hidden = false;
-        }
-
-        if (manageFoodElement) {
-            manageFoodElement.textContent =
-                offer.food_name ||
-                offer.foodName ||
-                "-";
-        }
-
-        if (manageRestaurantElement) {
-            manageRestaurantElement.textContent =
-                offer.restaurant_name ||
-                offer.restaurantName ||
-                "-";
-        }
-
-        if (manageEndElement) {
-            manageEndElement.textContent =
-                formatDateTime(
-                    offer.end_time ||
-                    offer.endTime
-                );
-        }
-
-        updateManageStatus();
-
-        await loadParticipants(
-            offer.id
+    const offer =
+        allOffers.find(
+            item =>
+                Number(item.id) ===
+                Number(offerId)
         );
 
-        if (manageSection) {
+    if (!offer) {
 
-            manageSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }
+        showToast("Offer not found.");
+
+        console.error(
+            "Offer not found:",
+            offerId,
+            allOffers
+        );
+
+        return;
     }
+
+    if (!isMyOffer(offer)) {
+
+        showToast(
+            "Only the creator can manage this offer."
+        );
+
+        return;
+    }
+
+    currentManageOffer = offer;
+
+    /* ==========================================
+       OPEN MODAL
+    ========================================== */
+
+    if (manageSection) {
+
+        manageSection.classList.add("is-active");
+
+        manageSection.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        document.body.classList.add(
+            "modal-open"
+        );
+    }
+
+
+    /* ==========================================
+       OFFER INFORMATION
+    ========================================== */
+
+    if (manageFoodElement) {
+
+        manageFoodElement.textContent =
+            offer.food_name ||
+            offer.foodName ||
+            "-";
+    }
+
+
+    if (manageRestaurantElement) {
+
+        manageRestaurantElement.textContent =
+            offer.restaurant_name ||
+            offer.restaurantName ||
+            "-";
+    }
+
+
+    if (manageStatusElement) {
+
+        manageStatusElement.textContent =
+            String(
+                offer.status ||
+                "OPEN"
+            ).toUpperCase();
+    }
+
+
+    if (manageTimeElement) {
+
+        manageTimeElement.textContent =
+            formatDateTime(
+                offer.start_time ||
+                offer.startTime
+            );
+    }
+
+
+    if (manageEndElement) {
+
+        manageEndElement.textContent =
+            formatDateTime(
+                offer.end_time ||
+                offer.endTime
+            );
+    }
+
+
+    updateManageStatus();
+
+
+    /* ==========================================
+       LOAD PARTICIPANTS
+    ========================================== */
+
+    await loadParticipants(
+        offer.id
+    );
+}
 
 
     function closeManageOffer() {
 
-        currentManageOffer = null;
+    currentManageOffer = null;
 
-        if (manageSection) {
-            manageSection.hidden = true;
-        }
+    if (manageSection) {
+
+        manageSection.classList.remove(
+            "is-active"
+        );
+
+        manageSection.setAttribute(
+            "aria-hidden",
+            "true"
+        );
     }
+
+    document.body.classList.remove(
+        "modal-open"
+    );
+}
 
 
     /* =====================================================

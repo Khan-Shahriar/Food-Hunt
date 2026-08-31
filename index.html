@@ -733,6 +733,108 @@
 
   </div>
 
+    </div>
+
+
+  <!-- ==========================
+       Manage Offer Modal
+  ========================== -->
+
+  <div class="modal-backdrop"
+       id="manageOfferModal"
+       data-manage-section
+       aria-hidden="true">
+
+    <div class="auth-modal manage-offer-modal"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="manageOfferTitle">
+
+      <button
+        class="close-button"
+        type="button"
+        data-close-manage
+        aria-label="Close manage offer">
+        X
+      </button>
+
+      <p class="eyebrow">MANAGE OFFER</p>
+
+      <h2 id="manageOfferTitle">
+        Manage Offer
+      </h2>
+
+      <div class="manage-offer-info">
+
+        <div>
+          <span>Food</span>
+          <strong data-manage-food>-</strong>
+        </div>
+
+        <div>
+          <span>Restaurant</span>
+          <strong data-manage-restaurant>-</strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong data-manage-status>-</strong>
+        </div>
+
+        <div>
+          <span>Participants</span>
+          <strong data-manage-count>0 / 0</strong>
+        </div>
+
+        <div>
+          <span>Start Time</span>
+          <strong data-manage-time>-</strong>
+        </div>
+
+        <div>
+          <span>End Time</span>
+          <strong data-manage-end>-</strong>
+        </div>
+
+      </div>
+
+      <hr>
+
+      <h3>Participants</h3>
+
+      <div
+        class="participants-list"
+        data-participants-list>
+        <p>No participants yet.</p>
+      </div>
+
+      <div
+        class="success-box"
+        data-success-box
+        hidden>
+        Offer completed successfully.
+      </div>
+
+      <div class="manage-offer-actions">
+
+        <button
+          type="button"
+          class="button button-secondary"
+          data-close-manage>
+          Close
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+</body>
+
+</html>
+
 
 </body>
 
