@@ -245,7 +245,6 @@
             if (!response.ok) {
 
                 if (response.status === 401) {
-                    window.location.href = "index.html";
                     return false;
                 }
 
@@ -270,9 +269,6 @@
                 "HOME USER ERROR:",
                 error
             );
-
-            window.location.href =
-                "index.html";
 
             return false;
         }
@@ -1054,7 +1050,7 @@
         });
     }
 
-    
+
 
     function updateHomePaymentBreakdown(
         offerId,
@@ -1082,7 +1078,7 @@
    UPDATE HOME PAYMENT PEOPLE
 ===================================================== */
 
-    
+
 
     function updateHomePaymentCount(
         offerId,
@@ -1921,143 +1917,143 @@
 
     async function openManageOffer(offerId) {
 
-    console.log("MANAGE OFFER CLICKED:", offerId);
+        console.log("MANAGE OFFER CLICKED:", offerId);
 
-    const offer =
-        allOffers.find(
-            item =>
-                Number(item.id) ===
-                Number(offerId)
-        );
-
-    if (!offer) {
-
-        showToast("Offer not found.");
-
-        console.error(
-            "Offer not found:",
-            offerId,
-            allOffers
-        );
-
-        return;
-    }
-
-    if (!isMyOffer(offer)) {
-
-        showToast(
-            "Only the creator can manage this offer."
-        );
-
-        return;
-    }
-
-    currentManageOffer = offer;
-
-    /* ==========================================
-       OPEN MODAL
-    ========================================== */
-
-    if (manageSection) {
-
-        manageSection.classList.add("is-active");
-
-        manageSection.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-        document.body.classList.add(
-            "modal-open"
-        );
-    }
-
-
-    /* ==========================================
-       OFFER INFORMATION
-    ========================================== */
-
-    if (manageFoodElement) {
-
-        manageFoodElement.textContent =
-            offer.food_name ||
-            offer.foodName ||
-            "-";
-    }
-
-
-    if (manageRestaurantElement) {
-
-        manageRestaurantElement.textContent =
-            offer.restaurant_name ||
-            offer.restaurantName ||
-            "-";
-    }
-
-
-    if (manageStatusElement) {
-
-        manageStatusElement.textContent =
-            String(
-                offer.status ||
-                "OPEN"
-            ).toUpperCase();
-    }
-
-
-    if (manageTimeElement) {
-
-        manageTimeElement.textContent =
-            formatDateTime(
-                offer.start_time ||
-                offer.startTime
+        const offer =
+            allOffers.find(
+                item =>
+                    Number(item.id) ===
+                    Number(offerId)
             );
-    }
 
+        if (!offer) {
 
-    if (manageEndElement) {
+            showToast("Offer not found.");
 
-        manageEndElement.textContent =
-            formatDateTime(
-                offer.end_time ||
-                offer.endTime
+            console.error(
+                "Offer not found:",
+                offerId,
+                allOffers
             );
+
+            return;
+        }
+
+        if (!isMyOffer(offer)) {
+
+            showToast(
+                "Only the creator can manage this offer."
+            );
+
+            return;
+        }
+
+        currentManageOffer = offer;
+
+        /* ==========================================
+           OPEN MODAL
+        ========================================== */
+
+        if (manageSection) {
+
+            manageSection.classList.add("is-active");
+
+            manageSection.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            document.body.classList.add(
+                "modal-open"
+            );
+        }
+
+
+        /* ==========================================
+           OFFER INFORMATION
+        ========================================== */
+
+        if (manageFoodElement) {
+
+            manageFoodElement.textContent =
+                offer.food_name ||
+                offer.foodName ||
+                "-";
+        }
+
+
+        if (manageRestaurantElement) {
+
+            manageRestaurantElement.textContent =
+                offer.restaurant_name ||
+                offer.restaurantName ||
+                "-";
+        }
+
+
+        if (manageStatusElement) {
+
+            manageStatusElement.textContent =
+                String(
+                    offer.status ||
+                    "OPEN"
+                ).toUpperCase();
+        }
+
+
+        if (manageTimeElement) {
+
+            manageTimeElement.textContent =
+                formatDateTime(
+                    offer.start_time ||
+                    offer.startTime
+                );
+        }
+
+
+        if (manageEndElement) {
+
+            manageEndElement.textContent =
+                formatDateTime(
+                    offer.end_time ||
+                    offer.endTime
+                );
+        }
+
+
+        updateManageStatus();
+
+
+        /* ==========================================
+           LOAD PARTICIPANTS
+        ========================================== */
+
+        await loadParticipants(
+            offer.id
+        );
     }
-
-
-    updateManageStatus();
-
-
-    /* ==========================================
-       LOAD PARTICIPANTS
-    ========================================== */
-
-    await loadParticipants(
-        offer.id
-    );
-}
 
 
     function closeManageOffer() {
 
-    currentManageOffer = null;
+        currentManageOffer = null;
 
-    if (manageSection) {
+        if (manageSection) {
 
-        manageSection.classList.remove(
-            "is-active"
-        );
+            manageSection.classList.remove(
+                "is-active"
+            );
 
-        manageSection.setAttribute(
-            "aria-hidden",
-            "true"
+            manageSection.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+        }
+
+        document.body.classList.remove(
+            "modal-open"
         );
     }
-
-    document.body.classList.remove(
-        "modal-open"
-    );
-}
 
 
     /* =====================================================

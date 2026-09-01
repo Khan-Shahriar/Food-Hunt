@@ -3,6 +3,9 @@
 ========================================== */
 
 const API = "/api";
+const urlParams = new URLSearchParams(window.location.search);
+const editOfferId = urlParams.get("edit");
+const isEditMode = Boolean(editOfferId);
 
 
 /* ==========================================
@@ -112,6 +115,84 @@ function updatePreview() {
 
 }
 
+async function loadOfferForEdit() {
+    if (!isEditMode) {
+        return;
+    }
+
+    try {
+        const res = await fetch(
+            API + "/offers/" + encodeURIComponent(editOfferId),
+            {
+                method: "GET",
+                credentials: "include"
+            }
+        );
+
+        const result = await res.json();
+
+        if (!res.ok || !result.success || !result.offer) {
+            alert(result.message || "Failed to load offer.");
+            return;
+        }
+
+        const offer = result.offer;
+
+        restaurantInput.value = offer.restaurant_name || "";
+        foodInput.value = offer.food_name || "";
+        descriptionInput.value = offer.food_description || "";
+
+        quantityInput.value = offer.quantity ?? "";
+        priceInput.value = offer.food_price ?? "";
+        deliveryInput.value = offer.delivery_charge ?? "";
+        peopleInput.value = offer.max_people ?? "";
+
+        startInput.value = offer.start_time || "";
+        endInput.value = offer.end_time || "";
+
+        // bKash
+        bkashCheckbox.checked =
+            Number(offer.payment_bkash_enabled) === 1;
+
+        bkashNumberInput.value =
+            offer.bkash_number || "";
+
+        // City Bank
+        cityBankCheckbox.checked =
+            Number(offer.payment_citybank_enabled) === 1;
+
+        cityBankAccountName.value =
+            offer.citybank_account_name || "";
+
+        cityBankAccountNumber.value =
+            offer.citybank_account_number || "";
+
+        cityBankPhone.value =
+            offer.citybank_phone || "";
+
+        // Cash
+        cashCheckbox.checked =
+            Number(offer.payment_cash_enabled) === 1;
+
+        // Update payment field visibility
+        toggleBkashFields();
+        toggleCityBankFields();
+        toggleCashFields();
+
+        // Update preview
+        updatePreview();
+
+        console.log("Offer loaded for editing:", offer);
+
+    } catch (err) {
+
+        console.error("Failed to load offer for editing:", err);
+
+        alert("Failed to load offer.");
+
+    }
+}
+
 [
     restaurantInput,
     foodInput,
@@ -142,9 +223,12 @@ function setDefaultDateTimes() {
 
 }
 
-setDefaultDateTimes();
+if (!isEditMode) {
+    setDefaultDateTimes();
+}
 
 updatePreview();
+loadOfferForEdit();
 
 
 /* ==========================================
@@ -315,39 +399,26 @@ toggleBkashFields();
 ========================================== */
 
 form.addEventListener("submit", async (e) => {
-
     e.preventDefault();
 
-    if (!validatePaymentMethods()) {
-        return;
-    }
-
-    if (!validateCityBank()) {
-        return;
-    }
+    if (!validatePaymentMethods()) return;
+    if (!validateCityBank()) return;
 
     const data = {
-
         restaurantName: restaurantInput.value.trim(),
-
         foodName: foodInput.value.trim(),
-
         foodDescription: descriptionInput.value.trim(),
 
         quantity: Number(quantityInput.value),
-
         foodPrice: Number(priceInput.value),
-
         deliveryCharge: Number(deliveryInput.value),
 
         startTime: startInput.value,
-
         endTime: endInput.value,
 
         maxPeople: Number(peopleInput.value),
 
         paymentMethods: {
-
             bkash: {
                 enabled: bkashCheckbox.checked,
                 number: bkashCheckbox.checked
@@ -360,39 +431,36 @@ form.addEventListener("submit", async (e) => {
                 accountName: cityBankCheckbox.checked
                     ? cityBankAccountName.value.trim()
                     : null,
-
                 accountNumber: cityBankCheckbox.checked
                     ? cityBankAccountNumber.value.trim()
                     : null,
-
                 phoneNumber: cityBankCheckbox.checked
                     ? cityBankPhone.value.trim()
                     : null
             },
 
             cash: {
-                enabled:
-                    document.getElementById("payment-cash")?.checked || false
+                enabled: cashCheckbox.checked
             }
-
         }
-
     };
 
     try {
+        const url = isEditMode
+            ? API + "/offers/" + encodeURIComponent(editOfferId)
+            : API + "/offers";
 
-        const res = await fetch(API + "/offers", {
+        const method = isEditMode
+            ? "PATCH"
+            : "POST";
 
-            method: "POST",
-
+        const res = await fetch(url, {
+            method,
             credentials: "include",
-
             headers: {
                 "Content-Type": "application/json"
             },
-
             body: JSON.stringify(data)
-
         });
 
         const result = await res.json();
@@ -401,18 +469,32 @@ form.addEventListener("submit", async (e) => {
 
         if (res.ok) {
 
-            form.reset();
+            if (isEditMode) {
 
-            updatePreview();
+                window.location.href = "index.html";
 
+            } else {
+
+                form.reset();
+
+                toggleBkashFields();
+                toggleCityBankFields();
+                toggleCashFields();
+
+                updatePreview();
+            }
         }
 
     } catch (err) {
 
-        console.error(err);
+        console.error("Offer save error:", err);
 
-        alert("Failed to create offer.");
-
+        alert(
+            isEditMode
+                ? "Failed to update offer."
+                : "Failed to create offer."
+        );
     }
-
 });
+
+

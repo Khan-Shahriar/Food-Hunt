@@ -484,7 +484,371 @@ router.post("/:id/join", requireAuth, (req, res) => {
 
 });
 
-export default router;
+/*
+ * Get Single Offer
+ * Used when opening Edit Offer.
+ */
+router.get("/:id", requireAuth, (req, res) => {
+
+    const offerId = Number(req.params.id);
+
+    try {
+
+        const offer = db.prepare(`
+            SELECT *
+            FROM offers
+            WHERE id = ?
+        `).get(offerId);
+
+        if (!offer) {
+            return res.status(404).json({
+                success: false,
+                message: "Offer not found."
+            });
+        }
+
+        if (offer.user_id !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Only the creator can view this offer."
+            });
+        }
+
+        return res.json({
+            success: true,
+            offer
+        });
+
+    } catch (err) {
+
+        console.error("GET SINGLE OFFER ERROR:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to load offer."
+        });
+
+    }
+
+});
+
+
+/*
+ * Edit Offer
+ */
+router.patch("/:id", requireAuth, (req, res) => {
+
+    const offerId = Number(req.params.id);
+
+    const {
+        restaurantName,
+        foodName,
+        foodDescription,
+        quantity,
+        foodPrice,
+        deliveryCharge,
+        startTime,
+        endTime,
+        maxPeople,
+        paymentMethods
+    } = req.body;
+
+    try {
+
+        /*
+         * Find offer.
+         */
+        const offer = db.prepare(`
+            SELECT *
+            FROM offers
+            WHERE id = ?
+        `).get(offerId);
+
+        if (!offer) {
+            return res.status(404).json({
+                success: false,
+                message: "Offer not found."
+            });
+        }
+
+
+        /*
+         * Only creator can edit.
+         */
+        if (offer.user_id !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Only the creator can edit this offer."
+            });
+        }
+
+
+        /*
+         * Only OPEN offers can be edited.
+         */
+        if (offer.status !== "OPEN") {
+            return res.status(400).json({
+                success: false,
+                message: "Only active offers can be edited."
+            });
+        }
+
+
+        /*
+         * Validate normal offer fields.
+         */
+        const validationError = validateOfferFields({
+            restaurantName,
+            foodName,
+            foodDescription,
+            quantity,
+            foodPrice,
+            deliveryCharge,
+            startTime,
+            endTime,
+            maxPeople
+        });
+
+        if (validationError) {
+            return res.status(400).json({
+                success: false,
+                message: validationError
+            });
+        }
+
+
+        /*
+         * Validate payment methods.
+         */
+        const paymentValidationError =
+            validatePaymentMethods(paymentMethods);
+
+        if (paymentValidationError) {
+            return res.status(400).json({
+                success: false,
+                message: paymentValidationError
+            });
+        }
+
+
+        const selectedPayments = paymentMethods;
+
+        const bkashEnabled =
+            selectedPayments.bkash?.enabled === true;
+
+        const cityBankEnabled =
+            selectedPayments.cityBank?.enabled === true;
+
+        const cashEnabled =
+            selectedPayments.cash?.enabled === true;
+
+
+        /*
+         * Validate bKash.
+         */
+        if (
+            bkashEnabled &&
+            !selectedPayments.bkash?.number?.trim()
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message: "bKash number is required."
+            });
+
+        }
+
+
+        /*
+         * Validate City Bank.
+         */
+        if (cityBankEnabled) {
+
+            const accountName =
+                selectedPayments.cityBank?.accountName?.trim() || "";
+
+            const accountNumber =
+                selectedPayments.cityBank?.accountNumber?.trim() || "";
+
+            const phoneNumber =
+                selectedPayments.cityBank?.phoneNumber?.trim() || "";
+
+            const hasAccountDetails =
+                accountName !== "" &&
+                accountNumber !== "";
+
+            const hasPhone =
+                phoneNumber !== "";
+
+            if (!hasAccountDetails && !hasPhone) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "For City Bank, provide Account Name + Account Number OR Phone Number."
+                });
+
+            }
+
+        }
+
+
+        /*
+         * Check current participants.
+         *
+         * maxPeople cannot be smaller than
+         * the number of people already joined.
+         */
+        const participantCount = db.prepare(`
+            SELECT COUNT(*) AS total
+            FROM offer_participants
+            WHERE offer_id = ?
+        `).get(offerId).total;
+
+        if (Number(maxPeople) < Number(participantCount)) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    `Maximum people cannot be less than the ${participantCount} participant(s) already joined.`
+            });
+
+        }
+
+
+        /*
+         * Get creator name for Cash.
+         */
+        const creator = db.prepare(`
+            SELECT full_name
+            FROM users
+            WHERE id = ?
+        `).get(req.user.id);
+
+        if (!creator) {
+
+            return res.status(401).json({
+                success: false,
+                message: "Authenticated user not found."
+            });
+
+        }
+
+
+        /*
+         * Update offer.
+         */
+        db.prepare(`
+            UPDATE offers
+            SET
+                restaurant_name = ?,
+                food_name = ?,
+                food_description = ?,
+
+                quantity = ?,
+                food_price = ?,
+                delivery_charge = ?,
+
+                start_time = ?,
+                end_time = ?,
+
+                max_people = ?,
+
+                payment_methods = ?,
+
+                payment_bkash_enabled = ?,
+                bkash_number = ?,
+
+                payment_citybank_enabled = ?,
+                citybank_account_name = ?,
+                citybank_account_number = ?,
+                citybank_phone = ?,
+
+                payment_cash_enabled = ?,
+                cash_account_name = ?,
+
+                updated_at = CURRENT_TIMESTAMP
+
+            WHERE id = ?
+        `).run(
+
+            restaurantName,
+            foodName,
+            foodDescription,
+
+            quantity,
+            foodPrice,
+            deliveryCharge,
+
+            startTime,
+            endTime,
+
+            maxPeople,
+
+            JSON.stringify([
+                ...(bkashEnabled ? ["bkash"] : []),
+                ...(cityBankEnabled ? ["city_bank"] : []),
+                ...(cashEnabled ? ["cash"] : [])
+            ]),
+
+            /*
+             * bKash
+             */
+            bkashEnabled ? 1 : 0,
+            bkashEnabled
+                ? selectedPayments.bkash.number.trim()
+                : null,
+
+            /*
+             * City Bank
+             */
+            cityBankEnabled ? 1 : 0,
+
+            cityBankEnabled
+                ? selectedPayments.cityBank.accountName?.trim() || null
+                : null,
+
+            cityBankEnabled
+                ? selectedPayments.cityBank.accountNumber?.trim() || null
+                : null,
+
+            cityBankEnabled
+                ? selectedPayments.cityBank.phoneNumber?.trim() || null
+                : null,
+
+            /*
+             * Cash
+             */
+            cashEnabled ? 1 : 0,
+
+            cashEnabled
+                ? creator.full_name
+                : null,
+
+            offerId
+        );
+
+
+        return res.json({
+            success: true,
+            message: "Offer updated successfully.",
+            offerId
+        });
+
+    } catch (err) {
+
+        console.error("UPDATE OFFER ERROR:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to update offer."
+        });
+
+    }
+
+});
+
+
 
 /*
  * Get Offer Participants
@@ -897,3 +1261,5 @@ router.patch(
 
     }
 );
+
+export default router;
