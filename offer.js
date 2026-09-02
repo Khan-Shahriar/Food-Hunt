@@ -338,14 +338,14 @@ async function loadCashCreatorName() {
 
 }
 
-loadCashCreatorName();
+        loadCashCreatorName();
 
-cityBankCheckbox.addEventListener(
-    "change",
-    toggleCityBankFields
-);
+        cityBankCheckbox.addEventListener(
+            "change",
+            toggleCityBankFields
+        );
 
-toggleCityBankFields();
+        toggleCityBankFields();
 
 function validateCityBank() {
 
