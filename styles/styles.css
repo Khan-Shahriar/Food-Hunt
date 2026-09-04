@@ -1,13 +1,10 @@
 @import url("global.css");
 @import url("auth.css");
 @import url("dashboard.css");
+@import url("home.css");
 @import url("news-feed.css");
 @import url("create-offer.css");
 @import url("profile.css");
 @import url("responsive.css");
 @import url("animations.css");
 @import url("manage-offer.css");
-
-/****
-All input
-****/
