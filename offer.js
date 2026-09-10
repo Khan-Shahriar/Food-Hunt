@@ -498,5 +498,110 @@ form.addEventListener("submit", async (e) => {
 });
 
 
-/*** Start Step 10 */
+/** Rmove This part */
+
+/* ==========================================
+   Create Offer
+========================================== */
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (!validatePaymentMethods()) return;
+    if (!validateCityBank()) return;
+
+    const data = {
+        restaurantName: restaurantInput.value.trim(),
+        foodName: foodInput.value.trim(),
+        foodDescription: descriptionInput.value.trim(),
+
+        quantity: Number(quantityInput.value),
+        foodPrice: Number(priceInput.value),
+        deliveryCharge: Number(deliveryInput.value),
+
+        startTime: startInput.value,
+        endTime: endInput.value,
+
+        maxPeople: Number(peopleInput.value),
+
+        paymentMethods: {
+            bkash: {
+                enabled: bkashCheckbox.checked,
+                number: bkashCheckbox.checked
+                    ? bkashNumberInput.value.trim()
+                    : null
+            },
+
+            cityBank: {
+                enabled: cityBankCheckbox.checked,
+                accountName: cityBankCheckbox.checked
+                    ? cityBankAccountName.value.trim()
+                    : null,
+                accountNumber: cityBankCheckbox.checked
+                    ? cityBankAccountNumber.value.trim()
+                    : null,
+                phoneNumber: cityBankCheckbox.checked
+                    ? cityBankPhone.value.trim()
+                    : null
+            },
+
+            cash: {
+                enabled: cashCheckbox.checked
+            }
+        }
+    };
+
+    try {
+        const url = isEditMode
+            ? API + "/offers/" + encodeURIComponent(editOfferId)
+            : API + "/offers";
+
+        const method = isEditMode
+            ? "PATCH"
+            : "POST";
+
+        const res = await fetch(url, {
+            method,
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        alert(result.message);
+
+        if (res.ok) {
+
+            if (isEditMode) {
+
+                window.location.href = "index.html";
+
+            } else {
+
+                form.reset();
+
+                toggleBkashFields();
+                toggleCityBankFields();
+                toggleCashFields();
+
+                updatePreview();
+            }
+        }
+
+    } catch (err) {
+
+        console.error("Offer save error:", err);
+
+        alert(
+            isEditMode
+                ? "Failed to update offer."
+                : "Failed to create offer."
+        );
+    }
+});
+
+/** and This */
 
