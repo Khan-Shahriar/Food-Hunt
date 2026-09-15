@@ -1,3 +1,5 @@
+@import url("home-fix.css");
+
 /* =========================================================
    FOOD HUNT — MANAGE OFFER MODAL
    Only affects #manageOfferModal
@@ -31,270 +33,153 @@
     pointer-events: none;
 }
 
-
-/* =========================================================
-   OPEN STATE
-========================================================= */
-
 #manageOfferModal.is-active {
     display: flex !important;
-
     opacity: 1 !important;
-
     visibility: visible !important;
-
     pointer-events: auto !important;
 }
 
-
-/* =========================================================
-   MANAGE OFFER CONTENT
-========================================================= */
-
 #manageOfferModal .manage-offer-modal {
     position: relative;
-
     width: min(700px, 100%);
-
     max-height: calc(100vh - 48px);
-
     overflow-y: auto;
-
     margin: 0;
-
     box-sizing: border-box;
-
     background: #ffffff;
-
     border-radius: 18px;
-
     padding: 28px;
-
     z-index: 100000;
 }
 
-
-/* =========================================================
-   INFO GRID
-========================================================= */
-
 #manageOfferModal .manage-offer-info {
     display: grid;
-
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
-
     margin-top: 20px;
 }
 
-
 #manageOfferModal .manage-offer-info > div {
     display: flex;
-
     flex-direction: column;
-
     gap: 5px;
-
     padding: 14px;
-
     border-radius: 12px;
-
     background: #f6f7f9;
 }
 
-
 #manageOfferModal .manage-offer-info span {
     font-size: 13px;
-
     color: #6b7280;
 }
 
-
 #manageOfferModal .manage-offer-info strong {
     font-size: 15px;
-
     color: #111827;
 }
 
-
-/* =========================================================
-   PARTICIPANTS
-========================================================= */
-
 #manageOfferModal .participants-list {
     display: flex;
-
     flex-direction: column;
-
     gap: 10px;
-
     margin-top: 14px;
-
     max-height: 300px;
-
     overflow-y: auto;
 }
 
-
 #manageOfferModal .participant-row {
     display: flex;
-
     align-items: center;
-
     gap: 12px;
-
     padding: 12px;
-
     border: 1px solid #e5e7eb;
-
     border-radius: 12px;
-
     background: #ffffff;
 }
 
-
 #manageOfferModal .participant-avatar {
     width: 42px;
-
     height: 42px;
-
     flex: 0 0 42px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     overflow: hidden;
-
     border-radius: 50%;
-
     background: #eef2ff;
-
     font-weight: 700;
 }
 
-
 #manageOfferModal .participant-avatar img {
     width: 100%;
-
     height: 100%;
-
     object-fit: cover;
 }
 
-
 #manageOfferModal .participant-info {
     display: flex;
-
     flex-direction: column;
-
     gap: 3px;
-
     flex: 1;
 }
-
 
 #manageOfferModal .participant-name {
     font-weight: 600;
 }
 
-
 #manageOfferModal .participant-time {
     font-size: 12px;
-
     color: #6b7280;
 }
 
-
 #manageOfferModal .received-control {
     display: flex;
-
     align-items: center;
-
     gap: 7px;
-
     cursor: pointer;
-
     white-space: nowrap;
-
     font-size: 13px;
 }
 
-
-/* =========================================================
-   SUCCESS MESSAGE
-========================================================= */
-
 #manageOfferModal .success-box {
     margin-top: 18px;
-
     padding: 14px;
-
     border-radius: 12px;
-
     background: #ecfdf5;
-
     color: #047857;
-
     font-weight: 600;
 }
 
-
-/* =========================================================
-   ACTIONS
-========================================================= */
-
 #manageOfferModal .manage-offer-actions {
     display: flex;
-
     justify-content: flex-end;
-
     gap: 10px;
-
     margin-top: 20px;
 }
 
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
 @media (max-width: 600px) {
-
     #manageOfferModal {
         padding: 12px !important;
     }
 
-
     #manageOfferModal .manage-offer-modal {
         width: 100%;
-
         max-height: calc(100vh - 24px);
-
         padding: 20px;
-
         border-radius: 16px;
     }
-
 
     #manageOfferModal .manage-offer-info {
         grid-template-columns: 1fr;
     }
 
-
     #manageOfferModal .participant-row {
         align-items: flex-start;
-
         flex-wrap: wrap;
     }
-
 
     #manageOfferModal .received-control {
         width: 100%;
     }
-
 }
