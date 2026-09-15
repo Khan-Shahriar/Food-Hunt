@@ -1,14 +1,5 @@
 /* =========================================================
    FOOD HUNT HOME — CSS CONFLICT FIXES
-   ---------------------------------------------------------
-   home.css was originally written for a standalone Home page.
-   The current Home view lives inside the Dashboard, so generic
-   selectors such as .brand, .brand-mark, .profile-button,
-   .toast-stack and .toast must not override dashboard styles.
-   ========================================================= */
-
-/* =========================================================
-   Restore Dashboard Navigation
    ========================================================= */
 
 .dashboard-nav .brand {
@@ -56,10 +47,6 @@
     width: 42px;
 }
 
-/* =========================================================
-   Restore Dashboard Toasts
-   ========================================================= */
-
 .dashboard ~ .toast-stack,
 .toast-stack {
     bottom: auto;
@@ -84,149 +71,133 @@
     padding: 14px 16px;
 }
 
-.toast-success {
-    border-color: rgba(40, 122, 78, 0.35);
-    color: var(--green);
-}
-
-.toast-error {
-    border-color: rgba(201, 53, 53, 0.35);
-    color: var(--red);
-}
+.toast-success { border-color: rgba(40, 122, 78, 0.35); color: var(--green); }
+.toast-error { border-color: rgba(201, 53, 53, 0.35); color: var(--red); }
 
 /* =========================================================
-   Current Home View
+   Standard-size Home View
    ========================================================= */
 
 .dashboard-view[data-view-panel="home"] {
     min-width: 0;
 }
 
+.dashboard-view[data-view-panel="home"] .welcome-card.home-welcome-card {
+    padding: 24px;
+    border-radius: 14px;
+    margin-bottom: 24px;
+}
+
+.dashboard-view[data-view-panel="home"] .welcome-card.home-welcome-card h1 {
+    font-size: clamp(24px, 3vw, 32px);
+    line-height: 1.2;
+}
+
 .dashboard-view[data-view-panel="home"] .home-offers-section {
-    margin-top: 28px;
+    margin-top: 22px;
 }
 
 .dashboard-view[data-view-panel="home"] .home-section-heading {
     align-items: center;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
+}
+
+.dashboard-view[data-view-panel="home"] .home-section-heading h2 {
+    font-size: 20px;
 }
 
 .dashboard-view[data-view-panel="home"] .home-offers-list {
     display: grid;
-    gap: 18px;
+    gap: 14px;
     min-width: 0;
 }
 
 .dashboard-view[data-view-panel="home"] .home-offer-card {
     background: var(--white);
     border: 1px solid var(--line);
-    border-radius: 14px;
-    box-shadow: 0 12px 30px rgba(22, 22, 22, 0.06);
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(22, 22, 22, 0.05);
     min-width: 0;
     overflow: hidden;
-    padding: 20px;
+    padding: 16px;
 }
 
 .dashboard-view[data-view-panel="home"] .home-offer-header,
 .dashboard-view[data-view-panel="home"] .home-offer-title,
-.dashboard-view[data-view-panel="home"] .home-offer-actions {
+.dashboard-view[data-view-panel="home"] .home-offer-actions,
+.dashboard-view[data-view-panel="home"] .home-offer-summary,
+.dashboard-view[data-view-panel="home"] .home-payment-breakdown {
     min-width: 0;
 }
 
 .dashboard-view[data-view-panel="home"] .home-offer-header {
     align-items: flex-start;
     display: flex;
-    gap: 16px;
+    gap: 12px;
     justify-content: space-between;
 }
 
-.dashboard-view[data-view-panel="home"] .home-offer-title h3,
+.dashboard-view[data-view-panel="home"] .home-offer-title h3 {
+    font-size: 17px;
+    line-height: 1.35;
+    margin: 0;
+}
+
 .dashboard-view[data-view-panel="home"] .home-offer-title p {
-    overflow-wrap: anywhere;
+    font-size: 13px;
+    line-height: 1.45;
+    margin-top: 4px;
 }
 
 .dashboard-view[data-view-panel="home"] .home-offer-body {
     display: grid;
-    gap: 16px;
-    margin-top: 18px;
-}
-
-.dashboard-view[data-view-panel="home"] .home-offer-summary,
-.dashboard-view[data-view-panel="home"] .home-payment-breakdown {
-    min-width: 0;
+    gap: 12px;
+    margin-top: 14px;
 }
 
 .dashboard-view[data-view-panel="home"] .home-payment-breakdown {
     display: grid;
-    gap: 10px;
+    gap: 8px;
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .dashboard-view[data-view-panel="home"] .home-payment-method {
     min-width: 0;
+    padding: 10px;
+    border-radius: 8px;
 }
 
 .dashboard-view[data-view-panel="home"] .home-participants-list {
     display: grid;
-    gap: 8px;
+    gap: 7px;
     min-width: 0;
 }
 
 .dashboard-view[data-view-panel="home"] .home-participant-row {
     align-items: center;
     display: flex;
-    gap: 12px;
+    gap: 10px;
     min-width: 0;
 }
 
-.dashboard-view[data-view-panel="home"] .home-participant-row > * {
-    min-width: 0;
-}
+.dashboard-view[data-view-panel="home"] .home-participant-row > * { min-width: 0; }
 
-/* Prevent long restaurant/food/payment text from breaking the layout. */
 .dashboard-view[data-view-panel="home"] .home-offer-card,
 .dashboard-view[data-view-panel="home"] .home-offer-card * {
     overflow-wrap: anywhere;
 }
 
-/* =========================================================
-   Responsive Home Fixes
-   ========================================================= */
-
 @media (max-width: 800px) {
-    .dashboard-view[data-view-panel="home"] .home-payment-breakdown {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-view[data-view-panel="home"] .home-offer-header {
-        flex-direction: column;
-    }
+    .dashboard-view[data-view-panel="home"] .home-payment-breakdown { grid-template-columns: 1fr; }
+    .dashboard-view[data-view-panel="home"] .home-offer-header { flex-direction: column; }
 }
 
 @media (max-width: 600px) {
-    .dashboard-view[data-view-panel="home"] .home-offer-card {
-        padding: 16px;
-    }
-
-    .dashboard-view[data-view-panel="home"] .home-offer-actions {
-        width: 100%;
-    }
-
-    .dashboard-view[data-view-panel="home"] .home-offer-actions .button {
-        width: 100%;
-    }
-
-    .dashboard-nav .brand {
-        font-size: 1rem;
-    }
-
-    .dashboard-nav .brand-mark {
-        height: 36px;
-        width: 36px;
-    }
-
-    .dashboard-nav .profile-button {
-        height: 38px;
-        width: 38px;
-    }
+    .dashboard-view[data-view-panel="home"] .welcome-card.home-welcome-card { padding: 18px; }
+    .dashboard-view[data-view-panel="home"] .home-offer-card { padding: 14px; }
+    .dashboard-view[data-view-panel="home"] .home-offer-actions { width: 100%; }
+    .dashboard-view[data-view-panel="home"] .home-offer-actions .button { width: 100%; }
+    .dashboard-nav .brand { font-size: 1rem; }
+    .dashboard-nav .brand-mark { height: 36px; width: 36px; }
+    .dashboard-nav .profile-button { height: 38px; width: 38px; }
 }
