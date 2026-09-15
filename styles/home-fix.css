@@ -13,3 +13,8 @@
     pointer-events: auto;
     cursor: pointer;
 }
+
+/* Remove the non-working Home welcome Create Offer button. */
+#welcomeCreateOfferBtn {
+    display: none !important;
+}
