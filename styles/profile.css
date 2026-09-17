@@ -1,11 +1,10 @@
 /* =========================================================
-   FOOD HUNT — PROFILE PAGE
-   Clean, compact, centered account layout
+   FOOD HUNT — MODERN PROFESSIONAL PROFILE
 ========================================================= */
 
 [data-view-panel="profile"],
 [data-view-panel="settings"] {
-  width: min(100%, 920px);
+  width: min(100%, 1040px);
   margin-inline: auto;
 }
 
@@ -13,69 +12,70 @@
 [data-view-panel="settings"] .settings-card {
   width: 100%;
   box-sizing: border-box;
-  margin: 0 0 20px;
-  padding: 28px;
-  background: #ffffff;
-  border: 1px solid #e8e1cf;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(48, 42, 20, 0.05);
+  margin: 0 0 22px;
+  padding: 30px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #ebe7dc;
+  border-radius: 20px;
+  box-shadow: 0 14px 38px rgba(31, 35, 28, 0.06);
 }
 
 .settings-card .eyebrow {
-  margin: 0 0 7px;
-  color: #927500;
+  margin: 0 0 8px;
+  color: #a18400;
   font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
 }
 
 .settings-card h2 {
-  margin: 0 0 24px;
-  color: #171717;
-  font-size: 1.8rem;
+  margin: 0 0 26px;
+  color: #171914;
+  font-size: clamp(1.65rem, 2.5vw, 2.15rem);
   line-height: 1.15;
-  font-weight: 800;
-  letter-spacing: -0.025em;
+  font-weight: 850;
+  letter-spacing: -0.04em;
 }
 
-/* Profile form */
-
-[data-profile-form] {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px 20px;
-}
+/* Profile identity header */
 
 .profile-avatar-section {
   grid-column: 1 / -1;
+  position: relative;
   display: flex;
   align-items: center;
-  padding: 0 0 8px;
+  gap: 18px;
+  margin: -30px -30px 26px;
+  padding: 30px;
+  background: linear-gradient(120deg, #fff9d9 0%, #fffdf4 55%, #f7f8f2 100%);
+  border-bottom: 1px solid #eee8d4;
 }
 
 .profile-avatar-upload {
   display: inline-flex !important;
   flex-direction: row !important;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   cursor: pointer;
 }
 
 .profile-avatar {
-  width: 72px;
-  height: 72px;
-  flex: 0 0 72px;
+  width: 88px;
+  height: 88px;
+  flex: 0 0 88px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 2px solid #e4c000;
+  border: 4px solid #fff;
   border-radius: 50%;
-  background: #fff5bd;
-  color: #191919;
-  font-size: 1.35rem;
-  font-weight: 800;
+  background: #ffda00;
+  color: #171914;
+  font-size: 1.65rem;
+  font-weight: 850;
+  box-shadow: 0 5px 18px rgba(61, 51, 0, 0.14);
 }
 
 .profile-avatar img {
@@ -88,29 +88,37 @@
 .avatar-upload-text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .avatar-upload-text strong {
-  color: #202020;
-  font-size: 0.95rem;
-  font-weight: 800;
+  color: #20231b;
+  font-size: 1rem;
+  font-weight: 850;
 }
 
 .avatar-upload-text small {
-  color: #77736a;
+  color: #77796e;
   font-size: 0.82rem;
   font-weight: 500;
+}
+
+/* Profile form */
+
+[data-profile-form] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 22px;
 }
 
 .settings-form label {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  color: #343434;
-  font-size: 0.86rem;
-  font-weight: 700;
+  gap: 8px;
+  color: #3e4238;
+  font-size: 0.82rem;
+  font-weight: 800;
 }
 
 [data-profile-form] label:nth-of-type(1) {
@@ -120,33 +128,33 @@
 .settings-form input {
   width: 100%;
   min-width: 0;
-  min-height: 44px;
+  min-height: 48px;
   box-sizing: border-box;
-  padding: 0 13px;
-  border: 1px solid #ddd5c3;
-  border-radius: 9px;
-  background: #fffdf8;
-  color: #191919;
+  padding: 0 15px;
+  border: 1px solid #deded4;
+  border-radius: 11px;
+  background: #fbfcf8;
+  color: #20231d;
   font: inherit;
   font-size: 0.92rem;
-  font-weight: 600;
+  font-weight: 650;
   outline: none;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 .settings-form input:hover {
-  border-color: #cfc19b;
+  border-color: #c9c6b4;
 }
 
 .settings-form input:focus {
-  border-color: #e0b900;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(255, 211, 0, 0.16);
+  border-color: #d7b600;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 211, 0, 0.16);
 }
 
 .settings-form input[readonly] {
-  background: #f6f4ed;
-  color: #77736a;
+  background: #f1f3ee;
+  color: #777c70;
   cursor: default;
 }
 
@@ -161,15 +169,15 @@
   min-height: 1.2em;
   margin: 0;
   font-size: 0.84rem;
-  font-weight: 600;
+  font-weight: 650;
 }
 
 [data-profile-form] > .button,
 [data-password-form] > .button {
   grid-column: 1 / -1;
-  min-height: 44px;
-  border-radius: 9px;
-  font-weight: 800;
+  min-height: 48px;
+  border-radius: 11px;
+  font-weight: 850;
 }
 
 /* Settings forms */
@@ -190,8 +198,8 @@
 }
 
 [data-delete-form] .button {
-  min-height: 44px;
-  border-radius: 9px;
+  min-height: 46px;
+  border-radius: 10px;
   font-weight: 800;
 }
 
@@ -206,11 +214,11 @@
 
 [data-view-panel="profile"].is-active .settings-card,
 [data-view-panel="settings"].is-active .settings-card {
-  animation: profileCardIn 0.25s ease both;
+  animation: profileCardIn 0.28s ease both;
 }
 
 @keyframes profileCardIn {
-  from { opacity: 0; transform: translateY(5px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -223,12 +231,23 @@
   [data-view-panel="profile"] .settings-card,
   [data-view-panel="settings"] .settings-card {
     padding: 20px;
-    border-radius: 13px;
+    border-radius: 16px;
+  }
+
+  .profile-avatar-section {
+    margin: -20px -20px 22px;
+    padding: 22px 20px;
+  }
+
+  .profile-avatar {
+    width: 72px;
+    height: 72px;
+    flex-basis: 72px;
   }
 
   .settings-card h2 {
-    font-size: 1.6rem;
     margin-bottom: 20px;
+    font-size: 1.6rem;
   }
 
   [data-profile-form],
@@ -247,11 +266,5 @@
   [data-profile-form] > .button,
   [data-password-form] > .button {
     grid-column: 1;
-  }
-
-  .profile-avatar {
-    width: 64px;
-    height: 64px;
-    flex-basis: 64px;
   }
 }
