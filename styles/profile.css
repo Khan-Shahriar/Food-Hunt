@@ -1,96 +1,89 @@
-/* ==========================================
-   Center Profile & Settings
-========================================== */
+/* =========================================================
+   FOOD HUNT — PROFILE PAGE
+   Clean, compact, centered account layout
+========================================================= */
 
 [data-view-panel="profile"],
 [data-view-panel="settings"] {
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
+  width: min(100%, 920px);
+  margin-inline: auto;
 }
 
-/* ==========================================
-   Profile & Settings
-========================================== */
-
-.settings-card {
+[data-view-panel="profile"] .settings-card,
+[data-view-panel="settings"] .settings-card {
   width: 100%;
-  background: #ffffff;
-  border: 1px solid var(--border, #e7dfc8);
-  border-radius: 16px;
-  padding: 24px;
   box-sizing: border-box;
-  box-shadow: 0 12px 35px rgba(40, 35, 20, 0.06);
-  margin-bottom: 24px;
+  margin: 0 0 20px;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #e8e1cf;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(48, 42, 20, 0.05);
 }
 
-/* ==========================================
-   Profile Avatar
-========================================== */
+.settings-card .eyebrow {
+  margin: 0 0 7px;
+  color: #927500;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.settings-card h2 {
+  margin: 0 0 24px;
+  color: #171717;
+  font-size: 1.8rem;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+/* Profile form */
+
+[data-profile-form] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 20px;
+}
 
 .profile-avatar-section {
   grid-column: 1 / -1;
-
   display: flex;
   align-items: center;
-
-  padding-bottom: 8px;
+  padding: 0 0 8px;
 }
 
 .profile-avatar-upload {
-  display: flex !important;
+  display: inline-flex !important;
   flex-direction: row !important;
   align-items: center;
-
-  gap: 16px;
-
+  gap: 14px;
   cursor: pointer;
 }
 
-/* Avatar circle */
-
 .profile-avatar {
-  width: 76px;
-  height: 76px;
-
-  flex: 0 0 76px;
-
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  border-radius: 50%;
-
-  background: #fff4b8;
-  border: 2px solid #e6c400;
-
-  color: #171717;
-
-  font-size: 1.5rem;
-  font-weight: 800;
-
   overflow: hidden;
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  border: 2px solid #e4c000;
+  border-radius: 50%;
+  background: #fff5bd;
+  color: #191919;
+  font-size: 1.35rem;
+  font-weight: 800;
 }
-
-.profile-avatar-upload:hover .profile-avatar {
-  transform: scale(1.03);
-  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.08);
-}
-
-/* Uploaded image */
 
 .profile-avatar img {
   width: 100%;
   height: 100%;
-
+  display: block;
   object-fit: cover;
 }
-
-/* Text beside avatar */
 
 .avatar-upload-text {
   display: flex;
@@ -99,108 +92,50 @@
 }
 
 .avatar-upload-text strong {
-  color: #222;
+  color: #202020;
   font-size: 0.95rem;
   font-weight: 800;
 }
 
 .avatar-upload-text small {
-  color: #777;
+  color: #77736a;
   font-size: 0.82rem;
   font-weight: 500;
 }
 
-/* ------------------------------------------
-   Page Heading
------------------------------------------- */
-
-.settings-card .eyebrow {
-  margin: 0 0 8px;
-  color: #806d00;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.settings-card h2 {
-  margin: 0 0 28px;
-  color: #171717;
-  font-size: clamp(2rem, 3vw, 2.8rem);
-  line-height: 1.05;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-}
-
-/* ==========================================
-   Profile
-========================================== */
-
-[data-view-panel="profile"] {
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Profile form */
-
-[data-profile-form] {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-}
-
-/* Labels */
-
 .settings-form label {
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
   color: #343434;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   font-weight: 700;
 }
 
-/* Full width fields */
-
-[data-profile-form] label:nth-child(2) {
+[data-profile-form] label:nth-of-type(1) {
   grid-column: 1 / -1;
 }
 
-[data-profile-form] label:nth-child(3),
-[data-profile-form] label:nth-child(4) {
-  grid-column: span 1;
-}
-
-/* Inputs */
-
 .settings-form input {
   width: 100%;
-  min-height: 48px;
+  min-width: 0;
+  min-height: 44px;
   box-sizing: border-box;
-
-  padding: 0 15px;
-
-  border: 1px solid #ddd3b8;
-  border-radius: 10px;
-
-  background: #fffdf7;
-  color: #181818;
-
+  padding: 0 13px;
+  border: 1px solid #ddd5c3;
+  border-radius: 9px;
+  background: #fffdf8;
+  color: #191919;
   font: inherit;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
-
   outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 .settings-form input:hover {
-  border-color: #cdbf98;
+  border-color: #cfc19b;
 }
 
 .settings-form input:focus {
@@ -209,209 +144,103 @@
   box-shadow: 0 0 0 3px rgba(255, 211, 0, 0.16);
 }
 
-/* Read-only fields */
-
 .settings-form input[readonly] {
-  background: #f7f5ed;
-  color: #666;
+  background: #f6f4ed;
+  color: #77736a;
   cursor: default;
 }
 
-/* ==========================================
-   Form Message
-========================================== */
+[data-profile-message],
+[data-password-form] .form-hint,
+[data-password-form] .form-error {
+  grid-column: 1 / -1;
+}
 
 .form-message,
 .form-error {
-  margin: 2px 0 0;
-  font-size: 0.88rem;
+  min-height: 1.2em;
+  margin: 0;
+  font-size: 0.84rem;
   font-weight: 600;
 }
 
-[data-profile-message] {
+[data-profile-form] > .button,
+[data-password-form] > .button {
   grid-column: 1 / -1;
-}
-
-/* ==========================================
-   Buttons
-========================================== */
-
-.settings-form > .button {
-  min-height: 48px;
-  border-radius: 10px;
+  min-height: 44px;
+  border-radius: 9px;
   font-weight: 800;
-  cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.2s ease,
-    opacity 0.2s ease;
 }
 
-/* Profile button */
-
-[data-profile-form] > .button {
-  grid-column: 1 / -1;
-  margin-top: 4px;
-}
-
-.settings-form > .button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.08);
-}
-
-.settings-form > .button:active {
-  transform: translateY(0);
-}
-
-/* ==========================================
-   Settings Page
-========================================== */
-
-[data-view-panel="settings"] {
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Password form */
+/* Settings forms */
 
 [data-password-form] {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  gap: 18px 20px;
 }
 
 [data-password-form] label:first-child {
   grid-column: 1 / -1;
 }
 
-[data-password-form] label:nth-child(2),
-[data-password-form] label:nth-child(3) {
-  grid-column: span 1;
-}
-
-/* Password hint */
-
-[data-password-form] .form-hint {
-  grid-column: 1 / -1;
-
-  margin: -2px 0 2px;
-
-  color: #777;
-  font-size: 0.85rem;
-  line-height: 1.5;
-}
-
-/* Password error */
-
-[data-password-form] .form-error {
-  grid-column: 1 / -1;
-}
-
-/* Update button */
-
-[data-password-form] > .button {
-  grid-column: 1 / -1;
-}
-
-/* ==========================================
-   Danger Zone
-========================================== */
-
-.settings-card.danger-card {
-  border-color: #efc4c4;
-  box-shadow: none;
-}
-
-.danger-card .eyebrow {
-  color: #9a6900;
-}
-
-.danger-card h2 {
-  margin-bottom: 24px;
-}
-
 [data-delete-form] {
   display: grid;
-  gap: 18px;
+  gap: 16px;
 }
 
-[data-delete-form] .form-error {
-  margin-top: -4px;
-}
-
-.button-danger {
-  min-height: 48px;
-  border-radius: 10px;
+[data-delete-form] .button {
+  min-height: 44px;
+  border-radius: 9px;
   font-weight: 800;
 }
 
-/* ==========================================
-   Better spacing between Settings cards
-========================================== */
-
-[data-view-panel="settings"] .settings-card:last-child {
-  margin-bottom: 0;
+.settings-card.danger-card {
+  border-color: #efcaca;
+  box-shadow: none;
 }
 
-/* ==========================================
-   Subtle card animation
-========================================== */
+.danger-card h2 {
+  margin-bottom: 20px;
+}
 
 [data-view-panel="profile"].is-active .settings-card,
 [data-view-panel="settings"].is-active .settings-card {
-  animation: profileCardIn 0.35s ease both;
-}
-
-[data-view-panel="settings"].is-active .danger-card {
-  animation-delay: 0.05s;
+  animation: profileCardIn 0.25s ease both;
 }
 
 @keyframes profileCardIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ==========================================
-   Mobile
-========================================== */
-
 @media (max-width: 700px) {
+  [data-view-panel="profile"],
+  [data-view-panel="settings"] {
+    width: 100%;
+  }
 
-  .settings-card {
-    padding: 22px;
-    border-radius: 14px;
+  [data-view-panel="profile"] .settings-card,
+  [data-view-panel="settings"] .settings-card {
+    padding: 20px;
+    border-radius: 13px;
   }
 
   .settings-card h2 {
-    font-size: 2rem;
-    margin-bottom: 22px;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
   }
 
   [data-profile-form],
   [data-password-form] {
     grid-template-columns: 1fr;
-    gap: 17px;
+    gap: 16px;
   }
 
   [data-profile-form] label,
   [data-password-form] label,
-  [data-profile-form] label:nth-child(2),
-  [data-profile-form] label:nth-child(3),
-  [data-profile-form] label:nth-child(4),
+  [data-profile-form] label:nth-of-type(1),
   [data-password-form] label:first-child,
-  [data-password-form] label:nth-child(2),
-  [data-password-form] label:nth-child(3) {
-    grid-column: 1;
-  }
-
   [data-profile-message],
   [data-password-form] .form-hint,
   [data-password-form] .form-error,
@@ -420,7 +249,9 @@
     grid-column: 1;
   }
 
-  .settings-form input {
-    min-height: 46px;
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+    flex-basis: 64px;
   }
 }
