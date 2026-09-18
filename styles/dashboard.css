@@ -262,8 +262,65 @@
 }
 
 /* =========================================================
-   Settings Password
+   Settings Page
    ========================================================= */
+
+.dashboard-view[data-view-panel="settings"].is-active {
+  display: block;
+}
+
+.settings-page-content {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 28px;
+}
+
+.settings-page-header {
+  display: grid;
+  gap: 4px;
+}
+
+.settings-page-header .eyebrow {
+  margin: 0;
+}
+
+.settings-page-header h1 {
+  font-size: clamp(1.7rem, 3vw, 2.25rem);
+  line-height: 1.15;
+  margin: 0;
+}
+
+.settings-page-header > p:last-child {
+  color: var(--gray);
+  margin: 0;
+}
+
+.settings-section {
+  display: grid;
+  gap: 14px;
+}
+
+.settings-section-heading {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 9px;
+}
+
+.settings-section-heading h2 {
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.settings-card {
+  align-items: stretch;
+}
+
+.settings-card h2 {
+  font-size: 1.35rem;
+  line-height: 1.2;
+  margin: 0 0 7px;
+}
 
 .password-settings-card {
   display: block;
@@ -276,24 +333,17 @@
   justify-content: space-between;
 }
 
-.settings-description {
-  color: var(--gray);
-  margin: -4px 0 0;
+.settings-card-header .eyebrow {
+  margin-bottom: 7px;
 }
 
-.security-badge {
-  background: var(--yellow-soft);
-  border: 1px solid rgba(255, 215, 0, 0.55);
-  border-radius: 999px;
-  color: #6f5a00;
-  font-size: 0.78rem;
-  font-weight: 900;
-  padding: 7px 12px;
-  white-space: nowrap;
+.settings-description {
+  color: var(--gray);
+  margin: 0;
 }
 
 .password-settings-form {
-  max-width: 620px;
+  max-width: none;
 }
 
 .settings-password-wrap {
@@ -318,10 +368,14 @@
   right: 12px;
 }
 
+.settings-password-toggle:hover {
+  color: var(--ink);
+}
+
 .settings-password-requirements {
   background: #faf9f0;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 8px;
   display: grid;
   gap: 7px;
   padding: 12px 14px;
@@ -376,13 +430,79 @@
   justify-content: flex-end;
 }
 
+.settings-action-card {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  min-height: 92px;
+}
+
+.settings-action-card h3,
+.danger-card h3 {
+  font-size: 1rem;
+  margin: 0 0 5px;
+}
+
+.settings-action-card p,
+.danger-card-content p {
+  color: var(--gray);
+  margin: 0;
+}
+
+.settings-danger-section .settings-section-heading h2 {
+  color: var(--red);
+}
+
+.danger-card {
+  align-items: flex-start;
+  border-color: rgba(201, 53, 53, 0.35);
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+}
+
+.danger-card-content {
+  padding-top: 2px;
+}
+
+.settings-delete-form {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 0;
+  min-width: 180px;
+}
+
+.settings-delete-form label,
+.settings-delete-form input,
+.settings-delete-form .form-error {
+  width: 100%;
+}
+
+.settings-delete-form .button {
+  white-space: nowrap;
+}
+
 @media (max-width: 640px) {
-  .settings-card-header {
+  .settings-page-content {
+    gap: 24px;
+  }
+
+  .settings-card {
+    padding: 20px;
+  }
+
+  .settings-action-card,
+  .danger-card {
+    align-items: stretch;
     flex-direction: column;
   }
 
-  .security-badge {
-    align-self: flex-start;
+  .settings-action-card .button,
+  .settings-delete-form,
+  .settings-delete-form .button {
+    width: 100%;
   }
 
   .settings-password-actions {
