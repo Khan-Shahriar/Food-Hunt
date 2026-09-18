@@ -15,7 +15,18 @@ const profileForm = document.querySelector("[data-profile-form]");
 const passwordForm = document.querySelector("[data-password-form]");
 const deleteForm = document.querySelector("[data-delete-form]");
 const toastStack = document.querySelector("[data-toast-stack]");
-const resetTokenInput = document.querySelector("[data-reset-token]");
+const resetEmailInput = document.querySelector("[data-reset-email]");
+const resetEmailLabel = document.querySelector("[data-reset-email-label]");
+const otpInputs = [...document.querySelectorAll("[data-otp]")];
+const verifyResetCodeButton = document.querySelector("[data-verify-reset-code]");
+const resendResetCodeButton = document.querySelector("[data-resend-reset-code]");
+const resetBackEmailButton = document.querySelector("[data-reset-back-email]");
+const cancelResetButton = document.querySelector("[data-cancel-reset]");
+const newPasswordForm = document.querySelector('[data-auth-form="new-password"]');
+const newPasswordInput = document.querySelector("[data-new-password]");
+const passwordToggle = document.querySelector("[data-password-toggle]");
+let resetEmail = "";
+let resetToken = "";
 const authTabs = document.querySelector(".auth-tabs");
 const adminPanelBtn = document.getElementById("adminPanelBtn");
 
@@ -343,29 +354,91 @@ async function handleLogin(form) {
 }
 
 async function handleForgotPassword(form) {
-  const payload = Object.fromEntries(new FormData(form).entries());
+  const email = String(new FormData(form).get("email") || "").trim();
+
+  if (!email) {
+    throw new Error("Please enter your email address.");
+  }
+
   const data = await api("/auth/forgot-password", {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ email }),
   });
 
-  form.reset();
-  setActiveAuthTab("login");
+  resetEmail = email;
+  if (resetEmailLabel) resetEmailLabel.textContent = email;
+  if (resetEmailInput) resetEmailInput.value = email;
+
+  setActiveAuthTab("reset");
   showToast(data.message, "success");
+  setTimeout(() => otpInputs[0]?.focus(), 120);
+}
+
+async function handleVerifyResetCode() {
+  const code = otpInputs.map((input) => input.value).join("");
+
+  if (!/^\d{6}$/.test(code)) {
+    throw new Error("Please enter all 6 digits.");
+  }
+
+  const data = await api("/auth/verify-reset-code", {
+    method: "POST",
+    body: JSON.stringify({
+      email: resetEmail,
+      code,
+    }),
+  });
+
+  resetToken = data.resetToken;
+  setActiveAuthTab("new-password");
+  newPasswordInput?.focus();
 }
 
 async function handleResetPassword(form) {
   const payload = Object.fromEntries(new FormData(form).entries());
+
   const data = await api("/auth/reset-password", {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      resetToken,
+      password: payload.password,
+      confirmPassword: payload.confirmPassword,
+    }),
   });
 
   form.reset();
+  resetEmail = "";
+  resetToken = "";
+  otpInputs.forEach((input) => {
+    input.value = "";
+    input.classList.remove("is-filled");
+  });
   history.replaceState({}, "", window.location.pathname);
   setActiveAuthTab("login");
   showToast(data.message, "success");
 }
+
+async function resendResetCode() {
+  if (!resetEmail) {
+    setActiveAuthTab("forgot");
+    return;
+  }
+
+  await api("/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email: resetEmail }),
+  });
+
+  otpInputs.forEach((input) => {
+    input.value = "";
+    input.classList.remove("is-filled");
+  });
+
+  setActiveAuthTab("reset");
+  otpInputs[0]?.focus();
+  showToast("A new verification code has been sent.", "success");
+}
+
 
 async function handleLogout() {
   await api("/auth/logout", { method: "POST" });
@@ -492,12 +565,110 @@ authForms.forEach((form) => {
         await handleLogin(form);
       } else if (form.dataset.authForm === "forgot") {
         await handleForgotPassword(form);
-      } else if (form.dataset.authForm === "reset") {
+      } else if (form.dataset.authForm === "new-password") {
         await handleResetPassword(form);
       }
     } catch (error) {
       errorElement.textContent = error.message;
     }
+  });
+});
+
+otpInputs.forEach((input, index) => {
+  input.addEventListener("input", () => {
+    input.value = input.value.replace(/\D/g, "").slice(-1);
+    input.classList.toggle("is-filled", Boolean(input.value));
+
+    if (input.value && index < otpInputs.length - 1) {
+      otpInputs[index + 1].focus();
+    }
+  });
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Backspace" && !input.value && index > 0) {
+      otpInputs[index - 1].focus();
+    }
+  });
+
+  input.addEventListener("paste", (event) => {
+    const pasted = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+
+    if (!pasted) return;
+
+    event.preventDefault();
+
+    pasted.split("").forEach((digit, offset) => {
+      if (otpInputs[index + offset]) {
+        otpInputs[index + offset].value = digit;
+        otpInputs[index + offset].classList.add("is-filled");
+      }
+    });
+
+    otpInputs[Math.min(index + pasted.length, otpInputs.length - 1)].focus();
+  });
+});
+
+verifyResetCodeButton?.addEventListener("click", async () => {
+  const errorElement = document.querySelector('[data-error="reset"]');
+  errorElement.textContent = "";
+
+  try {
+    verifyResetCodeButton.disabled = true;
+    await handleVerifyResetCode();
+  } catch (error) {
+    errorElement.textContent = error.message;
+  } finally {
+    verifyResetCodeButton.disabled = false;
+  }
+});
+
+resendResetCodeButton?.addEventListener("click", async () => {
+  const errorElement = document.querySelector('[data-error="reset"]');
+  errorElement.textContent = "";
+
+  try {
+    resendResetCodeButton.disabled = true;
+    await resendResetCode();
+  } catch (error) {
+    errorElement.textContent = error.message;
+  } finally {
+    resendResetCodeButton.disabled = false;
+  }
+});
+
+resetBackEmailButton?.addEventListener("click", () => {
+  setActiveAuthTab("forgot");
+  if (resetEmailInput) resetEmailInput.value = resetEmail;
+});
+
+cancelResetButton?.addEventListener("click", () => {
+  resetEmail = "";
+  resetToken = "";
+  newPasswordForm?.reset();
+  setActiveAuthTab("login");
+});
+
+passwordToggle?.addEventListener("click", () => {
+  if (!newPasswordInput) return;
+
+  const showing = newPasswordInput.type === "text";
+  newPasswordInput.type = showing ? "password" : "text";
+  passwordToggle.textContent = showing ? "Show" : "Hide";
+  passwordToggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+});
+
+newPasswordInput?.addEventListener("input", () => {
+  const value = newPasswordInput.value;
+  const checks = {
+    length: value.length >= 8,
+    lower: /[a-z]/.test(value),
+    upper: /[A-Z]/.test(value),
+    number: /[0-9]/.test(value),
+    special: /[^A-Za-z0-9]/.test(value),
+  };
+
+  Object.entries(checks).forEach(([rule, valid]) => {
+    document.querySelector(`[data-rule="${rule}"]`)?.classList.toggle("is-valid", valid);
   });
 });
 
@@ -536,12 +707,6 @@ async function bootstrap() {
       openModal("login");
       showToast(error.message, "error");
     }
-    return;
-  }
-
-  if (params.get("reset")) {
-    resetTokenInput.value = params.get("reset");
-    openModal("reset");
     return;
   }
 
