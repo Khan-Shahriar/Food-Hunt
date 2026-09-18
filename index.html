@@ -496,26 +496,57 @@
           </article>
         </section>
         <section class="dashboard-view" data-view-panel="settings">
-          <article class="settings-card">
-            <p class="eyebrow">Security</p>
-            <h2>Change Password</h2>
-            <form class="settings-form" data-password-form>
+          <article class="settings-card password-settings-card">
+            <div class="settings-card-header">
+              <div>
+                <p class="eyebrow">Security</p>
+                <h2>Change Password</h2>
+                <p class="settings-description">Keep your Food Hunt account secure with a strong password.</p>
+              </div>
+              <span class="security-badge">Secure</span>
+            </div>
+
+            <form class="settings-form password-settings-form" data-password-form>
               <label>
                 Current Password
-                <input type="password" name="currentPassword" required />
+                <div class="settings-password-wrap">
+                  <input type="password" name="currentPassword" required autocomplete="current-password" />
+                  <button class="settings-password-toggle" type="button" data-settings-password-toggle="current" aria-label="Show current password">Show</button>
+                </div>
               </label>
+
               <label>
                 New Password
-                <input type="password" name="newPassword" required />
+                <div class="settings-password-wrap">
+                  <input type="password" name="newPassword" required autocomplete="new-password" data-settings-new-password />
+                  <button class="settings-password-toggle" type="button" data-settings-password-toggle="new" aria-label="Show new password">Show</button>
+                </div>
               </label>
+
+              <div class="settings-password-requirements">
+                <p>Password requirements</p>
+                <span data-settings-rule="length">At least 8 characters</span>
+                <span data-settings-rule="lower">One lowercase letter</span>
+                <span data-settings-rule="upper">One uppercase letter</span>
+                <span data-settings-rule="number">One number</span>
+                <span data-settings-rule="special">One special character</span>
+              </div>
+
               <label>
                 Confirm New Password
-                <input type="password" name="confirmPassword" required />
+                <div class="settings-password-wrap">
+                  <input type="password" name="confirmPassword" required autocomplete="new-password" />
+                  <button class="settings-password-toggle" type="button" data-settings-password-toggle="confirm" aria-label="Show confirmation password">Show</button>
+                </div>
               </label>
-              <p class="form-hint">Use at least 8 characters with uppercase, lowercase, number, and special character.
-              </p>
+
+              <p class="settings-password-match" data-password-match></p>
               <p class="form-error" data-password-error role="alert"></p>
-              <button class="button button-primary" type="submit">Update Password</button>
+
+              <div class="settings-password-actions">
+                <button class="button button-outline" type="reset">Clear</button>
+                <button class="button button-primary" type="submit">Update Password</button>
+              </div>
             </form>
           </article>
           <article class="settings-card danger-card">
