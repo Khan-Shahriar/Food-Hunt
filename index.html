@@ -606,29 +606,90 @@
         </p>
       </form>
       <form class="auth-form" data-auth-form="forgot" novalidate>
-        <h2>Forgot password</h2>
-        <p class="form-copy">Enter your email and we will send a reset link.</p>
+        <div class="reset-header">
+          <span class="reset-icon" aria-hidden="true">↗</span>
+          <div>
+            <p class="eyebrow">Account Recovery</p>
+            <h2>Forgot password?</h2>
+          </div>
+        </div>
+        <p class="form-copy">Enter your email and we'll send you a 6-digit verification code.</p>
         <label>
           Email
-          <input type="email" name="email" placeholder="you@office.com" required autocomplete="email" />
+          <input type="email" name="email" placeholder="you@office.com" required autocomplete="email" data-reset-email />
         </label>
         <p class="form-error" data-error="forgot" role="alert"></p>
-        <button class="button button-primary" type="submit">Send Reset Link</button>
+        <button class="button button-primary" type="submit" data-send-reset-code>Send Verification Code</button>
         <p class="auth-switch">
           <button type="button" data-switch-auth="login">Back to Login</button>
         </p>
       </form>
+
       <form class="auth-form" data-auth-form="reset" novalidate>
-        <h2>Reset password</h2>
-        <label>
+        <div class="reset-header">
+          <span class="reset-icon" aria-hidden="true">✓</span>
+          <div>
+            <p class="eyebrow">Verify Code</p>
+            <h2>Check your email</h2>
+          </div>
+        </div>
+        <p class="form-copy">Enter the 6-digit code sent to <strong data-reset-email-label>your email</strong>.</p>
+
+        <div class="otp-grid" data-otp-grid aria-label="6-digit verification code">
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" data-otp="0" aria-label="Digit 1" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-otp="1" aria-label="Digit 2" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-otp="2" aria-label="Digit 3" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-otp="3" aria-label="Digit 4" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-otp="4" aria-label="Digit 5" />
+          <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-otp="5" aria-label="Digit 6" />
+        </div>
+
+        <p class="form-error" data-error="reset" role="alert"></p>
+        <button class="button button-primary" type="button" data-verify-reset-code>Verify Code</button>
+
+        <div class="reset-actions">
+          <button class="text-button" type="button" data-resend-reset-code>Resend code</button>
+          <button class="text-button" type="button" data-reset-back-email>Change email</button>
+        </div>
+      </form>
+
+      <form class="auth-form" data-auth-form="new-password" novalidate>
+        <div class="reset-header">
+          <span class="reset-icon" aria-hidden="true">🔒</span>
+          <div>
+            <p class="eyebrow">New Password</p>
+            <h2>Create a new password</h2>
+          </div>
+        </div>
+
+        <p class="form-copy">Choose a strong password for your Food Hunt account.</p>
+
+        <label class="password-field">
           New Password
-          <input type="password" name="password" placeholder="New password" required autocomplete="new-password" />
+          <span class="password-input-wrap">
+            <input type="password" name="password" placeholder="Enter new password" required autocomplete="new-password" data-new-password />
+            <button type="button" class="password-toggle" data-password-toggle aria-label="Show password">Show</button>
+          </span>
         </label>
+
+        <div class="password-requirements" data-password-requirements>
+          <p>Password requirements</p>
+          <span data-rule="length">At least 8 characters</span>
+          <span data-rule="lower">One lowercase letter</span>
+          <span data-rule="upper">One uppercase letter</span>
+          <span data-rule="number">One number</span>
+          <span data-rule="special">One special character</span>
+        </div>
+
         <label>
           Confirm Password
-          <input type="password" name="confirmPassword" placeholder="Confirm password" required
-            autocomplete="new-password" />
+          <input type="password" name="confirmPassword" placeholder="Confirm new password" required autocomplete="new-password" />
         </label>
+
+        <p class="form-error" data-error="new-password" role="alert"></p>
+        <button class="button button-primary" type="submit" data-update-reset-password>Update Password</button>
+        <button class="button button-secondary" type="button" data-cancel-reset>Cancel</button>
+      </form>
         <input type="hidden" name="token" data-reset-token />
         <p class="form-error" data-error="reset" role="alert"></p>
         <button class="button button-primary" type="submit">Save New Password</button>
