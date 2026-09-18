@@ -8,7 +8,8 @@
     position: static;
   }
 
-  .form-row {
+  .form-row,
+  .payment-methods {
     grid-template-columns: 1fr;
   }
 

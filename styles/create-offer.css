@@ -253,6 +253,84 @@
   gap: 16px;
 }
 
+.payment-methods {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fffdf7;
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.payment-option:hover {
+  border-color: rgba(247, 201, 72, 0.7);
+  box-shadow: 0 8px 20px rgba(247, 201, 72, 0.12);
+}
+
+.payment-option input {
+  width: auto;
+  min-height: auto;
+  margin: 0;
+}
+
+.payment-details {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba(247, 201, 72, 0.35);
+  border-radius: 14px;
+  background: #fffdf5;
+}
+
+.payment-or {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.cash-payment-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+
+.cash-payment-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--yellow-soft);
+  color: #6a5200;
+  font-weight: 900;
+}
+
+.cash-payment-creator {
+  color: var(--gray);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
 .create-offer-card label {
   display: flex;
   flex-direction: column;
@@ -345,6 +423,11 @@
   grid-template-columns: minmax(0, 1fr) 420px;
   gap: 40px;
   align-items: start;
+}
+
+.create-offer-card .button,
+.create-offer-card button {
+  align-self: start;
 }
 
 .offer-preview {
