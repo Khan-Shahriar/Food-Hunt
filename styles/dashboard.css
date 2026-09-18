@@ -260,3 +260,136 @@
   display: grid;
   gap: 18px;
 }
+
+/* =========================================================
+   Settings Password
+   ========================================================= */
+
+.password-settings-card {
+  display: block;
+}
+
+.settings-card-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.settings-description {
+  color: var(--gray);
+  margin: -4px 0 0;
+}
+
+.security-badge {
+  background: var(--yellow-soft);
+  border: 1px solid rgba(255, 215, 0, 0.55);
+  border-radius: 999px;
+  color: #6f5a00;
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+
+.password-settings-form {
+  max-width: 620px;
+}
+
+.settings-password-wrap {
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+
+.settings-password-wrap input {
+  padding-right: 72px;
+  width: 100%;
+}
+
+.settings-password-toggle {
+  background: transparent;
+  border: 0;
+  color: #6f5a00;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 900;
+  position: absolute;
+  right: 12px;
+}
+
+.settings-password-requirements {
+  background: #faf9f0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: grid;
+  gap: 7px;
+  padding: 12px 14px;
+}
+
+.settings-password-requirements p {
+  font-size: 0.84rem;
+  font-weight: 900;
+  margin: 0 0 2px;
+}
+
+.settings-password-requirements span {
+  color: var(--gray);
+  font-size: 0.82rem;
+  padding-left: 20px;
+  position: relative;
+}
+
+.settings-password-requirements span::before {
+  content: "○";
+  left: 0;
+  position: absolute;
+}
+
+.settings-password-requirements span.is-valid {
+  color: var(--green);
+  font-weight: 800;
+}
+
+.settings-password-requirements span.is-valid::before {
+  content: "✓";
+}
+
+.settings-password-match {
+  font-size: 0.84rem;
+  font-weight: 800;
+  margin: -4px 0 0;
+  min-height: 18px;
+}
+
+.settings-password-match.is-valid {
+  color: var(--green);
+}
+
+.settings-password-match.is-invalid {
+  color: var(--red);
+}
+
+.settings-password-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .settings-card-header {
+    flex-direction: column;
+  }
+
+  .security-badge {
+    align-self: flex-start;
+  }
+
+  .settings-password-actions {
+    flex-direction: column-reverse;
+  }
+
+  .settings-password-actions .button {
+    width: 100%;
+  }
+}
