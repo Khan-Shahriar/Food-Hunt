@@ -194,3 +194,155 @@
   font-weight: 900;
   padding: 0 0 0 4px;
 }
+
+/* =========================================================
+   Password Reset / OTP
+   ========================================================= */
+
+.reset-header {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+}
+
+.reset-header h2 {
+  margin: 0;
+}
+
+.reset-icon {
+  align-items: center;
+  background: #f5f2df;
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  border-radius: 14px;
+  display: inline-flex;
+  flex: 0 0 48px;
+  font-size: 1.25rem;
+  height: 48px;
+  justify-content: center;
+  width: 48px;
+}
+
+.otp-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 8px 0;
+}
+
+.otp-input {
+  aspect-ratio: 1;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  min-height: 52px;
+  outline: none;
+  padding: 0;
+  text-align: center;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.otp-input:focus {
+  border-color: #d4ae00;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+.otp-input.is-filled {
+  border-color: #d4ae00;
+}
+
+.reset-actions {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.text-button {
+  background: transparent;
+  border: 0;
+  color: #6f5a00;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 4px;
+}
+
+.text-button:hover {
+  text-decoration: underline;
+}
+
+.password-input-wrap {
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+
+.password-input-wrap input {
+  padding-right: 68px;
+  width: 100%;
+}
+
+.password-toggle {
+  background: transparent;
+  border: 0;
+  color: #6f5a00;
+  cursor: pointer;
+  font-weight: 800;
+  position: absolute;
+  right: 10px;
+}
+
+.password-requirements {
+  background: #faf9f0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: grid;
+  gap: 7px;
+  padding: 12px 14px;
+}
+
+.password-requirements p {
+  font-size: 0.84rem;
+  font-weight: 900;
+  margin: 0 0 2px;
+}
+
+.password-requirements span {
+  color: var(--gray);
+  font-size: 0.82rem;
+  padding-left: 20px;
+  position: relative;
+}
+
+.password-requirements span::before {
+  content: "○";
+  left: 0;
+  position: absolute;
+}
+
+.password-requirements span.is-valid {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.password-requirements span.is-valid::before {
+  content: "✓";
+}
+
+@media (max-width: 520px) {
+  .otp-grid {
+    gap: 6px;
+  }
+
+  .otp-input {
+    border-radius: 8px;
+    font-size: 1.2rem;
+    min-height: 46px;
+  }
+
+  .auth-modal {
+    padding: 20px;
+  }
+}
