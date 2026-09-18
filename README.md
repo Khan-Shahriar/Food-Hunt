@@ -68,6 +68,11 @@ Set environment variables:
 JWT_SECRET=your-long-random-secret
 APP_URL=https://your-domain.com
 NODE_ENV=production
+
+# Gmail SMTP for password-reset OTP emails
+GMAIL_USER=your-gmail@gmail.com
+GMAIL_APP_PASSWORD=your-16-character-app-password
+EMAIL_FROM=your-gmail@gmail.com
 ```
 
 Use HTTPS, connect a real email provider (SMTP), and add Google/Phone OAuth when ready.
