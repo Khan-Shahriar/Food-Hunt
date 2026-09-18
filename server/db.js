@@ -58,6 +58,19 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 
+  CREATE TABLE IF NOT EXISTS password_reset_otps (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    email TEXT NOT NULL,
+    otp_hash TEXT NOT NULL,
+    reset_token TEXT UNIQUE,
+    attempts INTEGER NOT NULL DEFAULT 0,
+    expires_at TEXT NOT NULL,
+    verified_at TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
   CREATE TABLE IF NOT EXISTS offers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -113,6 +126,12 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_reset_token
   ON password_reset_tokens(token);
+
+  CREATE INDEX IF NOT EXISTS idx_reset_otp_email
+  ON password_reset_otps(email);
+
+  CREATE INDEX IF NOT EXISTS idx_reset_otp_token
+  ON password_reset_otps(reset_token);
 
   CREATE INDEX IF NOT EXISTS idx_offers_user
   ON offers(user_id);
