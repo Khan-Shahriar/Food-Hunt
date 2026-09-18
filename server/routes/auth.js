@@ -8,7 +8,11 @@ import {
   setAuthCookie,
   signToken,
 } from "../middleware/auth.js";
-import { sendPasswordResetEmail, sendVerificationEmail } from "../utils/email.js";
+import {
+  sendPasswordResetEmail,
+  sendPasswordResetOtpEmail,
+  sendVerificationEmail,
+} from "../utils/email.js";
 import { validateLogin, validatePassword, validateSignup } from "../utils/validation.js";
 
 const router = Router();
@@ -197,7 +201,7 @@ router.get("/verify-email", (req, res) => {
   return res.json({ message: "Email verified successfully. You can now log in." });
 });
 
-router.post("/forgot-password", (req, res) => {
+router.post("/forgot-password", async (req, res) => {
   const email = req.body.email?.trim();
 
   if (!email) {
@@ -205,28 +209,91 @@ router.post("/forgot-password", (req, res) => {
   }
 
   const user = getUserByEmail(email);
+
   if (user) {
-    const token = uuidv4();
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    const otpHash = bcrypt.hashSync(otp, 10);
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
-    db.prepare("DELETE FROM password_reset_tokens WHERE user_id = ?").run(user.id);
+    db.prepare("DELETE FROM password_reset_otps WHERE user_id = ?").run(user.id);
     db.prepare(
-      `INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (?, ?, ?)`,
-    ).run(user.id, token, expiresAt);
+      `INSERT INTO password_reset_otps
+       (user_id, email, otp_hash, attempts, expires_at)
+       VALUES (?, ?, ?, 0, ?)`,
+    ).run(user.id, user.email, otpHash, expiresAt);
 
-    sendPasswordResetEmail(user.email, user.full_name, `${APP_URL}/?reset=${token}`);
+    try {
+      await sendPasswordResetOtpEmail(user.email, user.full_name, otp);
+    } catch (error) {
+      console.error("Password reset email error:", error);
+      db.prepare("DELETE FROM password_reset_otps WHERE user_id = ?").run(user.id);
+      return res.status(500).json({ error: "Unable to send the reset code. Please try again." });
+    }
   }
 
   return res.json({
-    message: "If an account exists for that email, a reset link has been sent.",
+    message: "If an account exists for that email, a reset code has been sent.",
+  });
+});
+
+router.post("/verify-reset-code", (req, res) => {
+  const email = req.body.email?.trim();
+  const code = String(req.body.code || "").trim();
+
+  if (!email || !/^\d{6}$/.test(code)) {
+    return res.status(400).json({ error: "Enter the 6-digit verification code." });
+  }
+
+  const user = getUserByEmail(email);
+  if (!user) {
+    return res.status(400).json({ error: "Invalid or expired verification code." });
+  }
+
+  const record = db
+    .prepare(
+      `SELECT * FROM password_reset_otps
+       WHERE user_id = ?
+       ORDER BY id DESC
+       LIMIT 1`,
+    )
+    .get(user.id);
+
+  if (!record || new Date(record.expires_at) < new Date()) {
+    if (record) {
+      db.prepare("DELETE FROM password_reset_otps WHERE id = ?").run(record.id);
+    }
+    return res.status(400).json({ error: "Verification code has expired. Request a new code." });
+  }
+
+  if (record.attempts >= 5) {
+    return res.status(429).json({ error: "Too many incorrect attempts. Request a new code." });
+  }
+
+  if (!bcrypt.compareSync(code, record.otp_hash)) {
+    db.prepare("UPDATE password_reset_otps SET attempts = attempts + 1 WHERE id = ?").run(record.id);
+    return res.status(400).json({ error: "Incorrect verification code." });
+  }
+
+  const resetToken = uuidv4();
+
+  db.prepare(
+    `UPDATE password_reset_otps
+     SET reset_token = ?, verified_at = ?
+     WHERE id = ?`,
+  ).run(resetToken, new Date().toISOString(), record.id);
+
+  return res.json({
+    message: "Code verified successfully.",
+    resetToken,
   });
 });
 
 router.post("/reset-password", (req, res) => {
-  const { token, password, confirmPassword } = req.body;
+  const { token, resetToken, password, confirmPassword } = req.body;
+  const activeToken = resetToken || token;
 
-  if (!token) {
-    return res.status(400).json({ error: "Reset token is required." });
+  if (!activeToken) {
+    return res.status(400).json({ error: "Reset verification is required." });
   }
 
   if (password !== confirmPassword) {
@@ -238,20 +305,44 @@ router.post("/reset-password", (req, res) => {
     return res.status(400).json({ error: passwordError });
   }
 
-  const record = db
-    .prepare("SELECT * FROM password_reset_tokens WHERE token = ?")
-    .get(String(token));
+  let userId = null;
+  let otpRecord = db
+    .prepare(
+      `SELECT * FROM password_reset_otps
+       WHERE reset_token = ?
+       LIMIT 1`,
+    )
+    .get(String(activeToken));
 
-  if (!record || new Date(record.expires_at) < new Date()) {
-    return res.status(400).json({ error: "Invalid or expired reset link." });
+  if (otpRecord) {
+    if (
+      !otpRecord.verified_at ||
+      new Date(otpRecord.expires_at) < new Date()
+    ) {
+      return res.status(400).json({ error: "Reset verification has expired. Request a new code." });
+    }
+
+    userId = otpRecord.user_id;
+  } else {
+    const legacyRecord = db
+      .prepare("SELECT * FROM password_reset_tokens WHERE token = ?")
+      .get(String(activeToken));
+
+    if (!legacyRecord || new Date(legacyRecord.expires_at) < new Date()) {
+      return res.status(400).json({ error: "Invalid or expired reset verification." });
+    }
+
+    userId = legacyRecord.user_id;
   }
 
   const passwordHash = bcrypt.hashSync(password, 12);
-  db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(passwordHash, record.user_id);
-  db.prepare("DELETE FROM password_reset_tokens WHERE user_id = ?").run(record.user_id);
+
+  db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(passwordHash, userId);
+  db.prepare("DELETE FROM password_reset_tokens WHERE user_id = ?").run(userId);
+  db.prepare("DELETE FROM password_reset_otps WHERE user_id = ?").run(userId);
   db.prepare(
     `UPDATE users SET failed_login_attempts = 0, locked_until = NULL WHERE id = ?`,
-  ).run(record.user_id);
+  ).run(userId);
 
   return res.json({ message: "Password updated successfully. You can now log in." });
 });
