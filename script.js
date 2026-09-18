@@ -25,6 +25,11 @@ const cancelResetButton = document.querySelector("[data-cancel-reset]");
 const newPasswordForm = document.querySelector('[data-auth-form="new-password"]');
 const newPasswordInput = document.querySelector("[data-new-password]");
 const passwordToggle = document.querySelector("[data-password-toggle]");
+const settingsPasswordToggles = document.querySelectorAll("[data-settings-password-toggle]");
+const settingsNewPasswordInput = document.querySelector("[data-settings-new-password]");
+const settingsPasswordMatch = document.querySelector("[data-password-match]");
+const settingsPasswordRules = document.querySelectorAll("[data-settings-rule]");
+
 let resetEmail = "";
 let resetToken = "";
 const authTabs = document.querySelector(".auth-tabs");
@@ -670,6 +675,78 @@ newPasswordInput?.addEventListener("input", () => {
   Object.entries(checks).forEach(([rule, valid]) => {
     document.querySelector(`[data-rule="${rule}"]`)?.classList.toggle("is-valid", valid);
   });
+});
+
+function updateSettingsPasswordRequirements() {
+  const value = settingsNewPasswordInput?.value || "";
+  const checks = {
+    length: value.length >= 8,
+    lower: /[a-z]/.test(value),
+    upper: /[A-Z]/.test(value),
+    number: /[0-9]/.test(value),
+    special: /[^A-Za-z0-9]/.test(value),
+  };
+
+  settingsPasswordRules.forEach((rule) => {
+    rule.classList.toggle("is-valid", Boolean(checks[rule.dataset.settingsRule]));
+  });
+}
+
+function updateSettingsPasswordMatch() {
+  if (!passwordForm || !settingsPasswordMatch) return;
+
+  const newPassword = passwordForm.newPassword?.value || "";
+  const confirmPassword = passwordForm.confirmPassword?.value || "";
+
+  settingsPasswordMatch.classList.remove("is-valid", "is-invalid");
+
+  if (!confirmPassword) {
+    settingsPasswordMatch.textContent = "";
+    return;
+  }
+
+  if (newPassword === confirmPassword) {
+    settingsPasswordMatch.textContent = "Passwords match.";
+    settingsPasswordMatch.classList.add("is-valid");
+  } else {
+    settingsPasswordMatch.textContent = "Passwords do not match.";
+    settingsPasswordMatch.classList.add("is-invalid");
+  }
+}
+
+settingsPasswordToggles.forEach((button) => {
+  button.addEventListener("click", () => {
+    const type = button.dataset.settingsPasswordToggle;
+    const input = passwordForm?.querySelector(
+      type === "current"
+        ? '[name="currentPassword"]'
+        : type === "new"
+          ? '[name="newPassword"]'
+          : '[name="confirmPassword"]'
+    );
+
+    if (!input) return;
+
+    const showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    button.textContent = showing ? "Show" : "Hide";
+    button.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+  });
+});
+
+settingsNewPasswordInput?.addEventListener("input", () => {
+  updateSettingsPasswordRequirements();
+  updateSettingsPasswordMatch();
+});
+
+passwordForm?.querySelector('[name="confirmPassword"]')?.addEventListener("input", updateSettingsPasswordMatch);
+
+passwordForm?.addEventListener("reset", () => {
+  setTimeout(() => {
+    settingsPasswordRules.forEach((rule) => rule.classList.remove("is-valid"));
+    settingsPasswordMatch.textContent = "";
+    settingsPasswordMatch.classList.remove("is-valid", "is-invalid");
+  }, 0);
 });
 
 logoutButton.addEventListener("click", async () => {
