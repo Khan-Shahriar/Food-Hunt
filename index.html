@@ -495,72 +495,106 @@
             </form>
           </article>
         </section>
-        <section class="dashboard-view" data-view-panel="settings">
-          <article class="settings-card password-settings-card">
-            <div class="settings-card-header">
-              <div>
-                <p class="eyebrow">Security</p>
-                <h2>Change Password</h2>
-                <p class="settings-description">Keep your Food Hunt account secure with a strong password.</p>
+                <section class="dashboard-view" data-view-panel="settings">
+          <div class="settings-page-content">
+            <header class="settings-page-header">
+              <p class="eyebrow">SETTINGS</p>
+              <h1>Account</h1>
+              <p>Manage your account preferences and security.</p>
+            </header>
+
+            <section class="settings-section" aria-labelledby="settings-security-title">
+              <div class="settings-section-heading">
+                <h2 id="settings-security-title">Security</h2>
               </div>
-              <span class="security-badge">Secure</span>
-            </div>
-
-            <form class="settings-form password-settings-form" data-password-form>
-              <label>
-                Current Password
-                <div class="settings-password-wrap">
-                  <input type="password" name="currentPassword" required autocomplete="current-password" />
-                  <button class="settings-password-toggle" type="button" data-settings-password-toggle="current" aria-label="Show current password">Show</button>
+              <article class="settings-card password-settings-card">
+                <div class="settings-card-header">
+                  <div>
+                    <p class="eyebrow">Security</p>
+                    <h2>Change Password</h2>
+                    <p class="settings-description">Keep your account secure.</p>
+                  </div>
                 </div>
-              </label>
 
-              <label>
-                New Password
-                <div class="settings-password-wrap">
-                  <input type="password" name="newPassword" required autocomplete="new-password" data-settings-new-password />
-                  <button class="settings-password-toggle" type="button" data-settings-password-toggle="new" aria-label="Show new password">Show</button>
-                </div>
-              </label>
+                <form class="settings-form password-settings-form" data-password-form>
+                  <label>
+                    Current Password
+                    <div class="settings-password-wrap">
+                      <input type="password" name="currentPassword" required autocomplete="current-password" />
+                      <button class="settings-password-toggle" type="button" data-settings-password-toggle="current" aria-label="Show current password">Show</button>
+                    </div>
+                  </label>
 
-              <div class="settings-password-requirements">
-                <p>Password requirements</p>
-                <span data-settings-rule="length">At least 8 characters</span>
-                <span data-settings-rule="lower">One lowercase letter</span>
-                <span data-settings-rule="upper">One uppercase letter</span>
-                <span data-settings-rule="number">One number</span>
-                <span data-settings-rule="special">One special character</span>
+                  <label>
+                    New Password
+                    <div class="settings-password-wrap">
+                      <input type="password" name="newPassword" required autocomplete="new-password" data-settings-new-password />
+                      <button class="settings-password-toggle" type="button" data-settings-password-toggle="new" aria-label="Show new password">Show</button>
+                    </div>
+                  </label>
+
+                  <div class="settings-password-requirements">
+                    <p>Password requirements</p>
+                    <span data-settings-rule="length">At least 8 characters</span>
+                    <span data-settings-rule="lower">One lowercase letter</span>
+                    <span data-settings-rule="upper">One uppercase letter</span>
+                    <span data-settings-rule="number">One number</span>
+                    <span data-settings-rule="special">One special character</span>
+                  </div>
+
+                  <label>
+                    Confirm Password
+                    <div class="settings-password-wrap">
+                      <input type="password" name="confirmPassword" required autocomplete="new-password" />
+                      <button class="settings-password-toggle" type="button" data-settings-password-toggle="confirm" aria-label="Show confirmation password">Show</button>
+                    </div>
+                  </label>
+
+                  <p class="settings-password-match" data-password-match></p>
+                  <p class="form-error" data-password-error role="alert"></p>
+
+                  <div class="settings-password-actions">
+                    <button class="button button-outline" type="reset">Clear</button>
+                    <button class="button button-primary" type="submit">Update Password</button>
+                  </div>
+                </form>
+              </article>
+            </section>
+
+            <section class="settings-section" aria-labelledby="settings-account-title">
+              <div class="settings-section-heading">
+                <h2 id="settings-account-title">Account Management</h2>
               </div>
-
-              <label>
-                Confirm New Password
-                <div class="settings-password-wrap">
-                  <input type="password" name="confirmPassword" required autocomplete="new-password" />
-                  <button class="settings-password-toggle" type="button" data-settings-password-toggle="confirm" aria-label="Show confirmation password">Show</button>
+              <article class="settings-card settings-action-card">
+                <div>
+                  <h3>Profile</h3>
+                  <p>Update your personal information</p>
                 </div>
-              </label>
+                <button class="button button-outline" type="button" data-settings-profile-button>View Profile</button>
+              </article>
+            </section>
 
-              <p class="settings-password-match" data-password-match></p>
-              <p class="form-error" data-password-error role="alert"></p>
-
-              <div class="settings-password-actions">
-                <button class="button button-outline" type="reset">Clear</button>
-                <button class="button button-primary" type="submit">Update Password</button>
+            <section class="settings-section settings-danger-section" aria-labelledby="settings-danger-title">
+              <div class="settings-section-heading">
+                <h2 id="settings-danger-title">Danger Zone</h2>
               </div>
-            </form>
-          </article>
-          <article class="settings-card danger-card">
-            <p class="eyebrow">Danger zone</p>
-            <h2>Delete Account</h2>
-            <form class="settings-form" data-delete-form>
-              <label>
-                Confirm Password
-                <input type="password" name="password" required />
-              </label>
-              <p class="form-error" data-delete-error role="alert"></p>
-              <button class="button button-danger" type="submit">Delete Account</button>
-            </form>
-          </article>
+              <article class="settings-card danger-card">
+                <div class="danger-card-content">
+                  <h3>Delete Account</h3>
+                  <p>Permanently remove your Food Hunt account.</p>
+                </div>
+                <form class="settings-form settings-delete-form" data-delete-form>
+                  <label>
+                    Confirm Password
+                    <input type="password" name="password" required />
+                  </label>
+                  <p class="form-error" data-delete-error role="alert"></p>
+                  <button class="button button-danger" type="submit">Delete Account</button>
+                </form>
+              </article>
+            </section>
+          </div>
+        </section>
         </section>
       </div>
     </section>
