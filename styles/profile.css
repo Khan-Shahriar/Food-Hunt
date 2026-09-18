@@ -9,6 +9,10 @@
   margin-inline: auto;
 }
 
+[data-view-panel="settings"] {
+  gap: 24px;
+}
+
 [data-view-panel="profile"] .settings-card,
 [data-view-panel="settings"] .settings-card {
   display: block;
@@ -19,8 +23,27 @@
   overflow: hidden;
   background: #ffffff;
   border: 1px solid #e7e9ee;
-  border-radius: 18px;
-  box-shadow: 0 12px 34px rgba(20, 29, 45, 0.065);
+  border-radius: 22px;
+  box-shadow: 0 16px 42px rgba(20, 29, 45, 0.08);
+}
+
+[data-view-panel="settings"] .settings-card:first-child {
+  position: relative;
+  border-top: 5px solid #ffda00;
+}
+
+[data-view-panel="settings"] .settings-card:first-child::before {
+  content: "🔐";
+  position: absolute;
+  top: 27px;
+  right: 30px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #fff8cf;
+  font-size: 1.25rem;
 }
 
 .settings-card .eyebrow {
@@ -207,6 +230,17 @@
   grid-column: 1 / -1;
 }
 
+[data-password-form]::before {
+  content: "Keep your account secure with a strong password. Use a mix of letters, numbers, and symbols.";
+  grid-column: 1 / -1;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f8f9fb;
+  color: #697386;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
 [data-delete-form] {
   display: grid;
   gap: 16px;
@@ -230,6 +264,37 @@
 
 .danger-card h2 {
   margin-bottom: 24px;
+}
+
+[data-view-panel="settings"] .danger-card {
+  position: relative;
+  background: linear-gradient(180deg, #fffafa 0%, #ffffff 100%);
+}
+
+[data-view-panel="settings"] .danger-card::before {
+  content: "⚠";
+  position: absolute;
+  top: 27px;
+  right: 30px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #fff0f0;
+  color: #c24141;
+  font-size: 1.25rem;
+}
+
+[data-view-panel="settings"] .danger-card .settings-form::before {
+  content: "This action is permanent. Your account and related data will be deleted.";
+  display: block;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fff0f0;
+  color: #a33b3b;
+  font-size: 0.82rem;
+  line-height: 1.55;
 }
 
 [data-view-panel="profile"].is-active .settings-card,
@@ -270,6 +335,14 @@
     padding-bottom: 20px;
   }
 
+  [data-view-panel="settings"] .settings-card:first-child::before,
+  [data-view-panel="settings"] .danger-card::before {
+    top: 22px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+  }
+
   .profile-avatar-section {
     padding: 20px;
   }
@@ -295,7 +368,8 @@
   [data-password-form] .form-hint,
   [data-password-form] .form-error,
   [data-profile-form] > .button,
-  [data-password-form] > .button {
+  [data-password-form] > .button,
+  [data-password-form]::before {
     grid-column: 1;
   }
 
