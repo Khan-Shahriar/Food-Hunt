@@ -761,6 +761,10 @@ dashboardViewButtons.forEach((button) => {
   button.addEventListener("click", () => setDashboardView(button.dataset.dashboardView));
 });
 
+document.querySelector("[data-settings-profile-button]")?.addEventListener("click", () => {
+  setDashboardView("profile");
+});
+
 profileForm.addEventListener("submit", async (event) => {
   try {
     await handleProfileUpdate(event);
