@@ -1,63 +1,67 @@
+function money(value) {
+  return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+}
+
 export function calculateOfferTotals(offer, participants = []) {
-    const foodPrice = Number(offer.foodPrice) || 0;
-    const deliveryCharge = Number(offer.deliveryCharge) || 0;
-    const maxParticipants = Number(offer.maxPeople) || 0;
+  const foodPrice = Number(offer.foodPrice ?? offer.food_price);
+  const deliveryCharge = Number(offer.deliveryCharge ?? offer.delivery_charge);
+  const maxParticipants = Number(offer.maxPeople ?? offer.max_people);
 
-    const joinedCount = participants.length;
+  const safeFoodPrice = Number.isFinite(foodPrice) && foodPrice >= 0 ? foodPrice : 0;
+  const safeDeliveryCharge =
+    Number.isFinite(deliveryCharge) && deliveryCharge >= 0
+      ? deliveryCharge
+      : 0;
+  const safeMaxParticipants =
+    Number.isInteger(maxParticipants) && maxParticipants > 0
+      ? maxParticipants
+      : 0;
 
-    const deliveryShare =
-        maxParticipants > 0
-            ? deliveryCharge / maxParticipants
-            : 0;
+  const joinedCount = participants.length;
+  const deliveryShare =
+    safeMaxParticipants > 0
+      ? safeDeliveryCharge / safeMaxParticipants
+      : 0;
 
-    const costPerPerson =
-        foodPrice + deliveryShare;
+  const costPerPerson = money(safeFoodPrice + deliveryShare);
+  const totalAmount = money(costPerPerson * joinedCount);
+  const remainingSlots = Math.max(safeMaxParticipants - joinedCount, 0);
+  const progress =
+    safeMaxParticipants > 0
+      ? Math.min((joinedCount / safeMaxParticipants) * 100, 100)
+      : 0;
 
-    const totalAmount =
-        costPerPerson * joinedCount;
+  const paymentTotals = {
+    bkash: 0,
+    cityBank: 0,
+    cash: 0
+  };
 
-    const remainingSlots =
-        Math.max(maxParticipants - joinedCount, 0);
+  for (const participant of participants) {
+    const amount = costPerPerson;
+    if (participant.payment_method === "bkash") {
+      paymentTotals.bkash = money(paymentTotals.bkash + amount);
+    } else if (participant.payment_method === "city_bank") {
+      paymentTotals.cityBank = money(paymentTotals.cityBank + amount);
+    } else if (participant.payment_method === "cash") {
+      paymentTotals.cash = money(paymentTotals.cash + amount);
+    }
+  }
 
-    const progress =
-        maxParticipants > 0
-            ? Math.min(
-                (joinedCount / maxParticipants) * 100,
-                100
-            )
-            : 0;
+  const grandTotal = money(
+    paymentTotals.bkash +
+    paymentTotals.cityBank +
+    paymentTotals.cash
+  );
 
-    const paymentTotals = {
-        bkash: 0,
-        cityBank: 0,
-        cash: 0
-    };
-
-    participants.forEach((participant) => {
-        const paymentMethod = participant.payment_method;
-
-        if (paymentMethod === "bkash") {
-            paymentTotals.bkash += costPerPerson;
-        } else if (paymentMethod === "city_bank") {
-            paymentTotals.cityBank += costPerPerson;
-        } else if (paymentMethod === "cash") {
-            paymentTotals.cash += costPerPerson;
-        }
-    });
-
-    const grandTotal =
-        paymentTotals.bkash +
-        paymentTotals.cityBank +
-        paymentTotals.cash;
-
-    return {
-        joinedCount,
-        deliveryShare,
-        costPerPerson,
-        totalAmount,
-        remainingSlots,
-        progress,
-        paymentTotals,
-        grandTotal
-    };
+  return {
+    joinedCount,
+    deliveryShare: money(deliveryShare),
+    costPerPerson,
+    totalAmount,
+    remainingSlots,
+    progress,
+    paymentTotals,
+    grandTotal
+  };
 }
