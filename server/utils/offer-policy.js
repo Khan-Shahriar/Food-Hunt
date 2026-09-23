@@ -14,7 +14,7 @@ export function normalizeOfferStatus(status) {
   if (value === "COMPLETED") return "COMPLETED";
   if (value === "DISMISSED") return "DISMISSED";
   if (value === "CLOSED") return "ENDED";
-  return OFFER_STATUSES.includes(value) ? value : "OPEN";
+  return OFFER_STATUSES.includes(value) ? value : "UNKNOWN";
 }
 
 export function getAllowedPaymentMethods(offer) {
