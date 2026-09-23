@@ -158,7 +158,36 @@ router.put("/offers/:id", (req, res) => {
   const startTime = body.startTime;
   const endTime = body.endTime;
   const maxPeople = body.maxPeople ?? body.maxParticipants;
-  const paymentMethods = body.paymentMethods;
+
+  let paymentMethods = body.paymentMethods;
+  if (!paymentMethods) {
+    const existingPayment = db.prepare(`
+      SELECT payment_bkash_enabled, bkash_number,
+             payment_citybank_enabled, citybank_account_name,
+             citybank_account_number, citybank_phone,
+             payment_cash_enabled
+      FROM offers
+      WHERE id = ?
+    `).get(offerId);
+
+    if (existingPayment) {
+      paymentMethods = {
+        bkash: {
+          enabled: Number(existingPayment.payment_bkash_enabled) === 1,
+          number: existingPayment.bkash_number || null
+        },
+        cityBank: {
+          enabled: Number(existingPayment.payment_citybank_enabled) === 1,
+          accountName: existingPayment.citybank_account_name || null,
+          accountNumber: existingPayment.citybank_account_number || null,
+          phoneNumber: existingPayment.citybank_phone || null
+        },
+        cash: {
+          enabled: Number(existingPayment.payment_cash_enabled) === 1
+        }
+      };
+    }
+  }
 
   const fieldError = validateOfferFields({
     restaurantName, foodName, foodDescription, quantity, foodPrice,
