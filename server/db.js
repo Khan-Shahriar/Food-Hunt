@@ -229,6 +229,41 @@ addColumnIfMissing(
   "TEXT"
 );
 
+addColumnIfMissing(
+  "offers",
+  "payment_methods",
+  "TEXT"
+);
+
+/*
+ * Normalize legacy lifecycle values without deleting data.
+ */
+db.prepare(`
+  UPDATE offers
+  SET status = 'COMPLETED'
+  WHERE LOWER(status) = 'completed'
+`).run();
+
+db.prepare(`
+  UPDATE offers
+  SET status = 'DISMISSED'
+  WHERE LOWER(status) = 'dismissed'
+`).run();
+
+db.prepare(`
+  UPDATE offers
+  SET status = 'ENDED'
+  WHERE UPPER(status) = 'CLOSED'
+`).run();
+
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_offers_status
+  ON offers(status);
+
+  CREATE INDEX IF NOT EXISTS idx_offer_participants_user
+  ON offer_participants(user_id);
+`);
+
 
 /*
  * ============================================================
