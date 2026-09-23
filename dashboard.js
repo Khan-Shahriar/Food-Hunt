@@ -227,8 +227,8 @@ function showOfferSummary(offer) {
 
     } else if (Number(offer.joined) === 1) {
 
-        joinButton.disabled = true;
-        joinButton.textContent = "✓ Joined";
+        joinButton.disabled = false;
+        joinButton.textContent = "Leave Order";
         joinButton.classList.add("joined");
 
     } else {
@@ -282,7 +282,8 @@ function showOfferSummary(offer) {
         deliveryCharge / maxPeople;
 
     const totalCost =
-        foodPrice + deliveryPerHead;
+        offer.totals?.costPerPerson ??
+        (foodPrice + deliveryPerHead);
 
 
     document.getElementById("summaryPerHead").textContent =
@@ -456,8 +457,57 @@ function joinOffer() {
         return;
     }
 
+    if (Number(selectedOffer.joined) === 1) {
+        leaveOffer();
+        return;
+    }
+
     openPaymentModal();
 
+}
+
+async function leaveOffer() {
+    if (!selectedOffer) return;
+
+    const originalText = joinButton?.textContent || "Leave Order";
+
+    try {
+        if (joinButton) {
+            joinButton.disabled = true;
+            joinButton.textContent = "Leaving...";
+        }
+
+        const data = await api(
+            `/offers/${encodeURIComponent(selectedOffer.id)}/leave`,
+            { method: "DELETE" }
+        );
+
+        showToast(
+            data.message || "You left the offer.",
+            "success"
+        );
+
+        await renderNews();
+
+        const offers = await api("/offers");
+        const updatedOffer = offers.find(
+            offer => Number(offer.id) === Number(selectedOffer.id)
+        );
+
+        if (updatedOffer) {
+            selectedOffer = updatedOffer;
+            showOfferSummary(updatedOffer);
+        }
+    } catch (error) {
+        showToast(
+            error.message || "Failed to leave offer.",
+            "error"
+        );
+        if (joinButton) {
+            joinButton.disabled = false;
+            joinButton.textContent = originalText;
+        }
+    }
 }
 
 async function confirmPaymentAndJoin() {
