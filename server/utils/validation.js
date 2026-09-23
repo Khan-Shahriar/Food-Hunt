@@ -96,12 +96,20 @@ export function validateOfferFields({
   endTime,
   maxPeople
 }) {
-  if (!restaurantName?.trim()) {
+  if (typeof restaurantName !== "string" || !restaurantName.trim()) {
     return "Restaurant name is required.";
   }
 
-  if (!foodName?.trim()) {
+  if (restaurantName.trim().length > 120) {
+    return "Restaurant name is too long.";
+  }
+
+  if (typeof foodName !== "string" || !foodName.trim()) {
     return "Food name is required.";
+  }
+
+  if (foodName.trim().length > 160) {
+    return "Food name is too long.";
   }
 
   if (
@@ -112,59 +120,53 @@ export function validateOfferFields({
     return "Food description must be text.";
   }
 
-  if (
-    !Number.isInteger(Number(quantity)) ||
-    Number(quantity) <= 0
-  ) {
+  if (typeof foodDescription === "string" && foodDescription.length > 1000) {
+    return "Food description is too long.";
+  }
+
+  const normalizedQuantity = Number(quantity);
+  if (!Number.isInteger(normalizedQuantity) || normalizedQuantity <= 0) {
     return "Quantity must be a positive integer.";
   }
 
-  if (
-    !Number.isFinite(Number(foodPrice)) ||
-    Number(foodPrice) < 0
-  ) {
+  const normalizedFoodPrice = Number(foodPrice);
+  if (!Number.isFinite(normalizedFoodPrice) || normalizedFoodPrice < 0) {
     return "Food price must be a valid non-negative number.";
   }
 
-  if (
-    !Number.isFinite(Number(deliveryCharge)) ||
-    Number(deliveryCharge) < 0
-  ) {
+  const normalizedDeliveryCharge = Number(deliveryCharge);
+  if (!Number.isFinite(normalizedDeliveryCharge) || normalizedDeliveryCharge < 0) {
     return "Delivery charge must be a valid non-negative number.";
   }
 
-  if (!startTime) {
-    return "Start time is required.";
+  if (normalizedFoodPrice > 100000000 || normalizedDeliveryCharge > 100000000) {
+    return "Price values are too large.";
   }
 
-  if (!endTime) {
-    return "End time is required.";
-  }
+  if (!startTime) return "Start time is required.";
+  if (!endTime) return "End time is required.";
 
   const start = new Date(startTime);
   const end = new Date(endTime);
 
-  if (Number.isNaN(start.getTime())) {
-    return "Start time is invalid.";
-  }
-
-  if (Number.isNaN(end.getTime())) {
-    return "End time is invalid.";
-  }
+  if (Number.isNaN(start.getTime())) return "Start time is invalid.";
+  if (Number.isNaN(end.getTime())) return "End time is invalid.";
 
   if (end <= start) {
     return "End time must be after start time.";
   }
 
-  if (
-    !Number.isInteger(Number(maxPeople)) ||
-    Number(maxPeople) <= 0
-  ) {
+  const normalizedMaxPeople = Number(maxPeople);
+  if (!Number.isInteger(normalizedMaxPeople) || normalizedMaxPeople <= 0) {
     return "Maximum participants must be a positive integer.";
   }
 
+  if (normalizedMaxPeople > 10000) {
+    return "Maximum participants is too large.";
+  }
+
   return "";
-} 
+}
 
 export function validatePaymentMethods(paymentMethods) {
     if (
