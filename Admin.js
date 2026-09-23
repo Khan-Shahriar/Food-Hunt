@@ -734,36 +734,35 @@ function renderDashboardOffers() {
    ========================================================= */
 
 function getOfferStatus(offer) {
-  if (
-    offer.disabled === true ||
-    offer.status === "disabled"
-  ) {
+  const status = String(offer.status || "").toUpperCase();
+
+  if (status === "DISABLED" || offer.disabled === true) {
     return "disabled";
+  }
+
+  if (status === "DISMISSED") {
+    return "dismissed";
+  }
+
+  if (status === "COMPLETED" || status === "SUCCESSFUL") {
+    return "completed";
+  }
+
+  if (status === "ENDED") {
+    return "ended";
   }
 
   if (
     offer.endTime &&
-    !Number.isNaN(
-      new Date(
-        offer.endTime
-      ).getTime()
-    ) &&
-    new Date(
-      offer.endTime
-    ).getTime() < Date.now()
+    !Number.isNaN(new Date(offer.endTime).getTime()) &&
+    new Date(offer.endTime).getTime() < Date.now()
   ) {
     return "expired";
   }
 
   if (
-    Number(
-      offer.maxParticipants
-    ) > 0 &&
-    Number(
-      offer.participants
-    ) >= Number(
-      offer.maxParticipants
-    )
+    Number(offer.maxParticipants) > 0 &&
+    Number(offer.participants) >= Number(offer.maxParticipants)
   ) {
     return "full";
   }
