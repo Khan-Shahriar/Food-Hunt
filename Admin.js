@@ -1148,12 +1148,10 @@ async function toggleOfferDisabled(id) {
       )}/status`,
       {
         method: "PATCH",
-
         body: JSON.stringify({
-          accountStatus:
-            nextStatus === "disabled"
-              ? "banned"
-              : "active",
+          status: nextDisabled
+            ? "DISABLED"
+            : "OPEN",
         }),
       }
     );
@@ -1417,8 +1415,10 @@ async function toggleUserDisabled(id) {
         method: "PATCH",
 
         body: JSON.stringify({
-          status:
-            nextStatus,
+          accountStatus:
+            nextStatus === "disabled"
+              ? "banned"
+              : "active",
         }),
       }
     );
