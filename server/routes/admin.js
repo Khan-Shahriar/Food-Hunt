@@ -1,6 +1,9 @@
 import { Router } from "express";
 import db from "../db.js";
 import { requireAuth, requireRole } from "../middleware/auth.js";
+import { validateOfferFields } from "../utils/validation.js";
+import { calculateOfferTotals } from "../utils/calculation.js";
+import { canTransitionOfferStatus, getOfferParticipants, normalizeOfferStatus, serializePaymentMethods, syncParticipantAmounts, validatePaymentConfiguration } from "../utils/offer-policy.js";
 
 const router = Router();
 
@@ -85,353 +88,250 @@ GET ALL OFFERS
 
 router.get("/offers", (req, res) => {
   try {
-
     const offers = db.prepare(`
-      SELECT
-        offers.*,
-
-        users.full_name AS creator_name,
-        users.email AS creator_email,
-
-        (
-          SELECT COUNT(*)
-          FROM offer_participants
-          WHERE offer_participants.offer_id = offers.id
-        ) AS participant_count
-
-      FROM offers
-
-      JOIN users
-        ON offers.user_id = users.id
-
-      ORDER BY offers.created_at DESC
+      SELECT o.*, users.full_name AS creator_name, users.email AS creator_email,
+        (SELECT COUNT(*) FROM offer_participants WHERE offer_id = o.id) AS participant_count
+      FROM offers o
+      JOIN users ON users.id = o.user_id
+      ORDER BY o.created_at DESC
     `).all();
 
     return res.json({
       success: true,
-      offers
+      offers: offers.map((offer) => ({
+        ...offer,
+        status: normalizeOfferStatus(offer.status)
+      }))
     });
-
   } catch (error) {
     console.error("ADMIN GET OFFERS ERROR:", error);
-
-    return res.status(500).json({
-      error: "Failed to load offers."
-    });
+    return res.status(500).json({ success: false, error: "Failed to load offers." });
   }
 });
-
-
-/*
-=========================================================
-GET SINGLE OFFER
-=========================================================
-*/
 
 router.get("/offers/:id", (req, res) => {
-
   const offerId = Number(req.params.id);
-
-  if (!Number.isInteger(offerId)) {
-    return res.status(400).json({
-      error: "Invalid offer ID."
-    });
+  if (!Number.isInteger(offerId) || offerId <= 0) {
+    return res.status(400).json({ success: false, error: "Invalid offer ID." });
   }
 
   try {
-
     const offer = db.prepare(`
-      SELECT
-        offers.*,
-        users.full_name AS creator_name,
-        users.email AS creator_email,
-
-        (
-          SELECT COUNT(*)
-          FROM offer_participants
-          WHERE offer_participants.offer_id = offers.id
-        ) AS participant_count
-
-      FROM offers
-
-      JOIN users
-        ON offers.user_id = users.id
-
-      WHERE offers.id = ?
+      SELECT o.*, users.full_name AS creator_name, users.email AS creator_email
+      FROM offers o
+      JOIN users ON users.id = o.user_id
+      WHERE o.id = ?
     `).get(offerId);
 
-    if (!offer) {
-      return res.status(404).json({
-        error: "Offer not found."
-      });
-    }
+    if (!offer) return res.status(404).json({ success: false, error: "Offer not found." });
 
+    const participants = getOfferParticipants(offerId);
     return res.json({
       success: true,
-      offer
+      offer: {
+        ...offer,
+        status: normalizeOfferStatus(offer.status),
+        participant_count: participants.length,
+        totals: calculateOfferTotals(offer, participants)
+      },
+      participants
     });
-
   } catch (error) {
     console.error("ADMIN GET OFFER ERROR:", error);
-
-    return res.status(500).json({
-      error: "Failed to load offer."
-    });
+    return res.status(500).json({ success: false, error: "Failed to load offer." });
   }
 });
-
-
-/*
-=========================================================
-EDIT OFFER
-=========================================================
-*/
 
 router.put("/offers/:id", (req, res) => {
-
   const offerId = Number(req.params.id);
-
-  if (!Number.isInteger(offerId)) {
-    return res.status(400).json({
-      error: "Invalid offer ID."
-    });
+  if (!Number.isInteger(offerId) || offerId <= 0) {
+    return res.status(400).json({ success: false, error: "Invalid offer ID." });
   }
 
-  const {
-    restaurantName,
-    foodName,
-    description,
-    quantity,
-    price,
-    deliveryCharge,
-    startTime,
-    endTime,
-    maxParticipants
-  } = req.body;
+  const body = req.body || {};
+  const restaurantName = body.restaurantName;
+  const foodName = body.foodName;
+  const foodDescription = body.foodDescription ?? body.description;
+  const quantity = body.quantity;
+  const foodPrice = body.foodPrice ?? body.price;
+  const deliveryCharge = body.deliveryCharge;
+  const startTime = body.startTime;
+  const endTime = body.endTime;
+  const maxPeople = body.maxPeople ?? body.maxParticipants;
+  const paymentMethods = body.paymentMethods;
 
-  if (
-    !restaurantName?.trim() ||
-    !foodName?.trim()
-  ) {
-    return res.status(400).json({
-      error: "Restaurant name and food name are required."
-    });
-  }
+  const fieldError = validateOfferFields({
+    restaurantName, foodName, foodDescription, quantity, foodPrice,
+    deliveryCharge, startTime, endTime, maxPeople
+  });
+  if (fieldError) return res.status(400).json({ success: false, error: fieldError });
 
-  if (Number(quantity) <= 0) {
-    return res.status(400).json({
-      error: "Quantity must be greater than zero."
-    });
-  }
-
-  if (Number(price) < 0) {
-    return res.status(400).json({
-      error: "Food price cannot be negative."
-    });
-  }
-
-  if (Number(deliveryCharge) < 0) {
-    return res.status(400).json({
-      error: "Delivery charge cannot be negative."
-    });
-  }
-
-  if (Number(maxParticipants) <= 0) {
-    return res.status(400).json({
-      error: "Maximum participants must be greater than zero."
-    });
-  }
+  const payment = validatePaymentConfiguration(paymentMethods);
+  if (payment.error) return res.status(400).json({ success: false, error: payment.error });
 
   try {
+    const result = db.transaction(() => {
+      const offer = db.prepare(`SELECT * FROM offers WHERE id = ?`).get(offerId);
+      if (!offer) {
+        const e = new Error("Offer not found."); e.status = 404; throw e;
+      }
 
-    const existing = db
-      .prepare(`
-        SELECT id
-        FROM offers
+      const currentStatus = normalizeOfferStatus(offer.status);
+      if (!["OPEN", "DISABLED"].includes(currentStatus)) {
+        const e = new Error("Only OPEN or DISABLED offers can be edited by an admin.");
+        e.status = 400; throw e;
+      }
+
+      const participantCount = db.prepare(`
+        SELECT COUNT(*) AS total FROM offer_participants WHERE offer_id = ?
+      `).get(offerId).total;
+
+      if (Number(maxPeople) < Number(participantCount)) {
+        const e = new Error(
+          "Maximum participants cannot be less than the " + participantCount + " participant(s) already joined."
+        );
+        e.status = 400; throw e;
+      }
+
+      const creator = db.prepare(`SELECT full_name FROM users WHERE id = ?`).get(offer.user_id);
+      if (!creator) {
+        const e = new Error("Offer creator not found."); e.status = 409; throw e;
+      }
+
+      db.prepare(`
+        UPDATE offers SET
+          restaurant_name = ?, food_name = ?, food_description = ?,
+          quantity = ?, food_price = ?, delivery_charge = ?,
+          start_time = ?, end_time = ?, max_people = ?,
+          payment_methods = ?, payment_bkash_enabled = ?, bkash_number = ?,
+          payment_citybank_enabled = ?, citybank_account_name = ?,
+          citybank_account_number = ?, citybank_phone = ?,
+          payment_cash_enabled = ?, cash_account_name = ?,
+          updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
-      `)
-      .get(offerId);
+      `).run(
+        String(restaurantName).trim(),
+        String(foodName).trim(),
+        typeof foodDescription === "string" ? foodDescription.trim() || null : null,
+        Number(quantity),
+        Number(foodPrice),
+        Number(deliveryCharge),
+        startTime,
+        endTime,
+        Number(maxPeople),
+        serializePaymentMethods(payment),
+        payment.bkashEnabled ? 1 : 0,
+        payment.bkashEnabled ? payment.bkashNumber : null,
+        payment.cityBankEnabled ? 1 : 0,
+        payment.cityBankEnabled ? payment.accountName || null : null,
+        payment.cityBankEnabled ? payment.accountNumber || null : null,
+        payment.cityBankEnabled ? payment.phoneNumber || null : null,
+        payment.cashEnabled ? 1 : 0,
+        payment.cashEnabled ? creator.full_name : null,
+        offerId
+      );
 
-    if (!existing) {
-      return res.status(404).json({
-        error: "Offer not found."
-      });
-    }
+      const updated = db.prepare(`SELECT * FROM offers WHERE id = ?`).get(offerId);
+      const participants = getOfferParticipants(offerId);
+      syncParticipantAmounts(updated, participants);
+      const refreshed = getOfferParticipants(offerId);
 
-    db.prepare(`
-  UPDATE offers
+      return {
+        offer: {
+          ...updated,
+          status: normalizeOfferStatus(updated.status),
+          participant_count: refreshed.length,
+          totals: calculateOfferTotals(updated, refreshed)
+        }
+      };
+    })();
 
-  SET
-    restaurant_name = ?,
-    food_name = ?,
-    food_description = ?,
-    quantity = ?,
-    food_price = ?,
-    delivery_charge = ?,
-    start_time = ?,
-    end_time = ?,
-    max_people = ?
-
-  WHERE id = ?
-`).run(
-      restaurantName.trim(),
-      foodName.trim(),
-      description?.trim() || null,
-      Number(quantity),
-      Number(price),
-      Number(deliveryCharge),
-      startTime,
-      endTime,
-      Number(maxParticipants),
-      offerId
-    );
-
-    const updatedOffer = db
-      .prepare(`
-        SELECT *
-        FROM offers
-        WHERE id = ?
-      `)
-      .get(offerId);
-
-    return res.json({
-      success: true,
-      message: "Offer updated successfully.",
-      offer: updatedOffer
-    });
-
+    return res.json({ success: true, message: "Offer updated successfully.", ...result });
   } catch (error) {
+    if (error?.status) return res.status(error.status).json({ success: false, error: error.message });
     console.error("ADMIN UPDATE OFFER ERROR:", error);
-
-    return res.status(500).json({
-      error: "Failed to update offer."
-    });
+    return res.status(500).json({ success: false, error: "Failed to update offer." });
   }
 });
-
-
-/*
-=========================================================
-CHANGE OFFER STATUS
-=========================================================
-*/
 
 router.patch("/offers/:id/status", (req, res) => {
-
   const offerId = Number(req.params.id);
-  const { status } = req.body;
+  const requested = normalizeOfferStatus(req.body?.status);
 
-  const allowedStatuses = [
-    "OPEN",
-    "CLOSED",
-    "DISABLED"
-  ];
-
-  if (!Number.isInteger(offerId)) {
-    return res.status(400).json({
-      error: "Invalid offer ID."
-    });
+  if (!Number.isInteger(offerId) || offerId <= 0) {
+    return res.status(400).json({ success: false, error: "Invalid offer ID." });
   }
-
-  if (!allowedStatuses.includes(status)) {
-    return res.status(400).json({
-      error: "Invalid offer status."
-    });
+  if (!["OPEN", "ENDED", "COMPLETED", "DISMISSED", "DISABLED", "SUCCESSFUL"].includes(requested)) {
+    return res.status(400).json({ success: false, error: "Invalid offer status." });
   }
 
   try {
+    const result = db.transaction(() => {
+      const offer = db.prepare(`SELECT * FROM offers WHERE id = ?`).get(offerId);
+      if (!offer) {
+        const e = new Error("Offer not found."); e.status = 404; throw e;
+      }
 
-    const offer = db
-      .prepare(`
-        SELECT id
-        FROM offers
-        WHERE id = ?
-      `)
-      .get(offerId);
+      const current = normalizeOfferStatus(offer.status);
+      if (!canTransitionOfferStatus(current, requested)) {
+        const e = new Error("Invalid offer status transition from " + current + " to " + requested + ".");
+        e.status = 400; throw e;
+      }
 
-    if (!offer) {
-      return res.status(404).json({
-        error: "Offer not found."
-      });
-    }
+      db.prepare(`
+        UPDATE offers SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+      `).run(requested, offerId);
 
-    db.prepare(`
-      UPDATE offers
-      SET status = ?
-      WHERE id = ?
-    `).run(status, offerId);
+      return { status: requested };
+    })();
 
-    return res.json({
-      success: true,
-      message: `Offer status changed to ${status}.`
-    });
-
+    return res.json({ success: true, message: "Offer status changed to " + result.status + ".", ...result });
   } catch (error) {
+    if (error?.status) return res.status(error.status).json({ success: false, error: error.message });
     console.error("ADMIN STATUS ERROR:", error);
-
-    return res.status(500).json({
-      error: "Failed to change offer status."
-    });
+    return res.status(500).json({ success: false, error: "Failed to change offer status." });
   }
 });
-
-
-/*
-=========================================================
-DELETE OFFER
-=========================================================
-*/
 
 router.delete("/offers/:id", (req, res) => {
-
   const offerId = Number(req.params.id);
-
-  if (!Number.isInteger(offerId)) {
-    return res.status(400).json({
-      error: "Invalid offer ID."
-    });
+  if (!Number.isInteger(offerId) || offerId <= 0) {
+    return res.status(400).json({ success: false, error: "Invalid offer ID." });
   }
 
   try {
+    const result = db.transaction(() => {
+      const offer = db.prepare(`SELECT * FROM offers WHERE id = ?`).get(offerId);
+      if (!offer) {
+        const e = new Error("Offer not found."); e.status = 404; throw e;
+      }
 
-    const offer = db
-      .prepare(`
-        SELECT id
-        FROM offers
-        WHERE id = ?
-      `)
-      .get(offerId);
+      const current = normalizeOfferStatus(offer.status);
+      if (current === "DISMISSED") {
+        return { status: current, message: "Offer is already cancelled." };
+      }
+      if (!canTransitionOfferStatus(current, "DISMISSED")) {
+        const e = new Error("This offer cannot be cancelled from its current status.");
+        e.status = 400; throw e;
+      }
 
-    if (!offer) {
-      return res.status(404).json({
-        error: "Offer not found."
-      });
-    }
+      db.prepare(`
+        UPDATE offers SET status = 'DISMISSED', updated_at = CURRENT_TIMESTAMP WHERE id = ?
+      `).run(offerId);
 
-    /*
-     * Because foreign_keys = ON in db.js,
-     * participants will also be removed automatically.
-     */
+      return {
+        status: "DISMISSED",
+        message: "Offer cancelled successfully. Participant records were preserved."
+      };
+    })();
 
-    db.prepare(`
-      DELETE FROM offers
-      WHERE id = ?
-    `).run(offerId);
-
-    return res.json({
-      success: true,
-      message: "Offer deleted successfully."
-    });
-
+    return res.json({ success: true, ...result });
   } catch (error) {
+    if (error?.status) return res.status(error.status).json({ success: false, error: error.message });
     console.error("ADMIN DELETE OFFER ERROR:", error);
-
-    return res.status(500).json({
-      error: "Failed to delete offer."
-    });
+    return res.status(500).json({ success: false, error: "Failed to cancel offer." });
   }
 });
-
 
 /*
 =========================================================
