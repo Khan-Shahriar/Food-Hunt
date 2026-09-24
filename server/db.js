@@ -306,7 +306,46 @@ addColumnIfMissing(
 );
 
 
-/*\n * ============================================================\n * SECTION 3 — FOOD / ORDER / PAYMENT LIFECYCLE\n * ============================================================\n */\n\naddColumnIfMissing("offers", "payment_methods", "TEXT NOT NULL DEFAULT '[]'");\naddColumnIfMissing("offers", "final_total", "REAL");\naddColumnIfMissing("offers", "final_participant_count", "INTEGER");\naddColumnIfMissing("offers", "finalized_at", "TEXT");\naddColumnIfMissing("offers", "completed_at", "TEXT");\naddColumnIfMissing("offer_participants", "order_status", "TEXT NOT NULL DEFAULT 'JOINED'");\naddColumnIfMissing("offer_participants", "payment_status", "TEXT NOT NULL DEFAULT 'PENDING'");\naddColumnIfMissing("offer_participants", "updated_at", "TEXT");\n\ndb.exec(\n  "UPDATE offers SET status = 'COMPLETED' WHERE LOWER(status) = 'completed';\\n" +\n  "UPDATE offers SET status = 'DISMISSED' WHERE LOWER(status) = 'dismissed';\\n" +\n  "UPDATE offers SET status = 'SUCCESSFUL' WHERE LOWER(status) = 'successful';\\n" +\n  "UPDATE offers SET status = 'ENDED' WHERE LOWER(status) = 'ended';"\n);\n\ndb.exec(\n  "UPDATE offer_participants SET order_status = 'JOINED' WHERE order_status IS NULL OR TRIM(order_status) = '';\\n" +\n  "UPDATE offer_participants SET payment_status = 'PENDING' WHERE payment_status IS NULL OR TRIM(payment_status) = '';\"\n);\n\ndb.exec(\n  "CREATE INDEX IF NOT EXISTS idx_offer_participants_user ON offer_participants(user_id);\\n" +\n  "CREATE INDEX IF NOT EXISTS idx_offer_participants_payment ON offer_participants(offer_id, payment_method);\"\n);\n\n/*
+/*\n * ============================================================\n * /*
+ * ============================================================
+ * SECTION 3 — FOOD / ORDER / PAYMENT LIFECYCLE
+ * ============================================================
+ */
+
+addColumnIfMissing("offers", "payment_methods", "TEXT NOT NULL DEFAULT '[]'");
+addColumnIfMissing("offers", "final_total", "REAL");
+addColumnIfMissing("offers", "final_participant_count", "INTEGER");
+addColumnIfMissing("offers", "finalized_at", "TEXT");
+addColumnIfMissing("offers", "completed_at", "TEXT");
+addColumnIfMissing("offer_participants", "order_status", "TEXT NOT NULL DEFAULT 'JOINED'");
+addColumnIfMissing("offer_participants", "payment_status", "TEXT NOT NULL DEFAULT 'PENDING'");
+addColumnIfMissing("offer_participants", "updated_at", "TEXT");
+
+db.exec(`
+  UPDATE offers SET status = 'COMPLETED' WHERE LOWER(status) = 'completed';
+  UPDATE offers SET status = 'DISMISSED' WHERE LOWER(status) = 'dismissed';
+  UPDATE offers SET status = 'SUCCESSFUL' WHERE LOWER(status) = 'successful';
+  UPDATE offers SET status = 'ENDED' WHERE LOWER(status) = 'ended';
+`);
+
+db.exec(`
+  UPDATE offer_participants
+  SET order_status = 'JOINED'
+  WHERE order_status IS NULL OR TRIM(order_status) = '';
+
+  UPDATE offer_participants
+  SET payment_status = 'PENDING'
+  WHERE payment_status IS NULL OR TRIM(payment_status) = '';
+`);
+
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_offer_participants_user
+  ON offer_participants(user_id);
+
+  CREATE INDEX IF NOT EXISTS idx_offer_participants_payment
+  ON offer_participants(offer_id, payment_method);
+`);
+/*
  * ===========================================================
  * FINISH
  * ===========================================================
