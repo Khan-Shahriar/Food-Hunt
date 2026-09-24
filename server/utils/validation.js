@@ -190,3 +190,28 @@ export function validatePaymentMethods(paymentMethods) {
 
     return "";
 }
+
+
+export const PAYMENT_METHODS = Object.freeze([
+  "bkash",
+  "city_bank",
+  "cash"
+]);
+
+export function validatePaymentMethod(paymentMethod) {
+  if (!PAYMENT_METHODS.includes(paymentMethod)) {
+    return "Invalid payment method.";
+  }
+
+  return "";
+}
+
+export function validateOrderState(orderStatus) {
+  const allowed = ["JOINED", "CONFIRMED", "CANCELLED", "FULFILLED"];
+
+  if (!allowed.includes(orderStatus)) {
+    return "Invalid order status.";
+  }
+
+  return "";
+}
