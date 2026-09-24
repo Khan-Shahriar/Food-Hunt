@@ -1,30 +1,36 @@
+const roundMoney = (value) => Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+
 export function calculateOfferTotals(offer, participants = []) {
-    const foodPrice = Number(offer.foodPrice) || 0;
-    const deliveryCharge = Number(offer.deliveryCharge) || 0;
-    const maxParticipants = Number(offer.maxPeople) || 0;
+    const foodPrice = Math.max(0, Number(offer.foodPrice) || 0);
+    const deliveryCharge = Math.max(0, Number(offer.deliveryCharge) || 0);
+    const maxParticipants = Math.max(0, Number(offer.maxPeople) || 0);
 
-    const joinedCount = participants.length;
+    const activeParticipants = participants.filter(
+        (participant) =>
+            String(participant.order_status || "JOINED").toUpperCase() !== "CANCELLED"
+    );
 
-    const deliveryShare =
+    const joinedCount = activeParticipants.length;
+
+    const foodSubtotal = roundMoney(foodPrice * joinedCount);
+    const deliveryAllocated = roundMoney(
         maxParticipants > 0
-            ? deliveryCharge / maxParticipants
-            : 0;
+            ? deliveryCharge * (joinedCount / maxParticipants)
+            : 0
+    );
 
-    const costPerPerson =
-        foodPrice + deliveryShare;
+    const deliveryShare = roundMoney(
+        maxParticipants > 0 ? deliveryCharge / maxParticipants : 0
+    );
 
-    const totalAmount =
-        costPerPerson * joinedCount;
+    const costPerPerson = roundMoney(foodPrice + deliveryShare);
+    const totalAmount = roundMoney(costPerPerson * joinedCount);
 
-    const remainingSlots =
-        Math.max(maxParticipants - joinedCount, 0);
+    const remainingSlots = Math.max(maxParticipants - joinedCount, 0);
 
     const progress =
         maxParticipants > 0
-            ? Math.min(
-                (joinedCount / maxParticipants) * 100,
-                100
-            )
+            ? Math.min((joinedCount / maxParticipants) * 100, 100)
             : 0;
 
     const paymentTotals = {
@@ -33,25 +39,34 @@ export function calculateOfferTotals(offer, participants = []) {
         cash: 0
     };
 
-    participants.forEach((participant) => {
+    activeParticipants.forEach((participant) => {
         const paymentMethod = participant.payment_method;
 
         if (paymentMethod === "bkash") {
-            paymentTotals.bkash += costPerPerson;
+            paymentTotals.bkash = roundMoney(
+                paymentTotals.bkash + costPerPerson
+            );
         } else if (paymentMethod === "city_bank") {
-            paymentTotals.cityBank += costPerPerson;
+            paymentTotals.cityBank = roundMoney(
+                paymentTotals.cityBank + costPerPerson
+            );
         } else if (paymentMethod === "cash") {
-            paymentTotals.cash += costPerPerson;
+            paymentTotals.cash = roundMoney(
+                paymentTotals.cash + costPerPerson
+            );
         }
     });
 
-    const grandTotal =
+    const grandTotal = roundMoney(
         paymentTotals.bkash +
         paymentTotals.cityBank +
-        paymentTotals.cash;
+        paymentTotals.cash
+    );
 
     return {
         joinedCount,
+        foodSubtotal,
+        deliveryAllocated,
         deliveryShare,
         costPerPerson,
         totalAmount,
@@ -61,3 +76,5 @@ export function calculateOfferTotals(offer, participants = []) {
         grandTotal
     };
 }
+
+export { roundMoney };
