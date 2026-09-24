@@ -1,6 +1,7 @@
 import { Router } from "express";
 import db from "../db.js";
 import { requireAuth, requireRole } from "../middleware/auth.js";
+import { calculateOfferTotals } from "../utils/calculation.js";
 
 const router = Router();
 
@@ -281,7 +282,7 @@ router.put("/offers/:id", (req, res) => {
 
   const offerId = Number(req.params.id);
 
-  if (!Number.isInteger(offerId)) {
+  if (!Number.isInteger(offerId) || offerId <= 0) {
     return res.status(400).json({
       error: "Invalid offer ID."
     });
@@ -299,48 +300,38 @@ router.put("/offers/:id", (req, res) => {
     maxParticipants
   } = req.body;
 
-  if (
-    !restaurantName?.trim() ||
-    !foodName?.trim()
-  ) {
+  if (!restaurantName?.trim() || !foodName?.trim()) {
     return res.status(400).json({
       error: "Restaurant name and food name are required."
     });
   }
 
-  if (Number(quantity) <= 0) {
+  if (!Number.isInteger(Number(quantity)) || Number(quantity) <= 0) {
     return res.status(400).json({
-      error: "Quantity must be greater than zero."
+      error: "Quantity must be a positive integer."
     });
   }
 
-  if (Number(price) < 0) {
+  if (!Number.isFinite(Number(price)) || Number(price) < 0) {
     return res.status(400).json({
-      error: "Food price cannot be negative."
+      error: "Food price must be a valid non-negative number."
     });
   }
 
-  if (Number(deliveryCharge) < 0) {
+  if (!Number.isFinite(Number(deliveryCharge)) || Number(deliveryCharge) < 0) {
     return res.status(400).json({
-      error: "Delivery charge cannot be negative."
+      error: "Delivery charge must be a valid non-negative number."
     });
   }
 
-  if (Number(maxParticipants) <= 0) {
+  if (!Number.isInteger(Number(maxParticipants)) || Number(maxParticipants) <= 0) {
     return res.status(400).json({
-      error: "Maximum participants must be greater than zero."
+      error: "Maximum participants must be a positive integer."
     });
   }
 
   try {
-
-    const existing = db
-      .prepare(`
-        SELECT id
-        FROM offers
-        WHERE id = ?
-      `)
-      .get(offerId);
+    const existing = db.prepare("SELECT * FROM offers WHERE id = ?").get(offerId);
 
     if (!existing) {
       return res.status(404).json({
@@ -348,48 +339,93 @@ router.put("/offers/:id", (req, res) => {
       });
     }
 
-    db.prepare(`
-  UPDATE offers
+    if (String(existing.status).toUpperCase() !== "OPEN") {
+      return res.status(400).json({
+        error: "Only open offers can be edited."
+      });
+    }
 
-  SET
-    restaurant_name = ?,
-    food_name = ?,
-    food_description = ?,
-    quantity = ?,
-    food_price = ?,
-    delivery_charge = ?,
-    start_time = ?,
-    end_time = ?,
-    max_people = ?
+    const participants = db.prepare(`
+      SELECT *
+      FROM offer_participants
+      WHERE offer_id = ?
+      AND UPPER(COALESCE(order_status, 'JOINED')) != 'CANCELLED'
+    `).all(offerId);
 
-  WHERE id = ?
-`).run(
-      restaurantName.trim(),
-      foodName.trim(),
-      description?.trim() || null,
-      Number(quantity),
-      Number(price),
-      Number(deliveryCharge),
-      startTime,
-      endTime,
-      Number(maxParticipants),
-      offerId
-    );
+    if (Number(maxParticipants) < participants.length) {
+      return res.status(400).json({
+        error: "Maximum participants cannot be lower than the current participant count."
+      });
+    }
 
-    const updatedOffer = db
-      .prepare(`
-        SELECT *
-        FROM offers
+    const transaction = db.transaction(() => {
+      db.prepare(`
+        UPDATE offers
+        SET
+          restaurant_name = ?,
+          food_name = ?,
+          food_description = ?,
+          quantity = ?,
+          food_price = ?,
+          delivery_charge = ?,
+          start_time = ?,
+          end_time = ?,
+          max_people = ?,
+          final_total = NULL,
+          final_participant_count = NULL,
+          finalized_at = NULL,
+          completed_at = NULL,
+          updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
-      `)
-      .get(offerId);
+      `).run(
+        restaurantName.trim(),
+        foodName.trim(),
+        description?.trim() || null,
+        Number(quantity),
+        Number(price),
+        Number(deliveryCharge),
+        startTime,
+        endTime,
+        Number(maxParticipants),
+        offerId
+      );
+
+      const updatedOffer = db.prepare("SELECT * FROM offers WHERE id = ?").get(offerId);
+      const totals = calculateOfferTotals(
+        {
+          foodPrice: updatedOffer.food_price,
+          deliveryCharge: updatedOffer.delivery_charge,
+          maxPeople: updatedOffer.max_people
+        },
+        participants
+      );
+
+      db.prepare(`
+        UPDATE offer_participants
+        SET amount = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(totals.costPerPerson, participants[0]?.id ?? 0);
+
+      const updateAll = db.prepare(`
+        UPDATE offer_participants
+        SET amount = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `);
+
+      for (const participant of participants.slice(1)) {
+        updateAll.run(totals.costPerPerson, participant.id);
+      }
+    });
+
+    transaction();
+
+    const updatedOffer = db.prepare("SELECT * FROM offers WHERE id = ?").get(offerId);
 
     return res.json({
       success: true,
       message: "Offer updated successfully.",
       offer: updatedOffer
     });
-
   } catch (error) {
     console.error("ADMIN UPDATE OFFER ERROR:", error);
 
