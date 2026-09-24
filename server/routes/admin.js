@@ -522,7 +522,7 @@ router.delete("/offers/:id", (req, res) => {
 
     const offer = db
       .prepare(`
-        SELECT id
+        SELECT id, status, final_total
         FROM offers
         WHERE id = ?
       `)
@@ -534,10 +534,17 @@ router.delete("/offers/:id", (req, res) => {
       });
     }
 
-    /*
-     * Because foreign_keys = ON in db.js,
-     * participants will also be removed automatically.
-     */
+    const participantCount = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM offer_participants
+      WHERE offer_id = ?
+    `).get(offerId).total;
+
+    if (participantCount > 0 || offer.final_total !== null) {
+      return res.status(409).json({
+        error: "Offers with order or payment records cannot be deleted."
+      });
+    }
 
     db.prepare(`
       DELETE FROM offers
