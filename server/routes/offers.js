@@ -146,6 +146,21 @@ function safeOffer(offer) {
 }
 
 function reconcileParticipants(offerId, offer, participants) {
+    const activeParticipants = participants.filter(
+        (participant) =>
+            String(participant.order_status || "JOINED").toUpperCase() !== "CANCELLED"
+    );
+
+    const invalidPayment = activeParticipants.find(
+        (participant) => !ALLOWED_PAYMENT_METHODS.has(participant.payment_method)
+    );
+
+    if (invalidPayment) {
+        const error = new Error("An order contains an invalid payment method and cannot be finalized.");
+        error.statusCode = 409;
+        throw error;
+    }
+
     const totals = calculateOfferTotals(
         {
             foodPrice: offer.food_price,
