@@ -183,6 +183,96 @@ router.get("/offers/:id", (req, res) => {
 
 /*
 =========================================================
+GET OFFER ORDERS / PAYMENT RECORDS
+=========================================================
+*/
+
+router.get("/offers/:id/orders", (req, res) => {
+  const offerId = Number(req.params.id);
+
+  if (!Number.isInteger(offerId) || offerId <= 0) {
+    return res.status(400).json({
+      success: false,
+      error: "Invalid offer ID."
+    });
+  }
+
+  try {
+    const offer = db.prepare(`
+      SELECT
+        offers.*,
+        users.full_name AS creator_name,
+        users.email AS creator_email
+      FROM offers
+      JOIN users ON users.id = offers.user_id
+      WHERE offers.id = ?
+    `).get(offerId);
+
+    if (!offer) {
+      return res.status(404).json({
+        success: false,
+        error: "Offer not found."
+      });
+    }
+
+    const participants = db.prepare(`
+      SELECT
+        offer_participants.id,
+        offer_participants.offer_id,
+        offer_participants.user_id,
+        users.full_name,
+        users.email,
+        offer_participants.joined_at,
+        offer_participants.order_status,
+        offer_participants.payment_method,
+        offer_participants.payment_status,
+        offer_participants.amount,
+        offer_participants.food_received,
+        offer_participants.received_at,
+        offer_participants.updated_at
+      FROM offer_participants
+      JOIN users ON users.id = offer_participants.user_id
+      WHERE offer_participants.offer_id = ?
+      ORDER BY offer_participants.joined_at ASC
+    `).all(offerId);
+
+    const foodPrice = Math.max(0, Number(offer.food_price) || 0);
+    const deliveryCharge = Math.max(0, Number(offer.delivery_charge) || 0);
+    const maxPeople = Math.max(0, Number(offer.max_people) || 0);
+    const activeParticipants = participants.filter(
+      participant => String(participant.order_status || "JOINED").toUpperCase() !== "CANCELLED"
+    );
+    const joinedCount = activeParticipants.length;
+    const costPerPerson = Math.round(
+      (foodPrice + (maxPeople > 0 ? deliveryCharge / maxPeople : 0)) * 100
+    ) / 100;
+    const finalTotal = Math.round(costPerPerson * joinedCount * 100) / 100;
+
+    return res.json({
+      success: true,
+      offer,
+      participants,
+      reconciliation: {
+        participantCount: joinedCount,
+        costPerPerson,
+        finalTotal,
+        storedFinalTotal: offer.final_total ?? null,
+        finalizedAt: offer.finalized_at ?? null
+      }
+    });
+  } catch (error) {
+    console.error("ADMIN GET OFFER ORDERS ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      error: "Failed to load offer orders."
+    });
+  }
+});
+
+
+/*
+=========================================================
 EDIT OFFER
 =========================================================
 */
