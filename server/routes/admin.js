@@ -449,6 +449,7 @@ router.patch("/offers/:id/status", (req, res) => {
 
   const allowedStatuses = [
     "OPEN",
+    "ENDED",
     "CLOSED",
     "DISABLED"
   ];
@@ -481,9 +482,20 @@ router.patch("/offers/:id/status", (req, res) => {
       });
     }
 
+    if (
+      ["COMPLETED", "SUCCESSFUL", "DISMISSED"].includes(
+        String(offer.status).toUpperCase()
+      ) &&
+      status === "OPEN"
+    ) {
+      return res.status(409).json({
+        error: "A finalized offer cannot be reopened."
+      });
+    }
+
     db.prepare(`
       UPDATE offers
-      SET status = ?
+      SET status = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).run(status, offerId);
 
