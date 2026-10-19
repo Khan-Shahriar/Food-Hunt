@@ -306,7 +306,7 @@ addColumnIfMissing(
 );
 
 
-/*\n * ============================================================\n * /*
+/*
  * ============================================================
  * SECTION 3 — FOOD / ORDER / PAYMENT LIFECYCLE
  * ============================================================
@@ -320,6 +320,30 @@ addColumnIfMissing("offers", "completed_at", "TEXT");
 addColumnIfMissing("offer_participants", "order_status", "TEXT NOT NULL DEFAULT 'JOINED'");
 addColumnIfMissing("offer_participants", "payment_status", "TEXT NOT NULL DEFAULT 'PENDING'");
 addColumnIfMissing("offer_participants", "updated_at", "TEXT");
+
+// Backfill the normalized payment-method list for older offers. Preserve any
+// non-empty list already stored by newer versions of the application.
+const offersNeedingPaymentMethodBackfill = db.prepare(`
+  SELECT id, payment_methods, payment_bkash_enabled,
+         payment_citybank_enabled, payment_cash_enabled
+  FROM offers
+  WHERE payment_methods IS NULL OR TRIM(payment_methods) = '' OR payment_methods = '[]'
+`).all();
+
+const updatePaymentMethods = db.prepare(`
+  UPDATE offers SET payment_methods = ? WHERE id = ?
+`);
+
+for (const offer of offersNeedingPaymentMethodBackfill) {
+  const methods = [];
+  if (Number(offer.payment_bkash_enabled) === 1) methods.push("bkash");
+  if (Number(offer.payment_citybank_enabled) === 1) methods.push("city_bank");
+  if (Number(offer.payment_cash_enabled) === 1) methods.push("cash");
+
+  if (methods.length > 0) {
+    updatePaymentMethods.run(JSON.stringify(methods), offer.id);
+  }
+}
 
 db.exec(`
   UPDATE offers SET status = 'COMPLETED' WHERE LOWER(status) = 'completed';

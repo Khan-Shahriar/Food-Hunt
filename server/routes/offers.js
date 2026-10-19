@@ -208,8 +208,13 @@ function finalizeOffer(offerId, status = "COMPLETED") {
 
         const participants = getParticipants(offerId);
 
-        if (participants.length === 0) {
-            const error = new Error("At least one participant is required to finalize an offer.");
+        const activeParticipantCount = participants.filter(
+            (participant) =>
+                String(participant.order_status || "JOINED").toUpperCase() !== "CANCELLED"
+        ).length;
+
+        if (activeParticipantCount === 0) {
+            const error = new Error("At least one active participant is required to finalize an offer.");
             error.statusCode = 400;
             throw error;
         }
@@ -382,6 +387,7 @@ router.get("/", requireAuth, (req, res) => {
                 offers.payment_bkash_enabled,
                 offers.payment_citybank_enabled,
                 offers.payment_cash_enabled,
+                offers.payment_methods,
                 users.full_name,
                 (
                     SELECT COUNT(*)
@@ -449,15 +455,17 @@ router.post("/:id/join", requireAuth, (req, res) => {
             }
 
             if (new Date(offer.end_time).getTime() <= Date.now()) {
+                // Return normally so the transaction commits the lifecycle update.
                 db.prepare(`
                     UPDATE offers
                     SET status = 'ENDED', updated_at = CURRENT_TIMESTAMP
                     WHERE id = ? AND status = 'OPEN'
                 `).run(offerId);
 
-                const error = new Error("This offer has already ended.");
-                error.statusCode = 400;
-                throw error;
+                return {
+                    errorStatus: 400,
+                    errorMessage: "This offer has already ended."
+                };
             }
 
             const allowedPaymentMethods = allowedPaymentMethodsForOffer(offer);
@@ -544,6 +552,13 @@ router.post("/:id/join", requireAuth, (req, res) => {
         });
 
         const result = transaction();
+
+        if (result.errorStatus) {
+            return res.status(result.errorStatus).json({
+                success: false,
+                message: result.errorMessage
+            });
+        }
 
         return res.status(201).json({
             success: true,

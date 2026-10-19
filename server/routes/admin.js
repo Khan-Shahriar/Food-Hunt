@@ -237,26 +237,26 @@ router.get("/offers/:id/orders", (req, res) => {
       ORDER BY offer_participants.joined_at ASC
     `).all(offerId);
 
-    const foodPrice = Math.max(0, Number(offer.food_price) || 0);
-    const deliveryCharge = Math.max(0, Number(offer.delivery_charge) || 0);
-    const maxPeople = Math.max(0, Number(offer.max_people) || 0);
-    const activeParticipants = participants.filter(
-      participant => String(participant.order_status || "JOINED").toUpperCase() !== "CANCELLED"
+    // Keep admin reconciliation aligned with the same canonical calculation
+    // used by offer joins, participant views, and finalization.
+    const totals = calculateOfferTotals(
+      {
+        foodPrice: offer.food_price,
+        deliveryCharge: offer.delivery_charge,
+        maxPeople: offer.max_people
+      },
+      participants
     );
-    const joinedCount = activeParticipants.length;
-    const costPerPerson = Math.round(
-      (foodPrice + (maxPeople > 0 ? deliveryCharge / maxPeople : 0)) * 100
-    ) / 100;
-    const finalTotal = Math.round(costPerPerson * joinedCount * 100) / 100;
 
     return res.json({
       success: true,
       offer,
       participants,
       reconciliation: {
-        participantCount: joinedCount,
-        costPerPerson,
-        finalTotal,
+        participantCount: totals.joinedCount,
+        costPerPerson: totals.costPerPerson,
+        finalTotal: totals.grandTotal,
+        paymentTotals: totals.paymentTotals,
         storedFinalTotal: offer.final_total ?? null,
         finalizedAt: offer.finalized_at ?? null
       }
